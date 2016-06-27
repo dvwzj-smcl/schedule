@@ -95,7 +95,7 @@ class Layout extends Component {
             </Grid>
         );
     }
-};
+}
 
 Layout.propTypes = {
     location: PropTypes.object.isRequired,

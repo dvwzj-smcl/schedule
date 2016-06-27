@@ -3,12 +3,15 @@ import {
     USER_REQUEST_PROFILE_FAILED,
     USER_RECEIVED_PROFILE,
     USER_LOG_IN,
+    USER_LOG_OUT,
     USER_IS_LOGGED_IN,
+    USER_IS_LOGGED_OUT,
     USER_IS_NOT_LOGGED_IN,
     USER_UPDATING_PROFILE,
     USER_UPDATED_PROFILE,
     USER_UPDATE_PROFILE_FAILED
 } from '../constants/actionTypes';
+
 const initialState = {
     isRequesting: false,
     isReceived: true,
@@ -19,6 +22,7 @@ const initialState = {
 export default function userReducer(state = initialState, action = null) {
     switch (action.type) {
         case USER_LOG_IN:
+        case USER_LOG_OUT:
         case USER_REQUESTING_PROFILE:
         case USER_UPDATING_PROFILE:
             return Object.assign(
@@ -43,6 +47,7 @@ export default function userReducer(state = initialState, action = null) {
             );
         case USER_REQUEST_PROFILE_FAILED:
         case USER_IS_NOT_LOGGED_IN:
+        case USER_IS_LOGGED_OUT:
             return Object.assign(
                 {},
                 initialState

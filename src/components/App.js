@@ -31,13 +31,8 @@ const menus = [
     }
 ];
 
-
-
 class App extends Component {
     componentWillMount(){
-        if(!this.props.userState.profile){
-            this.context.router.replace('/login');
-        }
     }
     componentWillUpdate(){
     }
@@ -52,9 +47,14 @@ class App extends Component {
             </MuiThemeProvider>
         );
     }
-};
+}
 
-App.propTypes = {};
+App.propTypes = {
+    userState: PropTypes.object,
+    children: PropTypes.element,
+    location: PropTypes.object,
+    userActions: PropTypes.array
+};
 App.contextTypes = {
     router: PropTypes.object,
     store: PropTypes.object

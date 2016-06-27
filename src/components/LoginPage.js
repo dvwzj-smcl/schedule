@@ -5,11 +5,13 @@ import Paper from 'material-ui/Paper';
 
 import Formsy from 'formsy-react';
 import FormsyText from 'formsy-material-ui/lib/FormsyText';
-import TextField from 'material-ui/TextField';
 import Divider from 'material-ui/Divider';
 import RaisedButton from 'material-ui/RaisedButton';
 
 const FormsyTextMixin = React.createClass({
+    propTypes: {
+        type: PropTypes.string
+    },
     mixins: [Formsy.Mixin],
     handleOnChange(event){
         this.setValue(event.currentTarget[this.props.type === 'checkbox' ? 'checked' : 'value']);
@@ -40,6 +42,7 @@ class LoginPage extends Component {
         this.submitForm = this.submitForm.bind(this);
         this.notifyFormError = this.notifyFormError.bind(this);
     }
+
     componentDidMount() {
     }
     componentDidUpdate() {
@@ -58,11 +61,11 @@ class LoginPage extends Component {
     }
 
     submitForm(data) {
-        console.log(JSON.stringify(data, null, 4));
+        this.props.userActions.login(data);
     }
 
-    notifyFormError(data) {
-        console.error('Form error:', data);
+    notifyFormError(/*data*/) {
+        //console.error('Form error:', data);
     }
 
     render() {
@@ -83,7 +86,7 @@ class LoginPage extends Component {
                                 style={{padding: '16px 24px'}}>
                                 <FormsyTextMixin
                                     name="username"
-                                    validations="isNumeric"
+                                    validations="isWords"
                                     validationError={this.errorMessages.wordsError}
                                     required
                                     hintText="What is your username?"
@@ -114,9 +117,11 @@ class LoginPage extends Component {
                 </Row>
             </Grid>
         );
-    };
+    }
 }
 
-LoginPage.propTypes = {};
+LoginPage.propTypes = {
+    userActions: PropTypes.array
+};
 
 export default LoginPage;

@@ -1,8 +1,8 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
 
 import MainContent from './MainContent';
 
-const HomePage = (props) => {
+const HomePage = () => {
     return (
         <MainContent toolbarTitle="Home">
             test

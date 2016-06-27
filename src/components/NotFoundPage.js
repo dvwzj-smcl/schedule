@@ -1,8 +1,8 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
 
 import MainContent from './MainContent';
 
-const NotFoundPage = (props) => {
+const NotFoundPage = () => {
     return (
         <MainContent toolbarTitle="404 - File Not Found" />
     );

@@ -3,7 +3,9 @@ import {
     USER_REQUEST_PROFILE_FAILED,
     USER_RECEIVED_PROFILE,
     USER_LOG_IN,
+    USER_LOG_OUT,
     USER_IS_LOGGED_IN,
+    USER_IS_LOGGED_OUT,
     USER_IS_NOT_LOGGED_IN,
     USER_UPDATING_PROFILE,
     USER_UPDATED_PROFILE,
@@ -33,8 +35,14 @@ function updated(json) {
 function loggingIn() {
     return {type: USER_LOG_IN};
 }
+function loggingOut() {
+    return {type: USER_LOG_OUT};
+}
 function loggedIn(json) {
     return {type: USER_IS_LOGGED_IN, json};
+}
+function loggedOut() {
+    return {type: USER_IS_LOGGED_OUT};
 }
 function updateFail(){
     return {type: USER_UPDATE_PROFILE_FAILED};
@@ -51,7 +59,7 @@ export function updateProfile(profile) {
                 body: JSON.stringify(profile)
             })
             .then(response=>response.json())
-            .then(json=>dispatch(json.profile ? updated(json) : updateFail()), error=>dispatch(requestFail()));
+            .then(json=>dispatch(json.result ? updated(json) : updateFail()), ()=>dispatch(requestFail()));
     };
 }
 export function fetchProfile() {
@@ -59,19 +67,32 @@ export function fetchProfile() {
         dispatch(requesting());
         return fetch('http://localhost/schedule/api/auth')
             .then(response=>response.json())
-            .then(json=>dispatch(json.profile ? received(json) : emptyUser()), error=>dispatch(requestFail()));
+            .then(json=>dispatch(json.result ? received(json) : emptyUser()), ()=>dispatch(requestFail()));
     };
 }
 export function login(profile) {
     return (dispatch)=>{
         dispatch(loggingIn());
         return fetch(
-            'http://localhost/schedule/api/login',
+            'http://localhost/schedule/api/auth',
             {
                 method: 'post',
                 body: JSON.stringify(profile)
             })
             .then(response=>response.json())
-            .then(json=>dispatch(json.profile ? loggedIn(json) : emptyUser()), error=>dispatch(requestFail()));
+            .then(json=>dispatch(json.result ? loggedIn(json) : emptyUser()), ()=>dispatch(requestFail()));
+    };
+}
+
+export function logout() {
+    return (dispatch)=>{
+        dispatch(loggingOut());
+        return fetch(
+            'http://localhost/schedule/api/auth',
+            {
+                method: 'put'
+            })
+            .then(response=>response.json())
+            .then(()=>dispatch(loggedOut()), ()=>dispatch(requestFail()));
     };
 }
