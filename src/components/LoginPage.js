@@ -9,7 +9,7 @@ import TextField from 'material-ui/TextField';
 import Divider from 'material-ui/Divider';
 import RaisedButton from 'material-ui/RaisedButton';
 
-const MyInput = React.createClass({
+const FormsyTextMixin = React.createClass({
     mixins: [Formsy.Mixin],
     handleOnChange(event){
         this.setValue(event.currentTarget[this.props.type === 'checkbox' ? 'checked' : 'value']);
@@ -39,15 +39,10 @@ class LoginPage extends Component {
         this.disableButton = this.disableButton.bind(this);
         this.submitForm = this.submitForm.bind(this);
         this.notifyFormError = this.notifyFormError.bind(this);
-        //this.checkManualValid = this.checkManualValid.bind(this);
     }
     componentDidMount() {
     }
     componentDidUpdate() {
-    }
-
-    checkManualValid(){
-        console.log(this);
     }
 
     enableButton() {
@@ -86,27 +81,25 @@ class LoginPage extends Component {
                                 onValidSubmit={this.submitForm}
                                 onInvalidSubmit={this.notifyFormError}
                                 style={{padding: '16px 24px'}}>
-                                <MyInput
+                                <FormsyTextMixin
                                     name="username"
-                                    validations="isWords"
-                                    validationError={this.wordsError}
+                                    validations="isNumeric"
+                                    validationError={this.errorMessages.wordsError}
                                     required
                                     hintText="What is your username?"
                                     floatingLabelText="Username"
                                     underlineShow={false}
-                                    onChange={this.checkManualValid}
                                     />
                                 <Divider />
-                                <MyInput
+                                <FormsyTextMixin
                                     name="password"
                                     type="password"
                                     validations="isWords"
-                                    validationError={this.wordsError}
+                                    validationError={this.errorMessages.wordsError}
                                     required
                                     hintText="What is your password?"
                                     floatingLabelText="Password"
                                     underlineShow={false}
-                                    onChange={this.checkManualValid}
                                     />
                                 <Divider />
                                 <RaisedButton
@@ -114,7 +107,7 @@ class LoginPage extends Component {
                                     style={{marginTop: 12}}
                                     type="submit"
                                     label="Login"
-                                     />
+                                    disabled={!this.state.canSubmit} />
                             </Formsy.Form>
                         </Paper>
                     </Col>
