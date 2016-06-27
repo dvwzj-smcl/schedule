@@ -37,7 +37,7 @@ export default {
       {
         test: /(\.css|\.scss)$/,
         include: path.join(__dirname, 'src'),
-        loader: ExtractTextPlugin.extract('css?sourceMap!sass?sourceMap')
+        loader: ExtractTextPlugin.extract('css?sourceMap&modules!sass?sourceMap')
       }
     ]
   }
