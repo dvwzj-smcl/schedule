@@ -66,30 +66,30 @@ class Layout extends Component {
                         </Paper>
                     </Col>
                     <Col md={this.state.sidebar.expanded ? 9 : 11}>
-                        <AppBar
-                            title={<span style={{cursor: 'pointer'}} onTouchTap={this.linkTo.bind(null, '/')} >{this.props.appBarTitle}</span>}
-                            onLeftIconButtonTouchTap={this.toggleSidebar}
-                            showMenuIconButton={true}
-                            iconElementRight={
-                                <IconMenu
-                                    iconButtonElement={
-                                        <IconButton><NavigationExpandMoreIcon /></IconButton>
-                                    }
-                                    targetOrigin={{horizontal: 'right', vertical: 'top'}}
-                                    anchorOrigin={{horizontal: 'right', vertical: 'top'}} >
-                                    <MenuItem
-                                        primaryText="Profile"
-                                        leftIcon={<ActionAccountBoxIcon />}
-                                        onTouchTap={this.linkTo.bind(null, '/profile')} />
-                                    <MenuItem
-                                        primaryText="Sign out"
-                                        leftIcon={<ActionPowerSettingNewIcon />}
-                                        onTouchTap={this.linkTo.bind(null, '/logout')} />
-                                </IconMenu>
-                            } />
                         <Paper>
-                            {this.props.children}
+                            <AppBar
+                                title={<span style={{cursor: 'pointer'}} onTouchTap={this.linkTo.bind(null, '/')} >{this.props.appBarTitle}</span>}
+                                onLeftIconButtonTouchTap={this.toggleSidebar}
+                                showMenuIconButton={true}
+                                iconElementRight={
+                                    <IconMenu
+                                        iconButtonElement={
+                                            <IconButton><NavigationExpandMoreIcon /></IconButton>
+                                        }
+                                        targetOrigin={{horizontal: 'right', vertical: 'top'}}
+                                        anchorOrigin={{horizontal: 'right', vertical: 'top'}} >
+                                        <MenuItem
+                                            primaryText="Profile"
+                                            leftIcon={<ActionAccountBoxIcon />}
+                                            onTouchTap={this.linkTo.bind(null, '/profile')} />
+                                        <MenuItem
+                                            primaryText="Sign out"
+                                            leftIcon={<ActionPowerSettingNewIcon />}
+                                            onTouchTap={this.linkTo.bind(null, '/logout')} />
+                                    </IconMenu>
+                                } />
                         </Paper>
+                        {this.props.children}
                     </Col>
                 </Row>
             </Grid>
@@ -112,5 +112,7 @@ Layout.propTypes = {
 Layout.contextTypes = {
     router: PropTypes.object
 };
+
+
 
 export default Layout;

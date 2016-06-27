@@ -1,5 +1,6 @@
 import {
     USER_REQUESTING_PROFILE,
+    USER_REQUEST_PROFILE_FAILED,
     USER_RECEIVED_PROFILE,
     USER_IS_NOT_LOGGED_IN,
     USER_UPDATING_PROFILE,
@@ -11,6 +12,9 @@ import {
 
 function requesting() {
     return {type: USER_REQUESTING_PROFILE};
+}
+function requestFail(){
+    return {type: USER_REQUEST_PROFILE_FAILED};
 }
 function received(json) {
     return {type: USER_RECEIVED_PROFILE, json};

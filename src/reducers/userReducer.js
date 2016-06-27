@@ -1,5 +1,6 @@
 import {
     USER_REQUESTING_PROFILE,
+    USER_REQUEST_PROFILE_FAILED,
     USER_RECEIVED_PROFILE,
     USER_IS_NOT_LOGGED_IN,
     USER_UPDATING_PROFILE,
@@ -13,7 +14,7 @@ const initialState = {
     profile: null
 };
 
-export default function userReducer(state = initialState, action) {
+export default function userReducer(state = initialState, action = null) {
     switch (action.type) {
         case USER_REQUESTING_PROFILE:
         case USER_UPDATING_PROFILE:
@@ -37,6 +38,7 @@ export default function userReducer(state = initialState, action) {
                     profile: action.json.profile
                 }
             );
+        case USER_REQUEST_PROFILE_FAILED:
         case USER_IS_NOT_LOGGED_IN:
             return Object.assign(
                 {},

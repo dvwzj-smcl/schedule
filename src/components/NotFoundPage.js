@@ -1,13 +1,10 @@
 import React, { PropTypes } from 'react';
-import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
+
+import MainContent from './MainContent';
 
 const NotFoundPage = (props) => {
     return (
-        <Toolbar>
-            <ToolbarGroup>
-                <ToolbarTitle text="404 - Page Not Found" />
-            </ToolbarGroup>
-        </Toolbar>
+        <MainContent toolbarTitle="404 - File Not Found" />
     );
 };
 
