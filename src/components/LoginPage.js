@@ -25,10 +25,14 @@ class LoginPage extends Component {
         this.disableButton = this.disableButton.bind(this);
         this.submitForm = this.submitForm.bind(this);
         this.notifyFormError = this.notifyFormError.bind(this);
+        this.checkManualValid = this.checkManualValid.bind(this);
     }
     componentDidMount() {
     }
     componentDidUpdate() {
+    }
+
+    checkManualValid(){
     }
 
     enableButton() {
@@ -61,6 +65,8 @@ class LoginPage extends Component {
                                 title="Login"
                                 showMenuIconButton={false} />
                             <Formsy.Form
+                                ref="login-form"
+                                onSubmit={this.submitForm}
                                 onValid={this.enableButton}
                                 onInvalid={this.disableButton}
                                 onValidSubmit={this.submitForm}
