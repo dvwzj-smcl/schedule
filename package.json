@@ -28,6 +28,8 @@
     "classnames": "2.2.5",
     "es6-promise": "3.2.1",
     "flexboxgrid": "6.3.0",
+    "formsy-material-ui": "0.4.3",
+    "formsy-react": "0.18.0",
     "isomorphic-fetch": "2.2.1",
     "material-ui": "0.15.1",
     "object-assign": "4.1.0",

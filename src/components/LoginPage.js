@@ -2,6 +2,9 @@ import React, { Component, PropTypes } from 'react';
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import AppBar from 'material-ui/AppBar';
 import Paper from 'material-ui/Paper';
+
+import Formsy from 'formsy-react';
+import FormsyText from 'formsy-material-ui/lib/FormsyText';
 import TextField from 'material-ui/TextField';
 import Divider from 'material-ui/Divider';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -9,31 +12,44 @@ import RaisedButton from 'material-ui/RaisedButton';
 class LoginPage extends Component {
     constructor(props, context) {
         super(props, context);
-
         this.state = {
-            username: null,
-            password: null
+            canSubmit: false
         };
-        this.updateForm = this.updateForm.bind(this);
-        this.login = this.login.bind(this);
-        this.handleKeyDown = this.handleKeyDown.bind(this);
-    }
+        this.errorMessages = {
+            wordsError: "Please only use letters",
+            numericError: "Please provide a number",
+            urlError: "Please provide a valid URL"
+        };
 
+        this.enableButton = this.enableButton.bind(this);
+        this.disableButton = this.disableButton.bind(this);
+        this.submitForm = this.submitForm.bind(this);
+        this.notifyFormError = this.notifyFormError.bind(this);
+    }
     componentDidMount() {
     }
-
     componentDidUpdate() {
     }
-    login(){
-        console.log('login', this.state);
-    }
-    handleKeyDown(e) {
-        if (e.keyCode === 13) this.login();
-    }
-    updateForm(e){
-        console.log('updateForm', e.target.name, e.target.value);
+
+    enableButton() {
+        this.setState({
+            canSubmit: true
+        });
     }
 
+    disableButton() {
+        this.setState({
+            canSubmit: false
+        });
+    }
+
+    submitForm(data) {
+        console.log(JSON.stringify(data, null, 4));
+    }
+
+    notifyFormError(data) {
+        console.error('Form error:', data);
+    }
 
     render() {
         return (
@@ -44,13 +60,40 @@ class LoginPage extends Component {
                             <AppBar
                                 title="Login"
                                 showMenuIconButton={false} />
-                            <div style={{padding: '14px 26px'}}>
-                                <TextField underlineShow={false} hintText="Username" name="username" onChange={this.updateForm} onKeyDown={this.handleKeyDown} />
+                            <Formsy.Form
+                                onValid={this.enableButton}
+                                onInvalid={this.disableButton}
+                                onValidSubmit={this.submitForm}
+                                onInvalidSubmit={this.notifyFormError}
+                                style={{padding: '16px 24px'}}>
+                                <FormsyText
+                                    name="username"
+                                    validations="isWords"
+                                    validationError={this.wordsError}
+                                    required
+                                    hintText="What is your username?"
+                                    floatingLabelText="Username"
+                                    underlineShow={false}
+                                    />
                                 <Divider />
-                                <TextField underlineShow={false} hintText="Password" name="password" type="password" onChange={this.updateForm} onKeyDown={this.handleKeyDown} />
+                                <FormsyText
+                                    name="password"
+                                    type="password"
+                                    validations="isWords"
+                                    validationError={this.wordsError}
+                                    required
+                                    hintText="What is your password?"
+                                    floatingLabelText="Password"
+                                    underlineShow={false}
+                                    />
                                 <Divider />
-                                <RaisedButton label="Login" secondary={true} style={{marginTop: 12}} onTouchTap={this.login} />
-                            </div>
+                                <RaisedButton
+                                    secondary={true}
+                                    style={{marginTop: 12}}
+                                    type="submit"
+                                    label="Login"
+                                    disabled={!this.state.canSubmit} />
+                            </Formsy.Form>
                         </Paper>
                     </Col>
                 </Row>
