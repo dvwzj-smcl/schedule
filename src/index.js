@@ -10,7 +10,7 @@ import './styles/custom.css';
 require('./favicon.ico');
 
 const store = configureStore();
-store.dispatch(fetchProfile());
+//store.dispatch(fetchProfile());
 /*
 Promise.all([
     store.dispatch(fetchProfile())

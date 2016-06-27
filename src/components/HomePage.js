@@ -1,10 +1,14 @@
 import React, { PropTypes } from 'react';
 
+import {Toolbar, ToolbarGroup, ToolbarTitle} from 'material-ui/Toolbar';
+
 const HomePage = (props) => {
     return (
-        <div>
-            Home
-        </div>
+        <Toolbar>
+            <ToolbarGroup>
+                <ToolbarTitle text="Home" />
+            </ToolbarGroup>
+        </Toolbar>
     );
 };
 
