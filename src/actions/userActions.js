@@ -2,6 +2,8 @@ import {
     USER_REQUESTING_PROFILE,
     USER_REQUEST_PROFILE_FAILED,
     USER_RECEIVED_PROFILE,
+    USER_LOG_IN,
+    USER_IS_LOGGED_IN,
     USER_IS_NOT_LOGGED_IN,
     USER_UPDATING_PROFILE,
     USER_UPDATED_PROFILE,
@@ -28,9 +30,16 @@ function updating() {
 function updated(json) {
     return {type: USER_UPDATED_PROFILE, json};
 }
+function loggingIn() {
+    return {type: USER_LOG_IN};
+}
+function loggedIn(json) {
+    return {type: USER_IS_LOGGED_IN, json};
+}
 function updateFail(){
     return {type: USER_UPDATE_PROFILE_FAILED};
 }
+
 export function updateProfile(profile) {
     return (dispatch, getState)=>{
         profile = Object.assign({}, getState().user.profile, profile);
@@ -42,14 +51,27 @@ export function updateProfile(profile) {
                 body: JSON.stringify(profile)
             })
             .then(response=>response.json())
-            .then(json=>dispatch(json.profile ? updated(json) : updateFail()), error=>dispatch(updateFail()));
-    }
+            .then(json=>dispatch(json.profile ? updated(json) : updateFail()), error=>dispatch(requestFail()));
+    };
 }
-export function fetchProfile(force:boolean = false) {
-    return (dispatch, getState) => {
+export function fetchProfile() {
+    return (dispatch) => {
         dispatch(requesting());
-        return fetch('http://localhost/schedule/api/auth/user')
+        return fetch('http://localhost/schedule/api/auth')
             .then(response=>response.json())
             .then(json=>dispatch(json.profile ? received(json) : emptyUser()), error=>dispatch(requestFail()));
+    };
+}
+export function login(profile) {
+    return (dispatch)=>{
+        dispatch(loggingIn());
+        return fetch(
+            'http://localhost/schedule/api/login',
+            {
+                method: 'post',
+                body: JSON.stringify(profile)
+            })
+            .then(response=>response.json())
+            .then(json=>dispatch(json.profile ? loggedIn(json) : emptyUser()), error=>dispatch(requestFail()));
     };
 }
