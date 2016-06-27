@@ -9,6 +9,20 @@ import TextField from 'material-ui/TextField';
 import Divider from 'material-ui/Divider';
 import RaisedButton from 'material-ui/RaisedButton';
 
+const MyInput = React.createClass({
+    mixins: [Formsy.Mixin],
+    handleOnChange(event){
+        this.setValue(event.currentTarget[this.props.type === 'checkbox' ? 'checked' : 'value']);
+    },
+    render(){
+        const cloneProps = Object.assign({}, this.props);
+        cloneProps.onChange = this.handleOnChange;
+        cloneProps.value = this.getValue();
+        cloneProps.checked = this.props.type === 'checkbox' && this.getValue() ? 'checked' : null;
+        return React.cloneElement(<FormsyText {...cloneProps} />);
+    }
+});
+
 class LoginPage extends Component {
     constructor(props, context) {
         super(props, context);
@@ -25,7 +39,7 @@ class LoginPage extends Component {
         this.disableButton = this.disableButton.bind(this);
         this.submitForm = this.submitForm.bind(this);
         this.notifyFormError = this.notifyFormError.bind(this);
-        this.checkManualValid = this.checkManualValid.bind(this);
+        //this.checkManualValid = this.checkManualValid.bind(this);
     }
     componentDidMount() {
     }
@@ -33,6 +47,7 @@ class LoginPage extends Component {
     }
 
     checkManualValid(){
+        console.log(this);
     }
 
     enableButton() {
@@ -66,13 +81,12 @@ class LoginPage extends Component {
                                 showMenuIconButton={false} />
                             <Formsy.Form
                                 ref="login-form"
-                                onSubmit={this.submitForm}
                                 onValid={this.enableButton}
                                 onInvalid={this.disableButton}
                                 onValidSubmit={this.submitForm}
                                 onInvalidSubmit={this.notifyFormError}
                                 style={{padding: '16px 24px'}}>
-                                <FormsyText
+                                <MyInput
                                     name="username"
                                     validations="isWords"
                                     validationError={this.wordsError}
@@ -80,9 +94,10 @@ class LoginPage extends Component {
                                     hintText="What is your username?"
                                     floatingLabelText="Username"
                                     underlineShow={false}
+                                    onChange={this.checkManualValid}
                                     />
                                 <Divider />
-                                <FormsyText
+                                <MyInput
                                     name="password"
                                     type="password"
                                     validations="isWords"
@@ -91,6 +106,7 @@ class LoginPage extends Component {
                                     hintText="What is your password?"
                                     floatingLabelText="Password"
                                     underlineShow={false}
+                                    onChange={this.checkManualValid}
                                     />
                                 <Divider />
                                 <RaisedButton
@@ -98,7 +114,7 @@ class LoginPage extends Component {
                                     style={{marginTop: 12}}
                                     type="submit"
                                     label="Login"
-                                    disabled={!this.state.canSubmit} />
+                                     />
                             </Formsy.Form>
                         </Paper>
                     </Col>
