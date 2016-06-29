@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { Router, browserHistory } from 'react-router';
 import routes from './routes';
-const configureStore = require('./store/configureStore');
+import configureStore from './store/configureStore';
 
 import './styles/custom.css';
 require('./favicon.ico');

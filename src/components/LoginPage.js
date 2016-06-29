@@ -4,26 +4,9 @@ import AppBar from 'material-ui/AppBar';
 import Paper from 'material-ui/Paper';
 
 import Formsy from 'formsy-react';
-import FormsyText from 'formsy-material-ui/lib/FormsyText';
 import Divider from 'material-ui/Divider';
 import RaisedButton from 'material-ui/RaisedButton';
-
-const FormsyTextMixin = React.createClass({
-    propTypes: {
-        type: PropTypes.string
-    },
-    mixins: [Formsy.Mixin],
-    handleOnChange(event){
-        this.setValue(event.currentTarget[this.props.type === 'checkbox' ? 'checked' : 'value']);
-    },
-    render(){
-        const cloneProps = Object.assign({}, this.props);
-        cloneProps.onChange = this.handleOnChange;
-        cloneProps.value = this.getValue();
-        cloneProps.checked = this.props.type === 'checkbox' && this.getValue() ? 'checked' : null;
-        return React.cloneElement(<FormsyText {...cloneProps} />);
-    }
-});
+import FormsyTextMixin from './FormsyTextMixin';
 
 class LoginPage extends Component {
     constructor(props, context) {
@@ -121,7 +104,7 @@ class LoginPage extends Component {
 }
 
 LoginPage.propTypes = {
-    userActions: PropTypes.array
+    userActions: PropTypes.object
 };
 
 export default LoginPage;

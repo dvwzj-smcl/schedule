@@ -53,7 +53,7 @@ App.propTypes = {
     userState: PropTypes.object,
     children: PropTypes.element,
     location: PropTypes.object,
-    userActions: PropTypes.array
+    userActions: PropTypes.object
 };
 App.contextTypes = {
     router: PropTypes.object,
