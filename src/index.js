@@ -5,9 +5,8 @@ import { Router, browserHistory } from 'react-router';
 import routes from './routes';
 import configureStore from './store/configureStore';
 
-import './styles/custom.css';
+//import './styles/custom.css';
 require('./favicon.ico');
-
 const store = configureStore();
 
 render(

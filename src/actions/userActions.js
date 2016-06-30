@@ -14,6 +14,9 @@ import {
 
 //import fetch from 'isomorphic-fetch';
 
+import jwt from 'jsonwebtoken';
+const appKey = 'base64:lw65FxR9qSD137bNTvrQM6kOSG9dLNyyGx8JTdaO/OQ=';
+
 function requesting() {
     return {type: USER_REQUESTING_PROFILE};
 }
@@ -56,7 +59,7 @@ export function updateProfile(profile) {
             `http://localhost/schedule/api/user/${profile.id}`,
             {
                 method: 'put',
-                body: JSON.stringify(profile)
+                body: jwt.sign({data: profile}, appKey)
             })
             .then(response=>response.json())
             .then(json=>dispatch(json.result ? updated(json) : updateFail()), ()=>dispatch(requestFail()));
@@ -77,7 +80,7 @@ export function login(profile) {
             'http://localhost/schedule/api/auth',
             {
                 method: 'post',
-                body: JSON.stringify(profile)
+                body: jwt.sign({data: profile}, appKey)
             })
             .then(response=>response.json())
             .then(json=>dispatch(json.result ? loggedIn(json) : emptyUser()), ()=>dispatch(requestFail()));

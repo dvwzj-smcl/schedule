@@ -18,6 +18,10 @@ export default {
     publicPath: '/',
     filename: 'bundle.js'
   },
+  node: {
+    net: "empty",
+    dns: "empty"
+  },
   plugins: [
     new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.DefinePlugin(GLOBALS), // Tells React to build in prod mode. https://facebook.github.io/react/downloads.html
