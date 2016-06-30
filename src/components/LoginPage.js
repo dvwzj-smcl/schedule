@@ -6,7 +6,7 @@ import Paper from 'material-ui/Paper';
 import Formsy from 'formsy-react';
 import Divider from 'material-ui/Divider';
 import RaisedButton from 'material-ui/RaisedButton';
-import FormsyTextMixin from './FormsyTextMixin';
+import SemiText from './forms/SemiText';
 
 class LoginPage extends Component {
     constructor(props, context) {
@@ -67,7 +67,7 @@ class LoginPage extends Component {
                                 onValidSubmit={this.submitForm}
                                 onInvalidSubmit={this.notifyFormError}
                                 style={{padding: '16px 24px'}}>
-                                <FormsyTextMixin
+                                <SemiText
                                     name="username"
                                     validations="isWords"
                                     validationError={this.errorMessages.wordsError}
@@ -77,7 +77,7 @@ class LoginPage extends Component {
                                     underlineShow={false}
                                     />
                                 <Divider />
-                                <FormsyTextMixin
+                                <SemiText
                                     name="password"
                                     type="password"
                                     validations="isWords"

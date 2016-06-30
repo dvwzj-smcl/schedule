@@ -9,6 +9,7 @@ import configureStore from './store/configureStore';
 require('./favicon.ico');
 const store = configureStore();
 
+
 render(
     <Provider store={store}>
         <Router history={browserHistory} routes={routes} />
