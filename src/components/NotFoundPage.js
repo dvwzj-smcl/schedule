@@ -1,13 +1,15 @@
 import React from 'react';
-
-import MainContent from './MainContent';
+import { Link } from 'react-router';
 
 const NotFoundPage = () => {
     return (
-        <MainContent toolbarTitle="404 - File Not Found" />
+        <div>
+            <h4>
+                404 Page Not Found
+            </h4>
+            <Link to="/"> Go back to homepage </Link>
+        </div>
     );
 };
-
-NotFoundPage.propTypes = {};
 
 export default NotFoundPage;

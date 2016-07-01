@@ -1,7 +1,10 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import AppBar from 'material-ui/AppBar';
 import Paper from 'material-ui/Paper';
+import { login, isAuthenticated } from '../actions/userActions';
 
 import Formsy from 'formsy-react';
 import Divider from 'material-ui/Divider';
@@ -44,7 +47,11 @@ class LoginPage extends Component {
     }
 
     submitForm(data) {
-        this.props.userActions.login(data);
+        this.props.actions.login(data.username, data.password).then(()=>{
+            if(this.props.actions.isAuthenticated()){
+                this.context.router.replace(this.props.routing.locationBeforeTransitions.query.ref || '/');
+            }
+        });
     }
 
     notifyFormError(/*data*/) {
@@ -55,7 +62,7 @@ class LoginPage extends Component {
         return (
             <Grid>
                 <Row>
-                    <Col mdOffset={4} md={4}>
+                    <Col xs mdOffset={4} md={4}>
                         <Paper>
                             <AppBar
                                 title="Login"
@@ -104,7 +111,25 @@ class LoginPage extends Component {
 }
 
 LoginPage.propTypes = {
-    userActions: PropTypes.object
+    actions: PropTypes.object.isRequired,
+    routing: PropTypes.object.isRequired
+};
+LoginPage.contextTypes = {
+    router: PropTypes.object.isRequired
 };
 
-export default LoginPage;
+export default connect(
+    (state)=>{
+        return {
+            routing: state.routing
+        };
+    },
+    (dispatch)=>{
+        return {
+            actions: {
+                login: bindActionCreators(login, dispatch),
+                isAuthenticated: bindActionCreators(isAuthenticated, dispatch)
+            }
+        };
+    }
+)(LoginPage);

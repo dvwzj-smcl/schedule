@@ -31,6 +31,7 @@
     "formsy-material-ui": "0.4.3",
     "formsy-react": "0.18.0",
     "isomorphic-fetch": "2.2.1",
+    "jsonwebtoken": "7.0.1",
     "material-ui": "0.15.1",
     "object-assign": "4.1.0",
     "react": "15.0.2",
@@ -38,8 +39,10 @@
     "react-flexbox-grid": "0.9.6",
     "react-redux": "4.4.5",
     "react-router": "2.4.0",
+    "react-router-redux": "4.0.5",
     "react-tap-event-plugin": "1.0.0",
     "redux": "3.5.2",
+    "redux-auth-wrapper": "0.5.2",
     "redux-thunk": "2.1.0"
   },
   "devDependencies": {

@@ -1,101 +1,70 @@
 import {
-    USER_REQUESTING_PROFILE,
-    USER_REQUEST_PROFILE_FAILED,
-    USER_RECEIVED_PROFILE,
-    USER_LOG_IN,
-    USER_LOG_OUT,
-    USER_IS_LOGGED_IN,
-    USER_IS_LOGGED_OUT,
-    USER_IS_NOT_LOGGED_IN,
-    USER_UPDATING_PROFILE,
-    USER_UPDATED_PROFILE,
-    USER_UPDATE_PROFILE_FAILED
+    USER_IS_AUTHENTICATED,
+    USER_IS_NOT_AUTHENTICATED,
+    USER_SIGN_IN,
+    USER_SIGN_OUT,
+    USER_UPDATE_TOKEN,
+    USER_REQUEST_SUCCESS,
+    USER_REQUEST_FAILED
 } from '../constants/actionTypes';
 
-//import fetch from 'isomorphic-fetch';
+import api from '../api';
 
-import jwt from 'jsonwebtoken';
-const appKey = 'base64:lw65FxR9qSD137bNTvrQM6kOSG9dLNyyGx8JTdaO/OQ=';
-
-function requesting() {
-    return {type: USER_REQUESTING_PROFILE};
+function userIsAuthenticated(){
+    return {type: USER_IS_AUTHENTICATED};
 }
-function requestFail(){
-    return {type: USER_REQUEST_PROFILE_FAILED};
+function userIsNotAuthenticated(){
+    return {type: USER_IS_NOT_AUTHENTICATED};
 }
-function received(json) {
-    return {type: USER_RECEIVED_PROFILE, json};
+function userSignIn(){
+    return {type: USER_SIGN_IN};
 }
-function emptyUser() {
-    return {type: USER_IS_NOT_LOGGED_IN};
+function userSignOut(){
+    return {type: USER_SIGN_OUT};
 }
-function updating() {
-    return {type: USER_UPDATING_PROFILE};
+function userUpdateToken(access_token){
+    return {type: USER_UPDATE_TOKEN, access_token};
 }
-function updated(json) {
-    return {type: USER_UPDATED_PROFILE, json};
+function userRequestSuccess(){
+    return {type: USER_REQUEST_SUCCESS};
 }
-function loggingIn() {
-    return {type: USER_LOG_IN};
-}
-function loggingOut() {
-    return {type: USER_LOG_OUT};
-}
-function loggedIn(json) {
-    return {type: USER_IS_LOGGED_IN, json};
-}
-function loggedOut() {
-    return {type: USER_IS_LOGGED_OUT};
-}
-function updateFail(){
-    return {type: USER_UPDATE_PROFILE_FAILED};
+function userRequestFailed(){
+    return {type: USER_REQUEST_FAILED};
 }
 
-export function updateProfile(profile) {
+export function isAuthenticated(){
     return (dispatch, getState)=>{
-        profile = Object.assign({}, getState().user.profile, profile);
-        dispatch(updating());
-        return fetch(
-            `http://localhost/schedule/api/user/${profile.id}`,
-            {
-                method: 'put',
-                body: jwt.sign({data: profile}, appKey)
-            })
-            .then(response=>response.json())
-            .then(json=>dispatch(json.result ? updated(json) : updateFail()), ()=>dispatch(requestFail()));
+        dispatch(getState().user.access_token ?  userIsAuthenticated() : userIsNotAuthenticated());
+        return !!getState().user.access_token;
     };
 }
-export function fetchProfile() {
-    return (dispatch) => {
-        dispatch(requesting());
-        return fetch('http://localhost/schedule/api/auth')
-            .then(response=>response.json())
-            .then(json=>dispatch(json.result ? received(json) : emptyUser()), ()=>dispatch(requestFail()));
+export function login(username, password){
+    return (dispatch, getState)=>{
+        if(getState().user.access_token){
+            return Promise.resolve(dispatch(userIsAuthenticated()));
+        }
+        dispatch(userSignIn());
+        return fetch(
+                api.baseUrl('/auth'),
+                {
+                    method: 'post',
+                    body: api.payload({
+                        username,
+                        password
+                    })
+                }
+            ).then(response=>response.json()).then(json=>{
+            dispatch(userRequestSuccess());
+            return dispatch(json.access_token ? userUpdateToken(json.access_token) : userIsNotAuthenticated());
+        }, ()=>dispatch(userRequestFailed()));
     };
 }
-export function login(profile) {
-    return (dispatch)=>{
-        dispatch(loggingIn());
-        return fetch(
-            'http://localhost/schedule/api/auth',
-            {
-                method: 'post',
-                body: jwt.sign({data: profile}, appKey)
-            })
-            .then(response=>response.json())
-            .then(json=>dispatch(json.result ? loggedIn(json) : emptyUser()), ()=>dispatch(requestFail()));
-    };
-}
-
-export function logout() {
-    return (dispatch)=>{
-        dispatch(loggingOut());
-        return fetch(
-            'http://localhost/schedule/api/auth',
-            {
-                method: 'put'
-            })
-            .then(response=>response.json())
-            .then(()=>dispatch(loggedOut()), ()=>dispatch(requestFail()));
+export function logout(){
+    return (dispatch, getState)=>{
+        if(!getState().user.access_token){
+            return Promise.resolve(dispatch(userIsNotAuthenticated()));
+        }
+        dispatch(userSignOut());
+        return Promise.resolve(dispatch(userUpdateToken(null)));
     };
 }

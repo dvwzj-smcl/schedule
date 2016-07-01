@@ -14,64 +14,61 @@ class Layout extends Component {
     constructor(props, context){
         super(props, context);
 
-        this.state = {
-            sidebar: {
-                expanded: true
-            }
-        };
-
-        this.toggleSidebar = this.toggleSidebar.bind(this);
         this.linkTo = this.linkTo.bind(this);
+        this.logout = this.logout.bind(this);
+        this.toggleSidebar = this.toggleSidebar.bind(this);
         this.isActiveMenu = this.isActiveMenu.bind(this);
-    }
-    toggleSidebar(){
-        this.setState({
-            sidebar:{
-                expanded: !this.state.sidebar.expanded
-            }
-        });
     }
     linkTo(pathname){
         return this.context.router.push(pathname);
+    }
+    toggleSidebar(){
+        this.props.actions.sidebar.toggle();
+    }
+    logout(){
+        this.props.actions.user.logout().then(()=>{
+            this.context.router.replace('/');
+        });
     }
     isActiveMenu(pathname){
         return this.props.location.pathname==pathname;
     }
     render(){
-        return (
-            <Grid>
-                <Row>
-                    <Col md={this.state.sidebar.expanded ? 3 : 1}>
-                        <Paper>
-                            <Menu
-                                autoWidth={false}
-                                style={{display: 'table', width: '100%', tableLayout: 'fixed'}} >
-                                {this.props.sidebarMenu.map((menu, i)=>{
-                                    return (
-                                        <MenuItem
-                                            key={i}
-                                            primaryText={this.state.sidebar.expanded ? menu.text : "\u00a0"}
-                                            leftIcon={this.state.sidebar.expanded ? menu.icon : React.cloneElement(menu.icon,{
+        if(this.props.user.access_token) {
+            return (
+                <Grid>
+                    <Row>
+                        <Col md={this.props.menu.sidebar.expanded ? 3 : 1}>
+                            <Paper>
+                                <Menu
+                                    autoWidth={false}
+                                    style={{display: 'table', width: '100%', tableLayout: 'fixed'}}>
+                                    {this.props.sidebarMenu.map((menu, i)=> {
+                                        return (
+                                            <MenuItem
+                                                key={i}
+                                                primaryText={this.props.menu.sidebar.expanded ? menu.text : "\u00a0"}
+                                                leftIcon={this.props.menu.sidebar.expanded ? menu.icon : React.cloneElement(menu.icon,{
                                                 style: {
                                                     width: '100%',
                                                     margin: '12px auto',
                                                     left: 0
                                                 }
                                             })}
-                                            onTouchTap={this.linkTo.bind(null, menu.to)}
-                                            style={this.isActiveMenu(menu.to)?{backgroundColor: 'rgba(0,0,0,0.2)'}:null} />
-                                    );
-                                })}
-                            </Menu>
-                        </Paper>
-                    </Col>
-                    <Col md={this.state.sidebar.expanded ? 9 : 11}>
-                        <Paper>
-                            <AppBar
-                                title={<span style={{cursor: 'pointer'}} onTouchTap={this.linkTo.bind(null, '/')} >{this.props.appBarTitle}</span>}
-                                onLeftIconButtonTouchTap={this.toggleSidebar}
-                                showMenuIconButton={true}
-                                iconElementRight={
+                                                onTouchTap={this.linkTo.bind(null, menu.to)}
+                                                style={this.isActiveMenu(menu.to)?{backgroundColor: 'rgba(0,0,0,0.2)'}:null}/>
+                                        );
+                                    })}
+                                </Menu>
+                            </Paper>
+                        </Col>
+                        <Col md={this.props.menu.sidebar.expanded ? 9 : 11}>
+                            <Paper>
+                                <AppBar
+                                    title={<span style={{cursor: 'pointer'}} onTouchTap={this.linkTo.bind(null, '/')} >{this.props.appBarTitle}</span>}
+                                    onLeftIconButtonTouchTap={this.toggleSidebar}
+                                    showMenuIconButton={true}
+                                    iconElementRight={
                                     <IconMenu
                                         iconButtonElement={
                                             <IconButton><NavigationExpandMoreIcon /></IconButton>
@@ -85,19 +82,25 @@ class Layout extends Component {
                                         <MenuItem
                                             primaryText="Sign out"
                                             leftIcon={<ActionPowerSettingNewIcon />}
-                                            onTouchTap={this.linkTo.bind(null, '/logout')} />
+                                            onTouchTap={this.logout} />
                                     </IconMenu>
-                                } />
-                        </Paper>
-                        {this.props.children}
-                    </Col>
-                </Row>
-            </Grid>
-        );
+                                }/>
+                            </Paper>
+                            {this.props.children}
+                        </Col>
+                    </Row>
+                </Grid>
+            );
+        }else{
+            return this.props.children;
+        }
     }
 }
 
 Layout.propTypes = {
+    user: PropTypes.object.isRequired,
+    menu: PropTypes.object.isRequired,
+    actions: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     appBarTitle: PropTypes.string.isRequired,
     sidebarMenu: PropTypes.arrayOf(
