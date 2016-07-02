@@ -2,12 +2,20 @@
 $vin-blue: #5bb7db;
 $vin-green: #60b044;
 $vin-red: #ff0000;
+$bgColor: #F5F5F5;
+$fgColor: #FFFFFF;
+
+$mainColor: #00bcd4;
+$mainTextColor: #FFFFFF;
+
+$secColor: #363A3F;
+$secTextColor: #FFFFFF;
 
 $sidebarExpanded: 256px;
 $navHeight: 56px;
-$contPad: 16px;
+$conPad: 30px;
 
-body { margin: 0; }
+body { margin: 0; font-family: 'Roboto', 'Segoe UI', 'Droid Sans', Tahoma, Arial, sans-serif; background: $bgColor; }
 
 /*--------*/
 /* Layout */
@@ -16,7 +24,18 @@ body { margin: 0; }
 /* Nav */
 
 .menu-wrapper { width: 100px !important; }
-.main-toolbar { position: fixed; width: 100% }
+.menu-wrapper>div { background: $secColor !important; }
+.menu-wrapper .nav-item { color: $secTextColor !important; font-size: 14px !important; }
+
+.top-nav-wrap { float: left; position: fixed; width: 100%; }
+.top-nav-bar { background: $fgColor !important; padding-left: $sidebarExpanded+$conPad+24px !important; }
+.side-nav-bar { background: $mainColor !important; color: $mainTextColor; letter-spacing: 1px; }
+
+/* Page Heading */
+
+.page-heading { background: #F1F1F1; float: left; width: 100%; box-sizing: border-box; padding: $navHeight $conPad 0 $sidebarExpanded+$conPad;}
+.page-heading>h1 { font-size: 30px; font-weight: 400; margin: 20px 0 5px 0; }
+.page-heading>p { color: #666; font-size: 13px; font-weight: 300; margin: 0 0 20px 0; }
 
 /* Content */
-.content-wrap { padding: $navHeight+$contPad $contPad $contPad $sidebarExpanded+$contPad; }
+.content-wrap { padding: $conPad $conPad $conPad $sidebarExpanded+$conPad; background: $bgColor; float: left; width: 100%; box-sizing: border-box; }

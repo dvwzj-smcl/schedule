@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import {Grid, Row, Col} from 'react-flexbox-grid';
+import Paper from 'material-ui/Paper';
 
 class HomePage extends Component {
     constructor(props, context){
@@ -6,9 +8,18 @@ class HomePage extends Component {
     }
     render(){
         return (
-            <div>
-                Home
-            </div>
+            <Paper>
+                <Grid fluid>
+                    <Row style={{height:400}}>
+                        <Col md={3}>
+                            Home
+                        </Col>
+                        <Col md={9}>
+                            Home
+                        </Col>
+                    </Row>
+                </Grid>
+            </Paper>
         );
     }
 }
