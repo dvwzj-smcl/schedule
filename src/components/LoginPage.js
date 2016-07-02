@@ -10,6 +10,7 @@ import Formsy from 'formsy-react';
 import Divider from 'material-ui/Divider';
 import RaisedButton from 'material-ui/RaisedButton';
 import SemiText from './forms/SemiText';
+import SemiForm from './forms/SemiForm';
 
 class LoginPage extends Component {
     constructor(props, context) {
@@ -32,6 +33,11 @@ class LoginPage extends Component {
     componentDidMount() {
     }
     componentDidUpdate() {
+        console.log('* login update');
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return !!(this.state.canSubmit !== nextState.canSubmit);
     }
 
     enableButton() {
@@ -47,6 +53,7 @@ class LoginPage extends Component {
     }
 
     submitForm(data) {
+        console.log('data', data);
         this.props.actions.login(data.username, data.password).then(()=>{
             if(this.props.actions.isAuthenticated()){
                 this.context.router.replace(this.props.routing.locationBeforeTransitions.query.ref || '/');
@@ -55,7 +62,7 @@ class LoginPage extends Component {
     }
 
     notifyFormError(/*data*/) {
-        //console.error('Form error:', data);
+        console.error('Form error:', data);
     }
 
     render() {
@@ -67,7 +74,7 @@ class LoginPage extends Component {
                             <AppBar
                                 title="Login"
                                 showMenuIconButton={false} />
-                            <Formsy.Form
+                            <SemiForm
                                 ref="login-form"
                                 onValid={this.enableButton}
                                 onInvalid={this.disableButton}
@@ -101,7 +108,7 @@ class LoginPage extends Component {
                                     type="submit"
                                     label="Login"
                                     disabled={!this.state.canSubmit} />
-                            </Formsy.Form>
+                            </SemiForm>
                         </Paper>
                     </Col>
                 </Row>

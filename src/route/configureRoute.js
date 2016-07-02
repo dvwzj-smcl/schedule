@@ -16,11 +16,16 @@ export default function configureRoute(store){
         wrapperDisplayName: 'UserIsAuthenticated' // a nice name for this auth check
     });
     const connect = (fn) => (nextState, replaceState) => fn(store, nextState, replaceState);
+    // return (
+    //     <Route path="/" component={App}>
+    //         <IndexRoute component={UserIsAuthenticated(HomePage)} onEnter={connect(UserIsAuthenticated.onEnter)} />
+    //         <Route path="/login" component={LoginPage} />
+    //         <Route path="*" component={UserIsAuthenticated(NotFoundPage)} onEnter={connect(UserIsAuthenticated.onEnter)} />
+    //     </Route>
+    // );
     return (
         <Route path="/" component={App}>
-            <IndexRoute component={UserIsAuthenticated(HomePage)} onEnter={connect(UserIsAuthenticated.onEnter)} />
-            <Route path="/login" component={LoginPage} />
-            <Route path="*" component={UserIsAuthenticated(NotFoundPage)} onEnter={connect(UserIsAuthenticated.onEnter)} />
+            <IndexRoute component={HomePage} />
         </Route>
     );
 }

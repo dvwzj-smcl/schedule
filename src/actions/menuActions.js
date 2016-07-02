@@ -25,6 +25,6 @@ export function sidebarIsExpanded(){
 export function sidebarToggle(){
     return (dispatch, getState)=>{
         dispatch(menuSidebarToggle());
-        return dispatch(getState().menu.sidebar.expanded ?  menuSidebarIsExpanded() : menuSidebarIsCollapsed());;
+        return dispatch(getState().menu.sidebar.expanded ?  menuSidebarIsExpanded() : menuSidebarIsCollapsed());
     };
 }

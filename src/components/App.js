@@ -32,6 +32,7 @@ const menus = [
 ];
 
 class App extends Component {
+
     componentWillMount(){
 
     }
@@ -45,6 +46,11 @@ class App extends Component {
             </MuiThemeProvider>
         );
     }
+    // render() {
+    //     return (
+    //         <div className="content">asdasda</div>
+    //     );
+    // }
 }
 
 App.propTypes = {
