@@ -5,10 +5,8 @@ import { bindActionCreators } from 'redux';
 import * as userActions from '../actions/userActions';
 import * as menuActions from '../actions/menuActions';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import ActionHomeIcon from 'material-ui/svg-icons/action/home';
-import ActionEventIcon from 'material-ui/svg-icons/action/event';
-import ActionEventSeatIcon from 'material-ui/svg-icons/action/event-seat';
 
+import {ActionHome, ActionEvent, ActionEventSeat} from 'material-ui/svg-icons';
 import Layout from './Layout';
 
 injectTapEventPlugin();
@@ -16,17 +14,17 @@ injectTapEventPlugin();
 const menus = [
     {
         text: "Home",
-        icon: <ActionHomeIcon />,
+        icon: <ActionHome />,
         to: "/"
     },
     {
         text: "Calendar",
-        icon: <ActionEventIcon />,
+        icon: <ActionEvent />,
         to: "/calendar"
     },
     {
         text: "Event",
-        icon: <ActionEventSeatIcon />,
+        icon: <ActionEventSeat />,
         to: "/event"
     }
 ];
@@ -51,7 +49,9 @@ class App extends Component {
 App.propTypes = {
     children: PropTypes.element,
     location: PropTypes.object,
-    actions: PropTypes.object
+    actions: PropTypes.object,
+    user: PropTypes.object,
+    menu: PropTypes.object
 };
 App.contextTypes = {
     router: PropTypes.object

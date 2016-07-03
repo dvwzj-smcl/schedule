@@ -1,14 +1,12 @@
 import React, {PropTypes, Component} from 'react';
-// import AppBar from 'material-ui/AppBar';
 import Paper from 'material-ui/Paper';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import IconMenu from 'material-ui/IconMenu';
 import IconButton from 'material-ui/IconButton';
-import ActionAccountBoxIcon from 'material-ui/svg-icons/action/account-box';
-import ActionPowerSettingNewIcon from 'material-ui/svg-icons/action/power-settings-new';
-// import NavigationExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more';
-import NavigationMoreVert from 'material-ui/svg-icons/navigation/more-vert';
+import FlatButton from 'material-ui/FlatButton';
+
+import {NavigationMenu, ActionAccountBox, ActionPowerSettingsNew, NavigationMoreVert} from 'material-ui/svg-icons';
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
 import Drawer from 'material-ui/Drawer';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -69,22 +67,24 @@ class Layout extends Component {
                 <Paper className="top-nav-wrap" zDepth={1}>
                     <Toolbar className="top-nav-bar">
                         <ToolbarGroup firstChild={true}>
-                            <ToolbarTitle text="Schedule"/>
+                            <FlatButton className="icon-btn left-most" icon={<NavigationMenu />} />
+                            <IconButton iconClassName="muidocs-icon-custom-github" />
                         </ToolbarGroup>
                         <ToolbarGroup>
+                            <ToolbarTitle text="Schedule"/>
                             <ToolbarSeparator />
                             <RaisedButton label="Something" primary={true}/>
                             <IconMenu
-                                iconButtonElement={<IconButton style={{width:'56px', height:'56px'}}><NavigationMoreVert /></IconButton>}
+                                iconButtonElement={<IconButton style={{width:56, height:56}}><NavigationMoreVert /></IconButton>}
                                 targetOrigin={{horizontal: 'right', vertical: 'top'}}
                                 anchorOrigin={{horizontal: 'right', vertical: 'top'}}>
                                 <MenuItem
                                     primaryText="Profile"
-                                    leftIcon={<ActionAccountBoxIcon />}
+                                    leftIcon={<ActionAccountBox />}
                                     onTouchTap={this.linkTo.bind(null, '/profile')}/>
                                 <MenuItem
                                     primaryText="Sign out"
-                                    leftIcon={<ActionPowerSettingNewIcon />}
+                                    leftIcon={<ActionPowerSettingsNew />}
                                     onTouchTap={this.logout}/>
                             </IconMenu>
                         </ToolbarGroup>

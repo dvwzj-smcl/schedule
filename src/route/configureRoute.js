@@ -16,18 +16,20 @@ export default function configureRoute(store){
         wrapperDisplayName: 'UserIsAuthenticated' // a nice name for this auth check
     });
     const connect = (fn) => (nextState, replaceState) => fn(store, nextState, replaceState);
-    return (
+
+    const useLogin = true; // true - to normally have to log in - change here
+    return (useLogin)? (
         <Route path="/" component={App}>
             <IndexRoute component={UserIsAuthenticated(HomePage)} onEnter={connect(UserIsAuthenticated.onEnter)} />
             <Route path="/login" component={LoginPage} />
             <Route path="*" component={UserIsAuthenticated(NotFoundPage)} onEnter={connect(UserIsAuthenticated.onEnter)} />
         </Route>
+    ):(
+        // For testing without logging in
+        <Route path="/" component={App}>
+            <IndexRoute component={HomePage} />
+            <Route path="*" component={HomePage} />
+        </Route>
     );
 
-    // For me to bypass auth, do not delete!
-    // return (
-    //     <Route path="/" component={App}>
-    //         <IndexRoute component={HomePage} />
-    //     </Route>
-    // );
 }

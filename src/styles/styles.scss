@@ -38,4 +38,11 @@ body { margin: 0; font-family: 'Roboto', 'Segoe UI', 'Droid Sans', Tahoma, Arial
 .page-heading>p { color: #666; font-size: 13px; font-weight: 300; margin: 0 0 20px 0; }
 
 /* Content */
+
 .content-wrap { padding: $conPad $conPad $conPad $sidebarExpanded+$conPad; background: $bgColor; float: left; width: 100%; box-sizing: border-box; }
+
+/* Button */
+
+.icon-btn { margin: 10px !important; min-width: 36px !important; }
+.icon-btn.first { margin-left: 0 !important; }
+.icon-btn.left-most { margin-left: -8px !important; }
