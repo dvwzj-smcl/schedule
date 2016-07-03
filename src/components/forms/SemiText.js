@@ -13,7 +13,6 @@ const debounceFunc = function(fn, delay) {
     };
 };
 
-// fix formsy text for form update
 class SemiText extends Component{
     constructor(props) {
         super(props);
@@ -22,18 +21,14 @@ class SemiText extends Component{
 
     componentDidMount() {
         const { debounce = 200 } = this.props;
-        console.log('kaka', this.props);
         this.setValidate = debounceFunc(this.refs.input.setValue, debounce);
     }
 
     componentWillReceiveProps() {
         const input = this.refs.input;
-        // input.setState({ value: input.getValue() || '' });
+        input.setState({ value: input.getValue() || '' });
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        return false;
-    }
 
     onChange(event) {
         if (this.props.onChange)

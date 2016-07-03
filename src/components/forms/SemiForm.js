@@ -1,50 +1,97 @@
 import React, { PropTypes, Component } from 'react';
-import FormsyText from 'formsy-material-ui/lib/FormsyText';
+import RaisedButton from 'material-ui/RaisedButton';
 import { Form } from 'formsy-react';
 
-// verification on every change is slow, so debouncing helps
-const debounceFunc = function(fn, delay) {
-    let timer = null;
-    return function () {
-        const args = arguments;
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            fn.apply(this, args);
-        }, delay);
-    };
-};
-
-// fix formsy text for form update
 class SemiForm extends Component {
     constructor(props) {
         super(props);
-        // this.onChange = this.onChange.bind(this);
+        this.state = {
+            canSubmit: false
+        };
+
+        this.enableButton = this.enableButton.bind(this);
+        this.disableButton = this.disableButton.bind(this);
+        this.submitForm = this.submitForm.bind(this);
+        this.notifyFormError = this.notifyFormError.bind(this);
+        this.resetForm = this.resetForm.bind(this);
     }
 
-    // componentDidMount() {
-    //     const { debounce = 200 } = this.props;
-    //     this.setValidate = debounceFunc(this.refs.input.setValue, debounce);
-    // }
-    //
-    // componentWillReceiveProps() {
-    //     const input = this.refs.input;
-    //     input.setState({ value: input.getValue() || '' });
-    // }
+    shouldComponentUpdate(nextProps, nextState) {
+        return this.state.canSubmit !== nextState.canSubmit;
+    }
 
-    // onChange(event) {
-    //     if (this.props.onChange)
-    //         this.props.onChange(event);
-    //     this.setValidate(event.currentTarget.value);
-    // }
+    enableButton() {
+        this.setState({
+            canSubmit: true
+        });
+    }
+
+    disableButton() {
+        this.setState({
+            canSubmit: false
+        });
+    }
+
+    submitForm(data) {
+        console.log('data', data);
+    }
+
+    notifyFormError(/*data*/) {
+        // console.error('Form error:', data);
+    }
+
+    resetForm() {
+        this.refs.form.reset();
+    }
 
     render() {
-        return <Form ref="form" {...this.props} />;
+
+        let resetBtn = this.props.hasReset ? (
+            <RaisedButton
+                label="Reset"
+                style={{marginTop: 24, marginLeft: 24}}
+                onClick={this.resetForm}
+            />
+        ) : null;
+
+        let submitBtn = (
+            <RaisedButton
+                formNoValidate
+                secondary={true}
+                style={{marginTop: 24}}
+                type="submit"
+                label={this.props.submitLabel || 'Submit'}
+                disabled={!this.state.canSubmit}
+            />);
+
+        return (
+            <Form
+                onValid={this.enableButton}
+                onInvalid={this.disableButton}
+                onValidSubmit={this.submitForm}
+                onInvalidSubmit={this.notifyFormError}
+                ref="form"
+                {...this.props} >
+                {this.props.children}
+                {submitBtn}
+                {resetBtn}
+            </Form>);
     }
 }
 
+
 SemiForm.propTypes = {
-    onChange: PropTypes.func,
-    debounce: PropTypes.number
+    hasReset: PropTypes.bool,
+    submitLabel: PropTypes.string,
+    enableButton: PropTypes.func,
+    disableButton: PropTypes.func,
+    submitForm: PropTypes.func,
+    resetForm: PropTypes.func,
+    notifyFormError: PropTypes.func,
+    children: React.PropTypes.oneOfType([
+        React.PropTypes.object,
+        React.PropTypes.array
+    ])
 };
 
 export default SemiForm;

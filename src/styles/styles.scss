@@ -13,7 +13,9 @@ $secTextColor: #FFFFFF;
 
 $sidebarExpanded: 256px;
 $navHeight: 56px;
-$conPad: 30px;
+$conWrapPad: 30px;
+$conPad: 24px;
+$barHeight: 56px;
 
 body { margin: 0; font-family: 'Roboto', 'Segoe UI', 'Droid Sans', Tahoma, Arial, sans-serif; background: $bgColor; }
 
@@ -27,19 +29,25 @@ body { margin: 0; font-family: 'Roboto', 'Segoe UI', 'Droid Sans', Tahoma, Arial
 .menu-wrapper>div { background: $secColor !important; }
 .menu-wrapper .nav-item { color: $secTextColor !important; font-size: 14px !important; }
 
-.top-nav-wrap { float: left; position: fixed; width: 100%; }
-.top-nav-bar { background: $fgColor !important; padding-left: $sidebarExpanded+$conPad+24px !important; }
+.top-nav-wrap { float: left; position: fixed; width: 100%; z-index: 999; }
+.top-nav-bar { background: $fgColor !important; padding-left: $sidebarExpanded+$conWrapPad+24px !important; }
 .side-nav-bar { background: $mainColor !important; color: $mainTextColor; letter-spacing: 1px; }
 
 /* Page Heading */
 
-.page-heading { background: #F1F1F1; float: left; width: 100%; box-sizing: border-box; padding: $navHeight $conPad 0 $sidebarExpanded+$conPad;}
+.page-heading { background: #F1F1F1; float: left; width: 100%; box-sizing: border-box; padding: $navHeight $conWrapPad 0 $sidebarExpanded+$conWrapPad;}
 .page-heading>h1 { font-size: 30px; font-weight: 400; margin: 20px 0 5px 0; }
 .page-heading>p { color: #666; font-size: 13px; font-weight: 300; margin: 0 0 20px 0; }
 
 /* Content */
 
-.content-wrap { padding: $conPad $conPad $conPad $sidebarExpanded+$conPad; background: $bgColor; float: left; width: 100%; box-sizing: border-box; }
+.content-wrap { padding: 0 $conWrapPad $conWrapPad $sidebarExpanded+$conWrapPad; background: $bgColor; float: left; width: 100%; box-sizing: border-box; }
+.content-wrap>div { padding: 0 !important;}
+
+.panel-bar { height: $barHeight; z-index: 99 !important; }
+.panel-bar>h1 { line-height: $barHeight !important; font-size: 20px !important; font-weight: 400; }
+
+.con-pad { padding: $conPad; }
 
 /* Button */
 

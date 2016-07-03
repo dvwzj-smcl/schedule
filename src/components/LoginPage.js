@@ -33,11 +33,10 @@ class LoginPage extends Component {
     componentDidMount() {
     }
     componentDidUpdate() {
-        console.log('* login update');
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        return !!(this.state.canSubmit !== nextState.canSubmit);
+        return this.state.canSubmit !== nextState.canSubmit;
     }
 
     enableButton() {
@@ -74,7 +73,7 @@ class LoginPage extends Component {
                             <AppBar
                                 title="Login"
                                 showMenuIconButton={false} />
-                            <SemiForm
+                            <Formsy.Form
                                 ref="login-form"
                                 onValid={this.enableButton}
                                 onInvalid={this.disableButton}
@@ -108,7 +107,7 @@ class LoginPage extends Component {
                                     type="submit"
                                     label="Login"
                                     disabled={!this.state.canSubmit} />
-                            </SemiForm>
+                            </Formsy.Form>
                         </Paper>
                     </Col>
                 </Row>
