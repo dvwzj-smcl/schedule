@@ -7,5 +7,9 @@ export default {
         sidebar: {
             expanded: true
         }
+    },
+    page: {
+        title: 'Home',
+        description: 'Description...'
     }
 };

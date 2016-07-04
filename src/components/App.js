@@ -40,7 +40,7 @@ class App extends Component {
     render() {
         return (
             <MuiThemeProvider >
-                <Layout appBarTitle="Schedule" user={this.props.user} menu={this.props.menu} actions={this.props.actions} sidebarMenu={menus} children={this.props.children} location={this.props.location} />
+                <Layout appBarTitle="Schedule" page={this.props.page} user={this.props.user} menu={this.props.menu} actions={this.props.actions} sidebarMenu={menus} children={this.props.children} location={this.props.location} />
             </MuiThemeProvider>
         );
     }
@@ -51,7 +51,8 @@ App.propTypes = {
     location: PropTypes.object,
     actions: PropTypes.object,
     user: PropTypes.object,
-    menu: PropTypes.object
+    menu: PropTypes.object,
+    page: PropTypes.object
 };
 App.contextTypes = {
     router: PropTypes.object
@@ -60,7 +61,8 @@ App.contextTypes = {
 function mapStateToProps(state) {
     return {
         user: state.user,
-        menu: state.menu
+        menu: state.menu,
+        page: state.page
     };
 }
 

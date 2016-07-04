@@ -33,9 +33,7 @@ class Layout extends Component {
     }
 
     logout() {
-        this.props.actions.user.logout().then(()=> {
-            this.context.router.replace('/');
-        });
+        this.props.actions.user.logout();
     }
 
     isActiveMenu(pathname) {
@@ -55,9 +53,7 @@ class Layout extends Component {
                                     className="nav-item"
                                     key={i}
                                     primaryText={this.props.menu.sidebar.expanded ? menu.text : "\u00a0"}
-                                    leftIcon={this.props.menu.sidebar.expanded ? menu.icon : React.cloneElement(menu.icon,{
-                                            style: { width: '100%', margin: '12px auto', left: 0 }
-                                        })}
+                                    leftIcon={menu.icon}
                                     onTouchTap={this.linkTo.bind(null, menu.to)}
                                     style={this.isActiveMenu(menu.to)?{backgroundColor: 'rgba(0,0,0,0.2)'}:null}/>
                             );
@@ -90,7 +86,7 @@ class Layout extends Component {
                         </ToolbarGroup>
                     </Toolbar>
                 </Paper>
-                <PageHeading title="Title" description="description" />
+                <PageHeading title={this.props.page.title} description={this.props.page.description} />
                 <div className="content-wrap">
                     {this.props.children}
                 </div>
@@ -100,6 +96,7 @@ class Layout extends Component {
 }
 
 Layout.propTypes = {
+    page: PropTypes.object.isRequired,
     user: PropTypes.object.isRequired,
     menu: PropTypes.object.isRequired,
     actions: PropTypes.object.isRequired,
