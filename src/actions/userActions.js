@@ -55,7 +55,10 @@ export function login(username, password){
                 }
             ).then(response=>response.json()).then(json=>{
             dispatch(userRequestSuccess());
-            return dispatch(json.access_token ? userUpdateToken(json.access_token) : userIsNotAuthenticated());
+            let access_token = json.data.token;
+            // let access_token = json.access_token; // Phai's
+
+            return dispatch(access_token ? userUpdateToken(access_token) : userIsNotAuthenticated());
         }, ()=>dispatch(userRequestFailed()));
     };
 }

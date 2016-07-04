@@ -10,6 +10,10 @@ require('./favicon.ico'); // Tell webpack to load favicon.ico
 import './styles/styles.scss'; // Yep, that's right. You can import SASS/CSS files too! Webpack will run the associated loader and plug this into the page.
 import { syncHistoryWithStore } from 'react-router-redux';
 
+// import jwt from 'jsonwebtoken';
+// var encode = jwt.sign({payload: {username: 'admin', password: 'admin1234'}}, 'base64:Q6ERrj4q7NCiSD27kFQNrRkiJFS//jIHbcXHzF4+3qQ=')
+// console.log(encode);
+
 const store = configureStore();
 const routes = configureRoute(store);
 

@@ -93,7 +93,6 @@ class LoginPage extends Component {
                                 <SemiText
                                     name="password"
                                     type="password"
-                                    validations="isWords"
                                     validationError={this.errorMessages.wordsError}
                                     required
                                     hintText="What is your password?"
