@@ -37,9 +37,7 @@ class HomePage extends Component {
                     <Col md={9}>
                         <Panel title="Home">
                             <div className="con-pad">
-                                This is panel widget. Title is optional.
-                                Test pull request.
-                                Test rebase. Test pull request.
+                                This is panel widget. Title is optional. Test pull request. 1234
                             </div>
                         </Panel>
                         <Row>
