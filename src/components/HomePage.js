@@ -39,7 +39,7 @@ class HomePage extends Component {
                             <div className="con-pad">
                                 This is panel widget. Title is optional.
                                 Test pull request.
-                                Test rebase.
+                                Test rebase. Test pull request.
                             </div>
                         </Panel>
                         <Row>
