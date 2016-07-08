@@ -12,6 +12,6 @@ class Sale extends Model
     }
 
     public function events(){
-        return $this->hasMany('App\Models\Calendar\Event');
+        return $this->hasMany('App\Models\Calendar\CalendarEvent');
     }
 }
