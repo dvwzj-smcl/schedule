@@ -11,11 +11,11 @@ browserSync({
     port: 3001
   },
   server: {
-    baseDir: 'dist'
+    baseDir: 'public/react'
   },
 
   files: [
-    'src/*.html'
+    'resources/assets/react/*.html'
   ],
 
   middleware: [historyApiFallback()]

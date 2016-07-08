@@ -11,10 +11,10 @@ export default {
   debug: true,
   devtool: 'source-map', // more info:https://webpack.github.io/docs/build-performance.html#sourcemaps and https://webpack.github.io/docs/configuration.html#devtool
   noInfo: true, // set to false to see a list of every file being bundled.
-  entry: './src/index',
+  entry: './resources/assets/react/index',
   target: 'web', // necessary per https://webpack.github.io/docs/testing.html#compile-and-test
   output: {
-    path: `${__dirname}/dist`,
+    path: `${__dirname}/public`,
     publicPath: '/',
     filename: 'bundle.js'
   },
@@ -31,7 +31,7 @@ export default {
   ],
   module: {
     loaders: [
-      {test: /\.js$/, include: path.join(__dirname, 'src'), loaders: ['babel']},
+      {test: /\.js$/, include: path.join(__dirname, 'resources/assets/react'), loaders: ['babel']},
       {test: /\.eot(\?v=\d+.\d+.\d+)?$/, loader: 'file'},
       {test: /\.(woff|woff2)$/, loader: 'file-loader?prefix=font/&limit=5000'},
       {test: /\.ttf(\?v=\d+.\d+.\d+)?$/, loader: 'file-loader?limit=10000&mimetype=application/octet-stream'},
@@ -40,7 +40,7 @@ export default {
       {test: /\.ico$/, loader: 'file-loader?name=[name].[ext]'},
       {
         test: /(\.css|\.scss)$/,
-        include: path.join(__dirname, 'src'),
+        include: path.join(__dirname, 'resources/assets/react'),
         loader: ExtractTextPlugin.extract('css?sourceMap&modules!sass?sourceMap')
       }
     ]

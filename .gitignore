@@ -37,3 +37,10 @@ dist
 
 # Mac files
 .DS_Store
+
+# laravel
+vendor
+public/storage
+Homestead.yaml
+Homestead.json
+.env

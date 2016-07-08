@@ -10,17 +10,19 @@
     "start": "npm-run-all --parallel test:watch open:src lint:watch",
     "open:src": "babel-node tools/srcServer.js",
     "open:dist": "babel-node tools/distServer.js",
-    "lint": "esw webpack.config.* src tools",
+    "lint": "esw webpack.config.* resources/assets/react tools",
     "lint:watch": "npm run lint -- --watch",
     "clean-dist": "npm run remove-dist && mkdir dist",
     "remove-dist": "rimraf ./dist",
     "build:html": "babel-node tools/buildHtml.js",
     "prebuild": "npm run clean-dist && npm run build:html && npm run lint && npm run test",
     "build": "babel-node tools/build.js && npm run open:dist",
-    "test": "mocha tools/testSetup.js \"src/**/*.spec.js\" --reporter progress",
-    "test:cover": "babel-node node_modules/isparta/bin/isparta cover --root src --report html node_modules/mocha/bin/_mocha -- --require ./tools/testSetup.js \"src/**/*.spec.js\" --reporter progress",
-    "test:cover:travis": "babel-node node_modules/isparta/bin/isparta cover --root src --report lcovonly _mocha -- --require ./tools/testSetup.js \"src/**/*.spec.js\" && cat ./coverage/lcov.info | node_modules/coveralls/bin/coveralls.js",
-    "test:watch": "npm run test -- --watch"
+    "test": "mocha tools/testSetup.js \"resources/assets/react/**/*.spec.js\" --reporter progress",
+    "test:cover": "babel-node node_modules/isparta/bin/isparta cover --root resources/assets/react --report html node_modules/mocha/bin/_mocha -- --require ./tools/testSetup.js \"resources/assets/react/**/*.spec.js\" --reporter progress",
+    "test:cover:travis": "babel-node node_modules/isparta/bin/isparta cover --root resources/assets/react --report lcovonly _mocha -- --require ./tools/testSetup.js \"resources/assets/react/**/*.spec.js\" && cat ./coverage/lcov.info | node_modules/coveralls/bin/coveralls.js",
+    "test:watch": "npm run test -- --watch",
+    "prod": "gulp --production",
+    "dev": "gulp watch"
   },
   "author": "dvwzj-smcl",
   "license": "MIT",
@@ -30,6 +32,7 @@
     "flexboxgrid": "6.3.0",
     "formsy-material-ui": "0.4.3",
     "formsy-react": "0.18.0",
+    "fullcalendar": "2.8.0",
     "gemini-scrollbar": "1.4.2",
     "isomorphic-fetch": "2.2.1",
     "jsonwebtoken": "7.0.1",
@@ -88,11 +91,16 @@
     "style-loader": "0.13.1",
     "webpack": "1.13.0",
     "webpack-dev-middleware": "1.6.1",
-    "webpack-hot-middleware": "2.10.0"
+    "webpack-hot-middleware": "2.10.0",
+    "gulp": "^3.9.1",
+    "laravel-elixir": "^5.0.0",
+    "bootstrap-sass": "^3.3.0"
   },
   "keywords": [],
   "repository": {
     "type": "git",
-    "url": ""
-  }
+    "url": "git+https://github.com/dvwzj-smcl/schedule.git"
+  },
+  "private": true
+
 }

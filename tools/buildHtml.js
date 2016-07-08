@@ -14,7 +14,7 @@ import cheerio from 'cheerio';
 const useTrackJs = true; // If you choose not to use TrackJS, just set this to false and the build warning will go away.
 const trackJsToken = ''; // If you choose to use TrackJS, insert your unique token here. To get a token, go to https://trackjs.com
 
-fs.readFile('src/index.html', 'utf8', (readError, markup) => {
+fs.readFile('resources/assets/react/index.html', 'utf8', (readError, markup) => {
   if (readError) {
     return console.log(chalkError(readError));
   }
@@ -34,11 +34,11 @@ fs.readFile('src/index.html', 'utf8', (readError, markup) => {
     }
   }
 
-  fs.writeFile('dist/index.html', $.html(), 'utf8', (writeError) => {
+  fs.writeFile('public/react/index.html', $.html(), 'utf8', (writeError) => {
     if (writeError) {
       return console.log(chalkError(writeError));
     }
-    console.log(chalkSuccess('index.html written to /dist'));
+    console.log(chalkSuccess('index.html written to /public/react'));
 
     return writeError;
   });
