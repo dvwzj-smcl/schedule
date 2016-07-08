@@ -4,7 +4,7 @@ namespace App\Models\Calendar;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Event extends Model
+class CalendarEvent extends Model
 {
     protected $table = 'calendar_events';
 

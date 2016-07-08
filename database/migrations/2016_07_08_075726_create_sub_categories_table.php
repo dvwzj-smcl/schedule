@@ -18,8 +18,8 @@ class CreateSubCategoriesTable extends Migration
             $table->timestamps();
         });
         Schema::table('calendar_sub_categories', function (Blueprint $table) {
-            $table->integer('category_id')->unsigned();
-            $table->foreign('category_id')->references('id')->on('calendar_categories')->onUpdate('cascade')->onDelete('cascade');
+            $table->integer('calendar_category_id')->unsigned();
+            $table->foreign('calendar_category_id')->references('id')->on('calendar_categories')->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

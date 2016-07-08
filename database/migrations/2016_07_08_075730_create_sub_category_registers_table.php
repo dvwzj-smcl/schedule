@@ -12,13 +12,13 @@ class CreateSubCategoryRegistersTable extends Migration
      */
     public function up()
     {
-        Schema::create('calendar_sub_category_registers', function (Blueprint $table) {
+        Schema::create('calendar_registers', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('duration');
             $table->string('color')->nullable();
             $table->timestamps();
         });
-        Schema::table('calendar_sub_category_registers', function (Blueprint $table) {
+        Schema::table('calendar_registers', function (Blueprint $table) {
             $table->integer('calendar_sub_category_id')->unsigned();
             $table->foreign('calendar_sub_category_id')->references('id')->on('calendar_sub_categories')->onUpdate('cascade')->onDelete('cascade');
             $table->integer('user_doctor_id')->unsigned();
@@ -33,6 +33,6 @@ class CreateSubCategoryRegistersTable extends Migration
      */
     public function down()
     {
-        Schema::drop('calendar_sub_category_registers');
+        Schema::drop('calendar_registers');
     }
 }

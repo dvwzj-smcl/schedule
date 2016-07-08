@@ -20,8 +20,8 @@ class CreateEventsTable extends Migration
             $table->timestamps();
         });
         Schema::table('calendar_events', function (Blueprint $table) {
-            $table->integer('calendar_sub_category_register_id')->unsigned();
-            $table->foreign('calendar_sub_category_register_id')->references('id')->on('calendar_sub_category_registers')->onUpdate('cascade')->onDelete('cascade');
+            $table->integer('calendar_register_id')->unsigned();
+            $table->foreign('calendar_register_id')->references('id')->on('calendar_registers')->onUpdate('cascade')->onDelete('cascade');
             $table->integer('user_sale_id')->unsigned()->nullable();
             $table->foreign('user_sale_id')->references('id')->on('user_sales')->onUpdate('cascade')->onDelete('cascade');
             $table->integer('user_customer_id')->unsigned()->nullable();
