@@ -11,4 +11,7 @@ class SubCategory extends Model
     public function category(){
         return $this->belongsTo('App\Models\Calendar\Category');
     }
+    public function events(){
+        return $this->hasManyThrough('App\Models\Calendar\Event', 'App\Models\Calendar\SubCategoryRegister');
+    }
 }

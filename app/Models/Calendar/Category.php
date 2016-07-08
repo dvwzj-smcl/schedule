@@ -8,7 +8,7 @@ class Category extends Model
 {
     protected $table = 'calendar_categories';
 
-    public function categories(){
+    public function sub_categories(){
         return $this->hasMany('App\Models\Calendar\SubCategory');
     }
 }

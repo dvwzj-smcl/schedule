@@ -12,6 +12,6 @@ class Doctor extends Model
     }
 
     public function events(){
-        return $this->hasMany('App\Models\Calendar\Event');
+        return $this->hasManyThrough('App\Models\Calendar\Event', 'App\Models\Calendar\SubCategoryRegister');
     }
 }
