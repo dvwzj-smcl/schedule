@@ -24,7 +24,7 @@ class CreateEventsTable extends Migration
             $table->integer('user_doctor_id')->unsigned();
             $table->foreign('user_doctor_id')->references('id')->on('user_doctors')->onUpdate('cascade')->onDelete('cascade');
             $table->integer('user_sale_id')->unsigned()->nullable();
-            $table->integer('user_sub_id')->unsigned();
+            $table->foreign('user_sale_id')->references('id')->on('user_sales')->onUpdate('cascade')->onDelete('cascade');
             $table->integer('user_customer_id')->unsigned()->nullable();
             $table->foreign('user_customer_id')->references('id')->on('user_customers')->onUpdate('cascade')->onDelete('cascade');
         });
