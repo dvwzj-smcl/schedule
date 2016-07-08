@@ -19,6 +19,8 @@ class CreateScheduleModuleTables extends Migration
     {
         // no user/permission here!
 
+        // return;
+
         Schema::create('doctors', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
