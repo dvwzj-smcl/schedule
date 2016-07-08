@@ -14,8 +14,7 @@ class CreateSubCategoriesTable extends Migration
     {
         Schema::create('calendar_sub_categories', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('duration');
-            $table->string('color')->nullable();
+            $table->string('name');
             $table->timestamps();
         });
         Schema::table('calendar_sub_categories', function (Blueprint $table) {
