@@ -17,9 +17,14 @@ class CreateScheduleModuleTables extends Migration
      */
     public function up()
     {
+        // no user/permission here!
+
         Schema::create('doctors', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+
+            $table->integer('user_id')->unsigned()->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('restrict');
 
             // config
             $table->string('color'); // #ffffff
@@ -30,12 +35,20 @@ class CreateScheduleModuleTables extends Migration
         Schema::create('sales', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
+
+            $table->integer('user_id')->unsigned()->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('restrict');
+
             $table->timestamps();
         });
 
         Schema::create('organizers', function (Blueprint $table) {  // Organize Queue (Middleman)
             $table->increments('id');
             $table->string('name');
+
+            $table->integer('user_id')->unsigned()->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('restrict');
+
             $table->timestamps();
         });
 
@@ -51,6 +64,7 @@ class CreateScheduleModuleTables extends Migration
         Schema::create('slots', function (Blueprint $table) {
             $table->increments('id');
 
+            // todo
             // *** START
             // --- can be ---
 
@@ -71,9 +85,9 @@ class CreateScheduleModuleTables extends Migration
 
             // *** END
 
-            $table->integer('doctor_id');
+            $table->integer('doctor_id')->unsigned();
             $table->foreign('doctor_id')->references('id')->on('doctors')->onUpdate('cascade')->onDelete('restrict');
-            $table->integer('organizer_id'); // for record
+            $table->integer('organizer_id')->unsigned(); // for record
             $table->foreign('organizer_id')->references('id')->on('organizers')->onUpdate('cascade')->onDelete('restrict');
 
             // flags
@@ -88,31 +102,31 @@ class CreateScheduleModuleTables extends Migration
 
             // config
             $table->string('color'); // #ffffff
-            
+
             $table->timestamps();
         });
 
         Schema::create('subcats', function (Blueprint $table) {  // Organize Queue (Middleman)
             $table->increments('id');
             $table->string('name');
-            $table->integer('category_id');
+            $table->integer('category_id')->unsigned();
             $table->foreign('category_id')->references('id')->on('categories')->onUpdate('cascade')->onDelete('restrict');
             $table->timestamps();
         });
 
         Schema::create('category_slot', function (Blueprint $table) { // Pivot without data
-            $table->integer('slot_id');
+            $table->integer('slot_id')->unsigned();
             $table->foreign('slot_id')->references('id')->on('slots')->onUpdate('cascade')->onDelete('cascade');
-            $table->integer('doctor_id');
+            $table->integer('doctor_id')->unsigned();
             $table->foreign('doctor_id')->references('id')->on('doctors')->onUpdate('cascade')->onDelete('cascade');
         });
 
         Schema::create('doctor_subcat', function (Blueprint $table) { // Pivot with data (duration)
-            $table->integer('subcat_id');
+            $table->integer('subcat_id')->unsigned();
             $table->foreign('subcat_id')->references('id')->on('subcats')->onUpdate('cascade')->onDelete('cascade');
-            $table->integer('doctor_id');
+            $table->integer('doctor_id')->unsigned();
             $table->foreign('doctor_id')->references('id')->on('doctors')->onUpdate('cascade')->onDelete('cascade');
-            $table->integer('duration'); // min
+            $table->integer('duration')->unsigned(); // min
         });
 
         Schema::table('calendar_events', function (Blueprint $table) {
