@@ -17,7 +17,7 @@ class CreateScheduleModuleTables extends Migration
      */
     public function up()
     {
-        // no user/permission here!
+        // no user/permission here! and admin is just a role!
 
         // return;
 
