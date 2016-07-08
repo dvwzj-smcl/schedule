@@ -13,8 +13,8 @@ import api from '../api';
 function userIsAuthenticated(){
     return {type: USER_IS_AUTHENTICATED};
 }
-function userIsNotAuthenticated(){
-    return {type: USER_IS_NOT_AUTHENTICATED};
+function userIsNotAuthenticated(error){
+    return {type: USER_IS_NOT_AUTHENTICATED, error};
 }
 function userSignIn(){
     return {type: USER_SIGN_IN};
@@ -32,9 +32,15 @@ function userRequestFailed(){
     return {type: USER_REQUEST_FAILED};
 }
 
+export function getError(){
+    return (dispatch, getState)=>{
+        return getState().user.error;
+    };
+}
+
 export function isAuthenticated(){
     return (dispatch, getState)=>{
-        dispatch(getState().user.access_token ?  userIsAuthenticated() : userIsNotAuthenticated());
+        //dispatch(getState().user.access_token ?  userIsAuthenticated() : userIsNotAuthenticated(null));
         return !!getState().user.access_token;
     };
 }
@@ -55,17 +61,17 @@ export function login(username, password){
                 }
             ).then(response=>response.json()).then(json=>{
             dispatch(userRequestSuccess());
-            let access_token = json.data.token;
+            //let access_token = json.data.token;
             // let access_token = json.access_token; // Phai's
 
-            return dispatch(access_token ? userUpdateToken(access_token) : userIsNotAuthenticated());
+            return dispatch(json.access_token ? userUpdateToken(json.access_token) : userIsNotAuthenticated(json.error));
         }, ()=>dispatch(userRequestFailed()));
     };
 }
 export function logout(){
     return (dispatch, getState)=>{
         if(!getState().user.access_token){
-            return Promise.resolve(dispatch(userIsNotAuthenticated()));
+            return Promise.resolve(dispatch(userIsNotAuthenticated(null)));
         }
         dispatch(userSignOut());
         return Promise.resolve(dispatch(userUpdateToken(null)));

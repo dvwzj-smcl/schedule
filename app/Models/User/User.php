@@ -12,7 +12,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'username', 'email', 'password',
     ];
 
     /**
@@ -23,4 +23,21 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function admin(){
+        return $this->hasOne('App\Models\User\Admin');
+    }
+    public function customer(){
+        return $this->hasOne('App\Models\User\Customer');
+    }
+    public function doctor(){
+        return $this->hasOne('App\Models\User\Doctor');
+    }
+    public function middleman(){
+        return $this->hasOne('App\Models\User\Middleman');
+    }
+    public function sale(){
+        return $this->hasOne('App\Models\User\Sale');
+    }
+
 }

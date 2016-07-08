@@ -17,4 +17,8 @@
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Handle Access-Token Header
+    RewriteCond %{HTTP:Access-Token} .
+    RewriteRule .* - [E=HTTP_ACCESS_TOKEN:%{HTTP:Access-Token}]
 </IfModule>

@@ -15,6 +15,7 @@ import { syncHistoryWithStore } from 'react-router-redux';
 // var encode = jwt.sign({payload: {username: 'admin', password: 'admin1234'}}, 'base64:Q6ERrj4q7NCiSD27kFQNrRkiJFS//jIHbcXHzF4+3qQ=')
 // console.log(encode);
 
+
 const store = configureStore();
 const routes = configureRoute(store);
 

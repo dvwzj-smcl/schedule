@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { Grid, Row, Col } from 'react-flexbox-grid';
 import AppBar from 'material-ui/AppBar';
 import Paper from 'material-ui/Paper';
-import { login, isAuthenticated } from '../actions/userActions';
+import { login, isAuthenticated, getError } from '../actions/userActions';
 
 import Formsy from 'formsy-react';
 import Divider from 'material-ui/Divider';
@@ -36,7 +36,7 @@ class LoginPage extends Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        return this.state.canSubmit !== nextState.canSubmit;
+        return (this.state.canSubmit !== nextState.canSubmit) || (this.props.user.error !== nextProps.user.error);
     }
 
     enableButton() {
@@ -100,6 +100,9 @@ class LoginPage extends Component {
                                     underlineShow={false}
                                     />
                                 <Divider />
+                                <Paper style={{display: this.props.actions.getError() ? 'block' : 'none', padding: 5}}>
+                                    {this.props.actions.getError()}
+                                </Paper>
                                 <RaisedButton
                                     secondary={true}
                                     style={{marginTop: 12}}
@@ -126,12 +129,14 @@ LoginPage.contextTypes = {
 export default connect(
     (state)=>{
         return {
+            user: state.user,
             routing: state.routing
         };
     },
     (dispatch)=>{
         return {
             actions: {
+                getError: bindActionCreators(getError, dispatch),
                 login: bindActionCreators(login, dispatch),
                 isAuthenticated: bindActionCreators(isAuthenticated, dispatch)
             }

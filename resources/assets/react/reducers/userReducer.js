@@ -16,12 +16,13 @@ export default function userReducer(state = initialState.user, action = null) {
         case USER_UPDATE_TOKEN:
             if(action.access_token) {
                 sessionStorage.setItem('access_token', action.access_token);
-                return Object.assign({}, state, {access_token: action.access_token});
+                return Object.assign({}, state, {access_token: action.access_token, error: null});
             }else{
                 sessionStorage.removeItem('access_token');
                 return {};
             }
         case USER_IS_NOT_AUTHENTICATED:
+            return Object.assign({}, state, {error: action.error});
         case USER_SIGN_IN:
         case USER_SIGN_OUT:
             sessionStorage.removeItem('access_token');
