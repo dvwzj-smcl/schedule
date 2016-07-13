@@ -87,6 +87,10 @@ class Layout extends Component {
                     </Toolbar>
                 </Paper>
 
+
+                <Paper style={{display: this.props.user.error ? 'block' : 'none', padding: 5}}>
+                    {this.props.user.error}
+                </Paper>
                 <div>
                     {this.props.children}
                 </div>

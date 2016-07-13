@@ -4,9 +4,10 @@ namespace App\Models\User;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Admin extends Model
+class Organizer extends Model
 {
-    protected $table = 'user_admins';
+    protected $table = 'sc_organizers';
+    protected $fillable = ['user_id'];
     public function user(){
         return $this->belongsTo('App\Models\User\User');
     }

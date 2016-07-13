@@ -6,12 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class SubCategory extends Model
 {
-    protected $table = 'calendar_sub_categories';
+    protected $table = 'sc_sub_categories';
+    protected $fillable = ['name', 'sc_category_id'];
+    public $timestamps = false;
 
     public function category(){
-        return $this->belongsTo('App\Models\Calendar\Category');
-    }
-    public function events(){
-        return $this->hasManyThrough('App\Models\Calendar\Event', 'App\Models\Calendar\SubCategoryRegister');
+        return $this->belongsTo('App\Models\Calendar\Category', 'sc_category_id');
     }
 }

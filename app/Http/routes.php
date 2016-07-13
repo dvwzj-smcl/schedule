@@ -14,6 +14,7 @@
 use Illuminate\Http\Request;
 use Firebase\JWT\JWT;
 use App\Models\User\User;
+use Carbon\Carbon;
 
 Route::get('/', function () {
     return view('welcome');
@@ -37,11 +38,73 @@ Route::group(['prefix'=>'api'], function(){
         $token = $request->getContent();
         $decode = JWT::decode($token, env('APP_KEY'), ['HS256']);
         if(Auth::once(['username' => $decode->username, 'password' => $decode->password])){
-            return response()->json(['access_token' => JWT::encode(Auth::user(), env('APP_KEY'))]);
+            $user = Auth::user();
+            $isAdmin = $user->hasRole('admin');
+            $isDoctor = $user->doctor;
+            $isOrganizer = $user->organizer;
+            $isSale = $user->sale;
+            return response()->json(['access_token' => JWT::encode($user, env('APP_KEY')), 'isAdmin'=>$isAdmin, 'isDoctor'=>$isDoctor, 'isOrganizer'=>$isOrganizer, 'isSale'=>$isSale]);
         }else if(User::where('username', $decode->username)->count()){
             return response()->json(['error' => 'incorrect password']);
         }else{
             return response()->json(['error' => 'user not found']);
         }
+    });
+    Route::group(['prefix'=>'calendar'], function(){
+        Route::get('events/{year?}/{month?}', function(Request $request,$year=null,$month=null){
+            if(is_null($year)){
+                $year = date('Y');
+            }
+            if(is_null($month)){
+                $month = date('m');
+            }
+            $date = Carbon::createFromDate($year, $month);
+            $start = $date->startOfMonth()->format('Y-m-d');
+            $end = $date->endOfMonth()->format('Y-m-d');
+            $slots = [];
+            $events = [];
+            //\DB::enableQueryLog();
+            foreach(\App\Models\Calendar\Slot::whereBetween(\DB::raw('substr(sc_slots.start,1,10)'), [$start, $end])->get() as $slot){
+                $response = $slot->response();
+                $events = array_merge($events, $response['events']);
+                $slots[] = $response['slot'];
+            }
+            return response()->json(['between'=>[$start,$end], 'events' => $events, 'slots'=>$slots],200, array(), JSON_PRETTY_PRINT);
+        });
+        Route::get('event/{event}', function(Request $request, \App\Models\Calendar\Event $event){
+            $event = $event
+                ->with('slot')
+                ->with('slot.doctor')
+                ->with('slot.organizer')
+                ->with('sub_category')
+                ->with('sub_category.category')
+                ->with('sale')
+                ->with('customer')
+                ->first();
+            return response()->json($event, 200, array(), JSON_PRETTY_PRINT);
+        })->where('event', '[0-9]+');
+        Route::get('event/{date?}', function(Request $request, $date=null){
+            if(is_null($date)){
+                $date = date('Y-m-d');
+            }
+            $slots = [];
+            $events = [];
+            foreach(\App\Models\Calendar\Slot::where('start', 'like', $date.'%')->get() as $slot){
+                $response = $slot->response();
+                $events = array_merge($events, $response['events']);
+                $slots[] = $response['slot'];
+            }
+            return response()->json(['events' => $events, 'slots'=>$slots],200, array(), JSON_PRETTY_PRINT);
+        })->where('date', '[0-9-]+');
+        Route::get('slot/{slot}', function(Request $request, \App\Models\Calendar\Slot $slot){
+            $response = $slot->response();
+            return response()->json($response['slot'],200, array(), JSON_PRETTY_PRINT);
+        });
+        Route::get('doctors', function(Request $request){
+            return response()->json(['doctors'=>\App\Models\User\Doctor::with('user')->get()],200, array(), JSON_PRETTY_PRINT);
+        });
+        Route::get('categories', function(Request $request){
+            return response()->json(['categories'=>\App\Models\Calendar\Category::all()],200, array(), JSON_PRETTY_PRINT);
+        });
     });
 });

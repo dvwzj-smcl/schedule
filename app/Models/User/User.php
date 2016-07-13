@@ -2,10 +2,12 @@
 
 namespace App\Models\User;
 
+use Zizaco\Entrust\Traits\EntrustUserTrait;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
+    use EntrustUserTrait;
     /**
      * The attributes that are mass assignable.
      *
@@ -24,17 +26,11 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-    public function admin(){
-        return $this->hasOne('App\Models\User\Admin');
-    }
-    public function customer(){
-        return $this->hasOne('App\Models\User\Customer');
-    }
     public function doctor(){
         return $this->hasOne('App\Models\User\Doctor');
     }
-    public function middleman(){
-        return $this->hasOne('App\Models\User\Middleman');
+    public function organizer(){
+        return $this->hasOne('App\Models\User\Organizer');
     }
     public function sale(){
         return $this->hasOne('App\Models\User\Sale');

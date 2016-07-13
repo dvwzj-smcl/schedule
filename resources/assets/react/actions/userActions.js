@@ -3,7 +3,7 @@ import {
     USER_IS_NOT_AUTHENTICATED,
     USER_SIGN_IN,
     USER_SIGN_OUT,
-    USER_UPDATE_TOKEN,
+    USER_UPDATE_USER,
     USER_REQUEST_SUCCESS,
     USER_REQUEST_FAILED
 } from '../constants/actionTypes';
@@ -22,8 +22,8 @@ function userSignIn(){
 function userSignOut(){
     return {type: USER_SIGN_OUT};
 }
-function userUpdateToken(access_token){
-    return {type: USER_UPDATE_TOKEN, access_token};
+function userUpdateUser(user){
+    return {type: USER_UPDATE_USER, user};
 }
 function userRequestSuccess(){
     return {type: USER_REQUEST_SUCCESS};
@@ -42,6 +42,26 @@ export function isAuthenticated(){
     return (dispatch, getState)=>{
         //dispatch(getState().user.access_token ?  userIsAuthenticated() : userIsNotAuthenticated(null));
         return !!getState().user.access_token;
+    };
+}
+export function isAdmin(){
+    return (dispatch, getState)=>{
+        return getState().user.isAdmin;
+    };
+}
+export function isDoctor(){
+    return (dispatch, getState)=>{
+        return getState().user.isDoctor;
+    };
+}
+export function isOrganizer(){
+    return (dispatch, getState)=>{
+        return getState().user.isOrganizer;
+    };
+}
+export function isSale(){
+    return (dispatch, getState)=>{
+        return getState().user.isSale;
     };
 }
 export function login(username, password){
@@ -64,7 +84,7 @@ export function login(username, password){
             //let access_token = json.data.token;
             // let access_token = json.access_token; // Phai's
 
-            return dispatch(json.access_token ? userUpdateToken(json.access_token) : userIsNotAuthenticated(json.error));
+            return dispatch(json.access_token ? userUpdateUser(json) : userIsNotAuthenticated(json.error));
         }, ()=>dispatch(userRequestFailed()));
     };
 }
@@ -74,6 +94,6 @@ export function logout(){
             return Promise.resolve(dispatch(userIsNotAuthenticated(null)));
         }
         dispatch(userSignOut());
-        return Promise.resolve(dispatch(userUpdateToken(null)));
+        return Promise.resolve(dispatch(userUpdateUser(null)));
     };
 }

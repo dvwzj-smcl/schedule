@@ -100,9 +100,7 @@ class LoginPage extends Component {
                                     underlineShow={false}
                                     />
                                 <Divider />
-                                <Paper style={{display: this.props.actions.getError() ? 'block' : 'none', padding: 5}}>
-                                    {this.props.actions.getError()}
-                                </Paper>
+
                                 <RaisedButton
                                     secondary={true}
                                     style={{marginTop: 12}}

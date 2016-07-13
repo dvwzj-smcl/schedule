@@ -4,6 +4,8 @@ import { bindActionCreators } from 'redux';
 import {Grid, Row, Col} from 'react-flexbox-grid';
 import Panel from './widgets/Panel';
 import PageHeading from './widgets/PageHeading';
+import { getEvents, getDoctors, getCategories } from '../actions/calendarActions';
+import { isAdmin, isDoctor, isOrganizer, isSale } from '../actions/userActions';
 
 import {List, ListItem} from 'material-ui/List';
 import Paper from 'material-ui/Paper';
@@ -19,6 +21,8 @@ import 'fullcalendar/dist/lang-all';
 import SemiText from './forms/SemiText';
 import SemiForm from './forms/SemiForm';
 import FormsyDate from 'formsy-material-ui/lib/FormsyDate';
+import SelectField from 'material-ui/SelectField';
+import MenuItem from 'material-ui/MenuItem';
 
 import ErrorMessage from './forms/ErrorMessage';
 
@@ -27,74 +31,88 @@ function pad(num, size){ return ('000000000' + num).substr(-size); }
 class CalendarPage extends Component {
     constructor(props, context){
         super(props, context);
-        this.events = [];
+        this.state = {
+            doctor_id: null,
+            category_id: null
+        };
+        this.selectDoctor = this.selectDoctor.bind(this);
+        this.selectCategory = this.selectCategory.bind(this);
     }
-    componentDidMount(){
-        $('#calendar').fullCalendar({
-            header: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'month, agendaWeek, agendaDay'
-            },
-            lang: 'en',
-            timezone: 'Asia/Bangkok',
-            height: 'auto',
-            minTime: '08:00',
-            maxTime: '17:00',
-            allDaySlot: false,
-            slotDuration: '00:30:00',
-            editable: true,
-            slotEventOverlap: false,
-            events: [
-                {
-                    start: '00:00',
-                    end: '08:00',
-                    color: 'gray',
-                    rendering: 'background',
-                    dow: [1,2,3,4,5]
-                },
-                {
-                    start: '12:00',
-                    end: '13:00',
-                    color: 'gray',
-                    rendering: 'background',
-                    dow: [1,2,3,4,5]
-                },
-                {
-                    start: '17:00',
-                    end: '24:00',
-                    color: 'gray',
-                    rendering: 'background',
-                    dow: [1,2,3,4,5]
-                },
-                {
-                    start: '00:00',
-                    end: '24:00',
-                    color: 'gray',
-                    rendering: 'background',
-                    dow: [0,6]
-                },
-                {
-                    start: '08:00',
-                    end: '09:00',
-                    color: 'green',
-                    rendering: 'background',
-                    dow: [1]
-                },
-                {
-                    start: '2016-07-04 08:00',
-                    end: '2016-07-04 09:00',
-                    color: 'black',
-                    title: 'test 1'
-                },
-                {
-                    start: '2016-07-04 08:00',
-                    end: '2016-07-04 09:00',
-                    color: 'black',
-                    title: 'test 2'
-                }
-            ]
+    selectDoctor(event, index, doctor_id){
+        this.setState({
+            doctor_id
         });
+    }
+    selectCategory(event, index, category_id){
+        this.setState({
+            category_id
+        });
+    }
+
+    componentDidMount(){
+        var promises = [];
+        promises.push(this.props.actions.calendar.getEvents());
+        if(this.props.user.isOrganizer){
+            promises.push(this.props.actions.calendar.getDoctors());
+            promises.push(this.props.actions.calendar.getCategories());
+        }
+        Promise.all(promises).then(()=>{
+            let events = [];
+            if(this.props.user.isOrganizer){
+                events = this.props.calendar.slots.map((slot)=>{
+                    return {
+                        title: slot.doctor.name,
+                        start: slot.start,
+                        end: slot.end
+                    };
+                });
+            }
+            $('#calendar').fullCalendar({
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month, agendaWeek, agendaDay'
+                },
+                lang: 'en',
+                timezone: 'Asia/Bangkok',
+                height: 'auto',
+                minTime: '08:00',
+                maxTime: '17:00',
+                allDaySlot: false,
+                slotDuration: '00:30:00',
+                editable: false,
+                slotEventOverlap: false,
+                events: events,
+                viewRender: (view, element)=>{
+                    const {between} = this.props.calendar;
+                    const {getEvents} = this.props.actions.calendar;
+                    const start = view.intervalStart.format('YYYY-MM-DD');
+                    const end = moment(view.intervalStart).endOf('month').format('YYYY-MM-DD');
+                    if(start!==between[0] && end!==between[1]){
+                        const year = view.intervalStart.format('YYYY');
+                        const month = view.intervalStart.format('MM');
+                        getEvents(year, month);
+                    }
+                }
+            });
+        });
+    }
+    shouldComponentUpdate(nextProps, nextState) {
+        const shouldUpdate = (nextProps.calendar.events!=this.props.calendar.events || nextProps.calendar.doctors!=this.props.calendar.doctors || nextProps.calendar.categories!=this.props.calendar.categories || this.state!=nextState);
+        return shouldUpdate;
+    }
+    componentDidUpdate(){
+        let events = [];
+        if(this.props.user.isOrganizer){
+            events = this.props.calendar.slots.map((slot)=>{
+                return {
+                    title: slot.doctor.name,
+                    start: slot.start,
+                    end: slot.end
+                };
+            });
+        }
+        console.log('componentDidUpdate', events);
     }
 
     render(){
@@ -111,22 +129,52 @@ class CalendarPage extends Component {
                             </Panel>
                         </Col>
                         <Col md={3}>
-                            <Panel>
-                                <List>
-                                    <ListItem primaryText="Inbox" leftIcon={<ContentInbox />} />
-                                    <ListItem primaryText="Starred" leftIcon={<ActionGrade />} />
-                                    <ListItem primaryText="Sent mail" leftIcon={<ContentSend />} />
-                                    <ListItem primaryText="Drafts" leftIcon={<ContentDrafts />} />
-                                    <ListItem primaryText="Inbox" leftIcon={<ContentInbox />} />
-                                </List>
-                                <Divider />
-                                <List>
-                                    <ListItem primaryText="All mail" rightIcon={<ActionInfo />} />
-                                    <ListItem primaryText="Trash" rightIcon={<ActionInfo />} />
-                                    <ListItem primaryText="Spam" rightIcon={<ActionInfo />} />
-                                    <ListItem primaryText="Follow up" rightIcon={<ActionInfo />} />
-                                </List>
-                            </Panel>
+                            {this.props.user.isAdmin ?
+                                (
+                                    <Panel>
+                                        <List>
+                                            <ListItem primaryText="Admin" leftIcon={<ContentInbox />} />
+                                        </List>
+                                    </Panel>
+                                ) : null}
+                            {this.props.user.isDoctor ?
+                                (
+                                    <Panel>
+                                        <List>
+                                            <ListItem primaryText="Doctor" leftIcon={<ContentInbox />} />
+                                        </List>
+                                    </Panel>
+                                ) : null}
+                            {this.props.user.isOrganizer ?
+                                (
+                                    <Panel>
+                                        <List>
+                                            <ListItem primaryText="Organizer" leftIcon={<ContentInbox />} />
+                                        </List>
+                                        <SelectField fullWidth={false} floatingLabelText="Doctors" value={this.state.doctor_id} onChange={this.selectDoctor}>
+                                            {this.props.calendar.doctors.map((doctor, i)=>{
+                                                return(
+                                                    <MenuItem key={i} value={doctor.id} primaryText={doctor.user.name} />
+                                                );
+                                            })}
+                                        </SelectField>
+                                        <SelectField fullWidth={false} floatingLabelText="Categories" value={this.state.category_id} onChange={this.selectCategory}>
+                                            {this.props.calendar.categories.map((category, i)=>{
+                                                return(
+                                                    <MenuItem key={i} value={category.id} primaryText={category.name} />
+                                                );
+                                            })}
+                                        </SelectField>
+                                    </Panel>
+                                ) : null}
+                            {this.props.user.isSale ?
+                                (
+                                    <Panel>
+                                        <List>
+                                            <ListItem primaryText="Sale" leftIcon={<ContentInbox />} />
+                                        </List>
+                                    </Panel>
+                                ) : null}
                         </Col>
                     </Row>
                 </Grid>
@@ -137,7 +185,18 @@ class CalendarPage extends Component {
 
 
 export default connect((state)=>{
-    return {}
+    return {
+        user: state.user,
+        calendar: state.calendar
+    }
 },(dispatch)=>{
-    return {}
+    return {
+        actions: {
+            calendar: {
+                getEvents: bindActionCreators(getEvents, dispatch),
+                getDoctors: bindActionCreators(getDoctors, dispatch),
+                getCategories: bindActionCreators(getCategories, dispatch)
+            }
+        }
+    }
 })(CalendarPage);

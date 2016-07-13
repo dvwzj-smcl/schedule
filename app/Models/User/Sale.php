@@ -6,12 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Sale extends Model
 {
-    protected $table = 'user_sales';
+    protected $table = 'sc_sales';
+    protected $fillable = ['user_id'];
+
     public function user(){
         return $this->belongsTo('App\Models\User\User');
-    }
-
-    public function events(){
-        return $this->hasMany('App\Models\Calendar\CalendarEvent');
     }
 }

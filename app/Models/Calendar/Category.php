@@ -6,9 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Category extends Model
 {
-    protected $table = 'calendar_categories';
+    protected $table = 'sc_categories';
+    protected $fillable = ['name', 'color'];
+    public $timestamps = false;
 
     public function sub_categories(){
-        return $this->hasMany('App\Models\Calendar\SubCategory');
+        return $this->hasMany('App\Models\Calendar\SubCategory', 'sc_category_id');
     }
 }
