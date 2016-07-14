@@ -22,6 +22,7 @@ import SemiText from './forms/SemiText';
 import SemiForm from './forms/SemiForm';
 import FormsyDate from 'formsy-material-ui/lib/FormsyDate';
 import SelectField from 'material-ui/SelectField';
+import TextField from 'material-ui/TextField';
 import MenuItem from 'material-ui/MenuItem';
 
 import ErrorMessage from './forms/ErrorMessage';
@@ -32,21 +33,71 @@ class CalendarPage extends Component {
     constructor(props, context){
         super(props, context);
         this.state = {
-            doctor_id: null,
-            category_id: null
+            slot: {
+                isCreate: false,
+                create: {
+                    doctor_id: null,
+                    category_id: null,
+                    select: []
+                }
+            }
         };
         this.selectDoctor = this.selectDoctor.bind(this);
         this.selectCategory = this.selectCategory.bind(this);
+        this.toggleCreateSlot = this.toggleCreateSlot.bind(this);
+        this.createSlotOnStartChange = this.createSlotOnStartChange.bind(this);
     }
     selectDoctor(event, index, doctor_id){
+        //console.log(event, doctor_id, index);
+        const create = Object.assign({}, this.state.slot.create, {doctor_id});
+        const slot = Object.assign({}, this.state.slot, {
+            create
+        });
         this.setState({
-            doctor_id
+            slot
         });
     }
     selectCategory(event, index, category_id){
-        this.setState({
-            category_id
+        const create = Object.assign({}, this.state.slot.create, {category_id});
+        const slot = Object.assign({}, this.state.slot, {
+            create
         });
+        this.setState({
+            slot
+        });
+    }
+    toggleCreateSlot(){
+        const slot = Object.assign({}, this.state.slot, {
+            isCreate: !this.state.slot.isCreate,
+            create: {
+                doctor_id: null,
+                category_id: null,
+                select: []
+            }
+        });
+        this.setState({
+            slot
+        });
+    }
+    createSlotOnStartChange(event){
+        console.log('?');
+    }
+    getRoleEvents(){
+        let events = [];
+        if(this.props.user.isOrganizer){
+            events = this.props.calendar.slots.map((slot)=>{
+                return {
+                    doctor_id: slot.doctor.id,
+                    title: slot.doctor.name,
+                    start: slot.start,
+                    end: slot.end,
+                    rendering: this.state.slot.isCreate ? 'background' : null
+                };
+            }).filter((event)=>{
+                return this.state.slot.create.doctor_id ? event.doctor_id == this.state.slot.create.doctor_id : true;
+            });
+        }
+        return events;
     }
 
     componentDidMount(){
@@ -57,16 +108,6 @@ class CalendarPage extends Component {
             promises.push(this.props.actions.calendar.getCategories());
         }
         Promise.all(promises).then(()=>{
-            let events = [];
-            if(this.props.user.isOrganizer){
-                events = this.props.calendar.slots.map((slot)=>{
-                    return {
-                        title: slot.doctor.name,
-                        start: slot.start,
-                        end: slot.end
-                    };
-                });
-            }
             $('#calendar').fullCalendar({
                 header: {
                     left: 'prev,next today',
@@ -80,9 +121,11 @@ class CalendarPage extends Component {
                 maxTime: '17:00',
                 allDaySlot: false,
                 slotDuration: '00:30:00',
-                editable: false,
+                editable: this.props.user.isOrganizer ? true : false,
+                selectable: this.props.user.isOrganizer ? true : false,
+                unselectAuto: false,
                 slotEventOverlap: false,
-                events: events,
+                events: this.getRoleEvents(),
                 viewRender: (view, element)=>{
                     const {between} = this.props.calendar;
                     const {getEvents} = this.props.actions.calendar;
@@ -93,26 +136,52 @@ class CalendarPage extends Component {
                         const month = view.intervalStart.format('MM');
                         getEvents(year, month);
                     }
+                },
+                select: (start, end, jsEvent, view)=>{
+
+                    const a = start.format('YYYY-MM-DD H:mm:ss');
+                    const b = end.format('YYYY-MM-DD H:mm:ss');
+                    const create = Object.assign({}, this.state.slot.create, {select:[a, b]});
+                    const slot = Object.assign({}, this.state.slot, {
+                        create
+                    });
+                    this.setState({
+                        slot
+                    });
+                    //console.log(this.refs['create-slot-start']);
+                    //this.refs['create-slot-start'].state.hasValue = true;
+                    //this.refs['create-slot-start'].input.value = a;
+                    //this.refs['create-slot-end'].input.value = b;
+                    console.log(this.refs['create-slot-start']);
+
+                },
+                unselect: (view, jsEvent)=>{
+                    /*
+                    const create = Object.assign({}, this.state.slot.create, {select:[]});
+                    const slot = Object.assign({}, this.state.slot, {
+                        create
+                    });
+                    this.setState({
+                        slot
+                    });
+                    */
+                },
+                eventClick: (calEvent, jsEvent, view)=>{
+                    console.log('eventClick');
                 }
             });
         });
     }
     shouldComponentUpdate(nextProps, nextState) {
-        const shouldUpdate = (nextProps.calendar.events!=this.props.calendar.events || nextProps.calendar.doctors!=this.props.calendar.doctors || nextProps.calendar.categories!=this.props.calendar.categories || this.state!=nextState);
-        return shouldUpdate;
+        return (nextProps.calendar.events!=this.props.calendar.events || nextProps.calendar.doctors!=this.props.calendar.doctors || nextProps.calendar.categories!=this.props.calendar.categories || this.state!=nextState);
     }
     componentDidUpdate(){
-        let events = [];
-        if(this.props.user.isOrganizer){
-            events = this.props.calendar.slots.map((slot)=>{
-                return {
-                    title: slot.doctor.name,
-                    start: slot.start,
-                    end: slot.end
-                };
-            });
+        $('#calendar').fullCalendar('removeEvents');
+        $('#calendar').fullCalendar('addEventSource', this.getRoleEvents());
+        if(!this.state.slot.isCreate) {
+            $('#calendar').fullCalendar('unselect');
         }
-        console.log('componentDidUpdate', events);
+        console.log('updated!');
     }
 
     render(){
@@ -149,22 +218,48 @@ class CalendarPage extends Component {
                                 (
                                     <Panel>
                                         <List>
-                                            <ListItem primaryText="Organizer" leftIcon={<ContentInbox />} />
+                                            <ListItem primaryText="Organizer" leftIcon={<ContentInbox />} onClick={this.toggleCreateSlot} />
                                         </List>
-                                        <SelectField fullWidth={false} floatingLabelText="Doctors" value={this.state.doctor_id} onChange={this.selectDoctor}>
-                                            {this.props.calendar.doctors.map((doctor, i)=>{
-                                                return(
-                                                    <MenuItem key={i} value={doctor.id} primaryText={doctor.user.name} />
-                                                );
-                                            })}
-                                        </SelectField>
-                                        <SelectField fullWidth={false} floatingLabelText="Categories" value={this.state.category_id} onChange={this.selectCategory}>
-                                            {this.props.calendar.categories.map((category, i)=>{
-                                                return(
-                                                    <MenuItem key={i} value={category.id} primaryText={category.name} />
-                                                );
-                                            })}
-                                        </SelectField>
+                                        {this.state.slot.isCreate ? (
+                                            <div>
+                                                <SelectField name="doctor_id" fullWidth={false} floatingLabelText="Doctors" value={this.state.slot.create.doctor_id} onChange={this.selectDoctor}>
+                                                    {this.props.calendar.doctors.map((doctor, i)=>{
+                                                        return(
+                                                            <MenuItem key={i} value={doctor.id} primaryText={doctor.user.name} />
+                                                        );
+                                                    })}
+                                                </SelectField>
+                                                <SelectField name="category_id" fullWidth={false} floatingLabelText="Categories" value={this.state.slot.create.category_id} onChange={this.selectCategory}>
+                                                    {this.props.calendar.categories.map((category, i)=>{
+                                                        return(
+                                                            <MenuItem key={i} value={category.id} primaryText={category.name} />
+                                                        );
+                                                    })}
+                                                </SelectField>
+                                                <TextField
+                                                    ref="create-slot-start"
+                                                    name="start"
+                                                    type="text"
+                                                    readOnly
+                                                    required
+                                                    hintText="Start"
+                                                    floatingLabelText="Start"
+                                                    underlineShow={false}
+                                                    velue={this.state.slot.create.select[0]}
+                                                    />
+                                                <TextField
+                                                    ref="create-slot-end"
+                                                    name="end"
+                                                    type="text"
+                                                    readOnly
+                                                    required
+                                                    hintText="End"
+                                                    floatingLabelText="End"
+                                                    underlineShow={false}
+                                                    velue={this.state.slot.create.select[1]}
+                                                    />
+                                            </div>
+                                        ):null}
                                     </Panel>
                                 ) : null}
                             {this.props.user.isSale ?

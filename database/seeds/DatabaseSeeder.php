@@ -32,14 +32,20 @@ class UsersTableSeeder extends Seeder
         $permission_event_request = \App\Models\User\Permission::create(['name'=>'event-request', 'display_name'=>'Request Event', 'description'=>'Give a permission to request an event']);
 
         $user_admin = \App\Models\User\User::create(['name'=>'Admin', 'username'=>'admin', 'email'=>'admin@localhost', 'password'=>bcrypt('password')]);
-        $user_doctor = \App\Models\User\User::create(['name'=>'Doctor A', 'username'=>'doctora', 'email'=>'doctora@localhost', 'password'=>bcrypt('password')]);
-        $user_organizer = \App\Models\User\User::create(['name'=>'Organizer A', 'username'=>'organizera', 'email'=>'organizera@localhost', 'password'=>bcrypt('password')]);
-        $user_sale = \App\Models\User\User::create(['name'=>'Sale A', 'username'=>'salea', 'email'=>'salea@localhost', 'password'=>bcrypt('password')]);
+        $user_doctor_a = \App\Models\User\User::create(['name'=>'Doctor A', 'username'=>'doctora', 'email'=>'doctora@localhost', 'password'=>bcrypt('password')]);
+        $user_doctor_b = \App\Models\User\User::create(['name'=>'Doctor B', 'username'=>'doctorb', 'email'=>'doctorb@localhost', 'password'=>bcrypt('password')]);
+        $user_organizer_a = \App\Models\User\User::create(['name'=>'Organizer A', 'username'=>'organizera', 'email'=>'organizera@localhost', 'password'=>bcrypt('password')]);
+        $user_organizer_b = \App\Models\User\User::create(['name'=>'Organizer B', 'username'=>'organizerb', 'email'=>'organizerb@localhost', 'password'=>bcrypt('password')]);
+        $user_sale_a = \App\Models\User\User::create(['name'=>'Sale A', 'username'=>'salea', 'email'=>'salea@localhost', 'password'=>bcrypt('password')]);
+        $user_sale_b = \App\Models\User\User::create(['name'=>'Sale B', 'username'=>'saleb', 'email'=>'saleb@localhost', 'password'=>bcrypt('password')]);
 
         $user_admin->attachRole($role_admin);
-        $user_doctor->attachRole($role_doctor);
-        $user_organizer->attachRole($role_organizer);
-        $user_sale->attachRole($role_sale);
+        $user_doctor_a->attachRole($role_doctor);
+        $user_doctor_b->attachRole($role_doctor);
+        $user_organizer_a->attachRole($role_organizer);
+        $user_organizer_b->attachRole($role_organizer);
+        $user_sale_a->attachRole($role_sale);
+        $user_sale_b->attachRole($role_sale);
 
         $role_admin->attachPermission($permission_manage_users);
         $role_doctor->attachPermission($permission_event_setting);
@@ -55,22 +61,34 @@ class CalendarsTableSeeder extends Seeder
     public function run()
     {
         \App\Models\User\Doctor::create(['color'=>'#ffffff', 'user_id'=>2]);
-        \App\Models\User\Organizer::create(['user_id'=>3]);
-        \App\Models\User\Sale::create(['user_id'=>4]);
+        \App\Models\User\Doctor::create(['color'=>'#ffffff', 'user_id'=>3]);
+        \App\Models\User\Organizer::create(['user_id'=>4]);
+        \App\Models\User\Organizer::create(['user_id'=>5]);
+        \App\Models\User\Sale::create(['user_id'=>6]);
+        \App\Models\User\Sale::create(['user_id'=>7]);
         \App\Models\User\Customer::create(['name'=>'Customer A', 'phone'=>'0987654321', 'contact'=>'htp://www.facebook.com/customera']);
         \App\Models\User\Customer::create(['name'=>'Customer B', 'phone'=>'0987654322', 'contact'=>'htp://www.facebook.com/customerb']);
 
         \App\Models\Calendar\Category::create(['name'=>'ผ่าตัด']);
+        \App\Models\Calendar\Category::create(['name'=>'Consult']);
         \App\Models\Calendar\SubCategory::create(['name'=>'ผ่าตัดหน้าอก', 'sc_category_id'=>1]);
         \App\Models\Calendar\SubCategory::create(['name'=>'ผ่าตัดจมูก', 'sc_category_id'=>1]);
+        \App\Models\Calendar\SubCategory::create(['name'=>'อะไรสักอย่าง', 'sc_category_id'=>2]);
 
         \App\Models\Calendar\DoctorCategory::create(['sc_category_id'=>1,'sc_doctor_id'=>1]);
+        \App\Models\Calendar\DoctorCategory::create(['sc_category_id'=>2,'sc_doctor_id'=>1]);
+        \App\Models\Calendar\DoctorCategory::create(['sc_category_id'=>1,'sc_doctor_id'=>2]);
+        \App\Models\Calendar\DoctorCategory::create(['sc_category_id'=>2,'sc_doctor_id'=>2]);
         \App\Models\Calendar\DoctorSubCategory::create(['duration'=>20, 'sc_sub_category_id'=>1,'sc_doctor_id'=>1]);
         \App\Models\Calendar\DoctorSubCategory::create(['duration'=>30, 'sc_sub_category_id'=>2,'sc_doctor_id'=>1]);
+        \App\Models\Calendar\DoctorSubCategory::create(['duration'=>30, 'sc_sub_category_id'=>3,'sc_doctor_id'=>1]);
+        \App\Models\Calendar\DoctorSubCategory::create(['duration'=>25, 'sc_sub_category_id'=>1,'sc_doctor_id'=>2]);
+        \App\Models\Calendar\DoctorSubCategory::create(['duration'=>25, 'sc_sub_category_id'=>2,'sc_doctor_id'=>2]);
+        \App\Models\Calendar\DoctorSubCategory::create(['duration'=>30, 'sc_sub_category_id'=>3,'sc_doctor_id'=>2]);
 
         \App\Models\Calendar\Slot::create(['start'=>'2016-07-12 08:00:00', 'end'=>'2016-07-12 12:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>1]);
-        \App\Models\Calendar\Slot::create(['start'=>'2016-07-12 13:00:00', 'end'=>'2016-07-12 17:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>1]);
-        \App\Models\Calendar\Slot::create(['start'=>'2016-07-13 13:00:00', 'end'=>'2016-07-13 17:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>1]);
+        \App\Models\Calendar\Slot::create(['start'=>'2016-07-12 13:00:00', 'end'=>'2016-07-12 17:00:00', 'sc_doctor_id'=>2, 'sc_organizer_id'=>1]);
+        \App\Models\Calendar\Slot::create(['start'=>'2016-07-13 13:00:00', 'end'=>'2016-07-13 17:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>2]);
         \App\Models\Calendar\Slot::create(['start'=>'2016-09-13 13:00:00', 'end'=>'2016-09-13 17:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>1]);
 
         \App\Models\Calendar\SlotCategory::create(['sc_slot_id'=>1, 'sc_category_id'=>1]); // for tell organizer what cat available to add into a slot
@@ -79,7 +97,7 @@ class CalendarsTableSeeder extends Seeder
         \App\Models\Calendar\SlotCategory::create(['sc_slot_id'=>4, 'sc_category_id'=>1]);
 
         \App\Models\Calendar\Event::create(['sc_slot_id'=>1, 'sc_sub_category_id'=>1]);
-        \App\Models\Calendar\Event::create(['sc_slot_id'=>1, 'sc_sub_category_id'=>1, 'sc_customer_id'=>1, 'sc_sale_id'=>1]);
+        \App\Models\Calendar\Event::create(['sc_slot_id'=>1, 'sc_sub_category_id'=>1, 'sc_customer_id'=>1, 'sc_sale_id'=>2]);
         \App\Models\Calendar\Event::create(['sc_slot_id'=>1, 'sc_sub_category_id'=>2]);
         \App\Models\Calendar\Event::create(['sc_slot_id'=>2, 'sc_sub_category_id'=>2, 'sc_customer_id'=>2, 'sc_sale_id'=>1]);
         \App\Models\Calendar\Event::create(['sc_slot_id'=>2, 'sc_sub_category_id'=>2]);
