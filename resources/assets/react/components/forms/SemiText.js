@@ -31,7 +31,7 @@ class SemiText extends Component{
     }
 
 
-    onChange() {
+    onChange(event) {
         if (this.props.onChange)
             this.props.onChange(event);
         this.setValidate(event.currentTarget.value);
