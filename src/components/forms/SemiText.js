@@ -17,6 +17,7 @@ class SemiText extends Component{
     constructor(props) {
         super(props);
         this.onChange = this.onChange.bind(this);
+        this.setValue = this.setValue.bind(this);
     }
 
     componentDidMount() {
@@ -34,6 +35,12 @@ class SemiText extends Component{
         if (this.props.onChange)
             this.props.onChange(event);
         this.setValidate(event.currentTarget.value);
+    }
+
+    setValue(event) {
+        const input = this.refs.input;
+        input.setState({ value: event });
+        this.setValidate(event);
     }
 
     render() {
