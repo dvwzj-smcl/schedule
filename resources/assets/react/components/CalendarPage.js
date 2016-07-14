@@ -148,8 +148,12 @@ class CalendarPage extends Component {
                     this.setState({
                         slot
                     });
-                    //console.log(this.refs['create-slot-start']);
-                    //this.refs['create-slot-start'].state.hasValue = true;
+                    console.log(this.refs['create-slot-start']);
+                    this.refs['create-slot-start'].state = {
+                        hasValue: true,
+                        isClean: false,
+                        isFocused: false
+                    };
                     //this.refs['create-slot-start'].input.value = a;
                     //this.refs['create-slot-end'].input.value = b;
                     console.log(this.refs['create-slot-start']);
@@ -251,7 +255,7 @@ class CalendarPage extends Component {
                                                     ref="create-slot-end"
                                                     name="end"
                                                     type="text"
-                                                    readOnly
+
                                                     required
                                                     hintText="End"
                                                     floatingLabelText="End"
