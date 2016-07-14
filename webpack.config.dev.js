@@ -22,7 +22,8 @@ export default {
   },
   node: {
     net: "empty",
-    dns: "empty"
+    dns: "empty",
+    fs: "empty"
   },
   plugins: [
     new webpack.DefinePlugin(GLOBALS), // Tells React to build in prod mode. https://facebook.github.io/react/downloads.htmlnew webpack.HotModuleReplacementPlugin());

@@ -22,6 +22,7 @@ import SemiText from './forms/SemiText';
 import SemiForm from './forms/SemiForm';
 import FormsyDate from 'formsy-material-ui/lib/FormsyDate';
 import SelectField from 'material-ui/SelectField';
+import FormsySelect from 'formsy-material-ui/lib/FormsySelect';
 import TextField from 'material-ui/TextField';
 import MenuItem from 'material-ui/MenuItem';
 
@@ -62,6 +63,7 @@ class CalendarPage extends Component {
         const slot = Object.assign({}, this.state.slot, {
             create
         });
+        console.log('slot', slot);
         this.setState({
             slot
         });
@@ -148,15 +150,21 @@ class CalendarPage extends Component {
                     this.setState({
                         slot
                     });
-                    console.log(this.refs['create-slot-start']);
-                    this.refs['create-slot-start'].state = {
-                        hasValue: true,
-                        isClean: false,
-                        isFocused: false
-                    };
+
+                    // console.log('this.refs', this.refs);
+                    // console.log(this.refs['create-slot-start']);
+                    this.refs['create-slot-start'].setValue(a);
+                    this.refs['create-slot-end'].setValue(b);
+                    // console.log('789', 789);
+
+                    // this.refs['create-slot-start'].state = {
+                    //     hasValue: true,
+                    //     isClean: false,
+                    //     isFocused: false
+                    // };
                     //this.refs['create-slot-start'].input.value = a;
                     //this.refs['create-slot-end'].input.value = b;
-                    console.log(this.refs['create-slot-start']);
+                    // console.log(this.refs['create-slot-start']);
 
                 },
                 unselect: (view, jsEvent)=>{
@@ -189,6 +197,7 @@ class CalendarPage extends Component {
     }
 
     render(){
+        console.log('this.state', this.state.slot.create.doctor_id);
         return (
             <div>
                 <PageHeading title="Calendar" description="description" />
@@ -226,43 +235,43 @@ class CalendarPage extends Component {
                                         </List>
                                         {this.state.slot.isCreate ? (
                                             <div>
-                                                <SelectField name="doctor_id" fullWidth={false} floatingLabelText="Doctors" value={this.state.slot.create.doctor_id} onChange={this.selectDoctor}>
-                                                    {this.props.calendar.doctors.map((doctor, i)=>{
-                                                        return(
-                                                            <MenuItem key={i} value={doctor.id} primaryText={doctor.user.name} />
-                                                        );
-                                                    })}
-                                                </SelectField>
-                                                <SelectField name="category_id" fullWidth={false} floatingLabelText="Categories" value={this.state.slot.create.category_id} onChange={this.selectCategory}>
-                                                    {this.props.calendar.categories.map((category, i)=>{
-                                                        return(
-                                                            <MenuItem key={i} value={category.id} primaryText={category.name} />
-                                                        );
-                                                    })}
-                                                </SelectField>
-                                                <TextField
-                                                    ref="create-slot-start"
-                                                    name="start"
-                                                    type="text"
-                                                    readOnly
-                                                    required
-                                                    hintText="Start"
-                                                    floatingLabelText="Start"
-                                                    underlineShow={false}
-                                                    velue={this.state.slot.create.select[0]}
-                                                    />
-                                                <TextField
-                                                    ref="create-slot-end"
-                                                    name="end"
-                                                    type="text"
+                                                <SemiForm>
+                                                    <FormsySelect name="doctor_id" fullWidth={false} floatingLabelText="Doctors" value={this.state.slot.create.doctor_id} onChange={this.selectDoctor}>
+                                                        {this.props.calendar.doctors.map((doctor, i)=>{
+                                                            return(
+                                                                <MenuItem key={i} value={doctor.id} primaryText={doctor.user.name} />
+                                                            );
+                                                        })}
+                                                    </FormsySelect>
+                                                    <FormsySelect name="category_id" fullWidth={false} floatingLabelText="Categories" value={this.state.slot.create.category_id} onChange={this.selectCategory}>
+                                                        {this.props.calendar.categories.map((category, i)=>{
+                                                            return(
+                                                                <MenuItem key={i} value={category.id} primaryText={category.name} />
+                                                            );
+                                                        })}
+                                                    </FormsySelect>
+                                                    <SemiText
+                                                        ref="create-slot-start"
+                                                        name="start"
+                                                        type="text"
+                                                        readOnly
+                                                        hintText="Start"
+                                                        floatingLabelText="Start"
+                                                        underlineShow={false}
+                                                        value={this.state.slot.create.select[0]}
+                                                        />
+                                                    <SemiText
+                                                        ref="create-slot-end"
+                                                        name="end"
+                                                        type="text"
+                                                        hintText="End"
+                                                        floatingLabelText="End"
+                                                        underlineShow={false}
+                                                        value={this.state.slot.create.select[1]}
+                                                        />
 
-                                                    required
-                                                    hintText="End"
-                                                    floatingLabelText="End"
-                                                    underlineShow={false}
-                                                    velue={this.state.slot.create.select[1]}
-                                                    />
-                                            </div>
+                                                </SemiForm>
+                                                </div>
                                         ):null}
                                     </Panel>
                                 ) : null}

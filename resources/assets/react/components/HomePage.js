@@ -9,6 +9,7 @@ import Divider from 'material-ui/Divider';
 
 // import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
+import SelectField from 'material-ui/SelectField';
 // Forms
 import SemiText from './forms/SemiText';
 import SemiForm from './forms/SemiForm';
@@ -27,6 +28,7 @@ class HomePage extends Component {
     }
 
     handleChange(event, index, value) {
+        console.log('asdf', index, value);
         this.setState({value});
         console.log('this.getState()', this.state);
     }
