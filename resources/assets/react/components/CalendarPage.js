@@ -236,14 +236,16 @@ class CalendarPage extends Component {
                                         {this.state.slot.isCreate ? (
                                             <div>
                                                 <SemiForm>
-                                                    <FormsySelect name="doctor_id" fullWidth={false} floatingLabelText="Doctors" value={this.state.slot.create.doctor_id} onChange={this.selectDoctor}>
+                                                    <FormsySelect validationError={ErrorMessage.required}
+                                                                  required name="doctor_id" fullWidth={false} floatingLabelText="Doctors">
                                                         {this.props.calendar.doctors.map((doctor, i)=>{
                                                             return(
                                                                 <MenuItem key={i} value={doctor.id} primaryText={doctor.user.name} />
                                                             );
                                                         })}
                                                     </FormsySelect>
-                                                    <FormsySelect name="category_id" fullWidth={false} floatingLabelText="Categories" value={this.state.slot.create.category_id} onChange={this.selectCategory}>
+                                                    <FormsySelect validationError={ErrorMessage.required}
+                                                                  required name="category_id" fullWidth={false} floatingLabelText="Categories">
                                                         {this.props.calendar.categories.map((category, i)=>{
                                                             return(
                                                                 <MenuItem key={i} value={category.id} primaryText={category.name} />
@@ -252,22 +254,24 @@ class CalendarPage extends Component {
                                                     </FormsySelect>
                                                     <SemiText
                                                         ref="create-slot-start"
+                                                        validationError={ErrorMessage.required}
+                                                        required
                                                         name="start"
                                                         type="text"
                                                         readOnly
                                                         hintText="Start"
                                                         floatingLabelText="Start"
                                                         underlineShow={false}
-                                                        value={this.state.slot.create.select[0]}
                                                         />
                                                     <SemiText
                                                         ref="create-slot-end"
+                                                        validationError={ErrorMessage.required}
+                                                        required
                                                         name="end"
                                                         type="text"
                                                         hintText="End"
                                                         floatingLabelText="End"
                                                         underlineShow={false}
-                                                        value={this.state.slot.create.select[1]}
                                                         />
 
                                                 </SemiForm>
