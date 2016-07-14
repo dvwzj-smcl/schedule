@@ -24,6 +24,7 @@ export default function configureRoute(store){
             <IndexRoute component={UserIsAuthenticated(HomePage)} onEnter={connect(UserIsAuthenticated.onEnter)} />
             <Route path="/login" component={LoginPage} />
             <Route path="/calendar" component={UserIsAuthenticated(CalendarPage)} onEnter={connect(UserIsAuthenticated.onEnter)} />
+            <Route path="/organize" component={UserIsAuthenticated(CalendarPage)} onEnter={connect(UserIsAuthenticated.onEnter)} />
             <Route path="*" component={UserIsAuthenticated(NotFoundPage)} onEnter={connect(UserIsAuthenticated.onEnter)} />
         </Route>
     ):(

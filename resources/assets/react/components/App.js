@@ -11,6 +11,8 @@ import Layout from './Layout';
 
 injectTapEventPlugin();
 
+// menu here
+
 const menus = [
     {
         text: "Home",
@@ -21,6 +23,11 @@ const menus = [
         text: "Calendar",
         icon: <ActionEvent />,
         to: "/calendar"
+    },
+    {
+        text: "Organize",
+        icon: <ActionEvent />,
+        to: "/organize"
     },
     {
         text: "Event",
