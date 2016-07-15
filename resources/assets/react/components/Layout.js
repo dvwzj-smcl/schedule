@@ -47,7 +47,23 @@ class Layout extends Component {
                     <Toolbar className="side-nav-bar"><ToolbarTitle text="Navigation"/></Toolbar>
                     <Menu autoWidth={false}
                         style={{display: 'table', width: '100%', tableLayout: 'fixed'}}>
-                        {this.props.sidebarMenu.map((menu, i)=> {
+                        {this.props.sidebarMenu.filter((menu)=>{
+                            return !menu.roles ? true : ((roles)=>{
+                                if(roles.indexOf('admin')>=0 && this.props.user.isAdmin){
+                                    return true;
+                                }
+                                if(roles.indexOf('organizer')>=0 && this.props.user.isOrganizer){
+                                    return true;
+                                }
+                                if(roles.indexOf('doctor')>=0 && this.props.user.isDoctor){
+                                    return true;
+                                }
+                                if(roles.indexOf('sale')>=0 && this.props.user.isSale){
+                                    return true;
+                                }
+                                return false;
+                            })(menu.roles)
+                        }).map((menu, i)=> {
                             return (
                                 <MenuItem
                                     className="nav-item"

@@ -18,9 +18,10 @@ const menus = [
         to: "/"
     },
     {
-        text: "Calendar",
+        text: "Organizer",
         icon: <ActionEvent />,
-        to: "/calendar"
+        to: "/organizer",
+        roles: ['organizer']
     },
     {
         text: "Event",

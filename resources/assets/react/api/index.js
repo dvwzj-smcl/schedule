@@ -5,7 +5,7 @@ function baseUrl(endpoint){ // change here
     // return 'http://192.168.1.10/semi_server_pok/public/api'+(endpoint.substr(0,1)=='/' ? endpoint : endpoint.substr(1));
     // return 'http://192.168.1.10/schedule/public/api'+(endpoint.substr(0,1)=='/' ? endpoint : endpoint.substr(1));
     // return 'http://localhost/semi_server_pok/public/api'+(endpoint.substr(0,1)=='/' ? endpoint : endpoint.substr(1));
-    return 'http://localhost/schedule-dev/public/api'+(endpoint.substr(0,1)=='/' ? endpoint : '/'+endpoint);
+    return 'http://localhost/schedule/public/api'+(endpoint ? (endpoint.substr(0,1)=='/' ? endpoint : '/'+endpoint) : '');
 }
 
 const appKey = 'base64:GLqxLeosxabv4rH6FYsDISUT3yrqdWD3jZGbKiJsqhA=';
