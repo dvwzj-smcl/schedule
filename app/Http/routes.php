@@ -106,5 +106,12 @@ Route::group(['prefix'=>'api'], function(){
         Route::get('categories', function(Request $request){
             return response()->json(['categories'=>\App\Models\Calendar\Category::all()],200, array(), JSON_PRETTY_PRINT);
         });
+        Route::post('slot', function(Request $request){
+            return response()->json(['result'=>$request->all()],200, array(), JSON_PRETTY_PRINT);
+        });
+        Route::get('doctor/{doctor_id}/slot', function(Request $request, $doctor_id){
+            $slots = App\Models\Calendar\Slot::where('sc_doctor_id', $doctor_id)->get();
+            return response()->json(['slots'=>$slots],200, array(), JSON_PRETTY_PRINT);
+        });
     });
 });
