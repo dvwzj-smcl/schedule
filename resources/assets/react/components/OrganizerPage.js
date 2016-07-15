@@ -106,12 +106,8 @@ class OrganizerPage extends Component {
                     this.setState(state);
                 },
                 drop: (date, jsEvent, ui, resourceObj)=>{
-                    /*
-                    let select = $(jsEvent.target).parents('.draggable-category').data('event').timestamp;
-                    let slot = Object.assign({}, this.state.slot, {select});
-                    let state = Object.assign({}, this.state, {slot, editing: true});
+                    let state = Object.assign({}, this.state, {editing: true});
                     this.setState(state);
-                    */
                 },
                 dayClick: ( date, jsEvent, view, resourceObj)=>{
                     let slot = Object.assign({}, this.state.slot, {select:null});
@@ -244,8 +240,7 @@ class OrganizerPage extends Component {
 
     }
     save(){
-        console.log('save!');
-        /*
+        //console.log('save!');
         let events = $('#calendar').fullCalendar('clientEvents').map((event)=>{
             return {
                 sc_doctor_id: this.state.slot.create.doctor_id,
@@ -258,7 +253,6 @@ class OrganizerPage extends Component {
         this.ajax('post', api.baseUrl('calendar/slot'), events, (response)=>{
             //console.log(response);
         }, error=>{});
-        */
     }
 
     render() {
