@@ -221,11 +221,14 @@ class OrganizerPage extends Component {
 
     }
     save(){
+        console.log('save!');
         let events = $('#calendar').fullCalendar('clientEvents').map((event)=>{
             event.doctor_id = this.state.slot.create.doctor_id;
             return event;
         });
-        console.log('saved!', events);
+        this.ajax('post', api.baseUrl('calendar/slot'), events, (response)=>{
+            //console.log(response);
+        }, error=>{});
     }
 
     render() {
