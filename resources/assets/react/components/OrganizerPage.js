@@ -50,7 +50,6 @@ class OrganizerPage extends Component {
                     category_id: null
                 }
             },
-            slots: [],
             doctors: [],
             categories: []
         };
@@ -85,9 +84,10 @@ class OrganizerPage extends Component {
                 slotDuration: '00:30:00',
                 editable: this.props.user.isOrganizer ? true : false,
                 selectable: this.props.user.isOrganizer ? true : false,
-                unselectAuto: false,
+                droppable: true,
+                unselectAuto: true,
                 slotEventOverlap: false,
-                events: this.state.slots,
+                events: [],
                 forceEventDuration: true,
                 defaultTimedEventDuration: '02:00:00',
                 viewRender: (view, element)=>{
@@ -101,23 +101,28 @@ class OrganizerPage extends Component {
                     this.setState(state);
                 },
                 unselect: (view, jsEvent)=>{
+                    let slot = Object.assign({}, this.state.slot, {select:null});
+                    let state = Object.assign({}, this.state, {slot});
+                    this.setState(state);
                 },
-                droppable: true,
-                drop: (date, jsEvent, ui, resource)=>{
+                drop: (date, jsEvent, ui, resourceObj)=>{
+                    /*
                     let select = $(jsEvent.target).parents('.draggable-category').data('event').timestamp;
                     let slot = Object.assign({}, this.state.slot, {select});
                     let state = Object.assign({}, this.state, {slot, editing: true});
                     this.setState(state);
-                    //console.log($(jsEvent.target).parents('.draggable-category').data('event'));
-
-                    //console.log($(this).data('event').timestamp);
-                    //console.log("Dropped on " + date.format());
+                    */
                 },
-                eventClick: (calEvent, jsEvent, view)=>{
-                    let slot = Object.assign({}, this.state.slot, {select: calEvent.timestamp});
+                dayClick: ( date, jsEvent, view, resourceObj)=>{
+                    let slot = Object.assign({}, this.state.slot, {select:null});
                     let state = Object.assign({}, this.state, {slot});
                     this.setState(state);
-                    //console.log('eventClick');
+                },
+                eventClick: (calEvent, jsEvent, view)=>{
+                    let select = calEvent._id;
+                    let slot = Object.assign({}, this.state.slot, {select});
+                    let state = Object.assign({}, this.state, {slot});
+                    this.setState(state);
                 },
                 eventDrop: ()=>{
                     let state = Object.assign({}, this.state, {editing: true});
@@ -139,7 +144,6 @@ class OrganizerPage extends Component {
         $('.draggable-category').each(function(){
             $(this).data('event', {
                 category_id: $(this).data('id'),
-                timestamp: new Date().getTime(),
                 title: $.trim($(this).text()), // use the element's text as the event title
                 stick: true // maintain when user navigates (see docs on the renderEvent method)
             });
@@ -152,8 +156,8 @@ class OrganizerPage extends Component {
             });
         });
         $('#calendar').fullCalendar('render');
-        $('#calendar').fullCalendar('removeEvents');
-        $('#calendar').fullCalendar('addEventSource', this.state.slots);
+        //$('#calendar').fullCalendar('removeEvents');
+        //$('#calendar').fullCalendar('addEventSource', this.state.slots);
 
     }
     discardChangeDoctor(){
@@ -166,20 +170,20 @@ class OrganizerPage extends Component {
         let doctor = {changing: false, next: null};
         let state = Object.assign({}, this.state, {slot, doctor, editing: false});
         this.setState(state);
-        //$('#calendar').fullCalendar('removeEvents');
+        $('#calendar').fullCalendar('removeEvents');
     }
     changeDoctorOnCreateSlot(event, index, doctor_id){
         let state = Object.assign({}, this.state, {doctor:{changing: true, next: doctor_id}});
         this.setState(state);
         if(!this.state.editing) {
-            //$('#calendar').fullCalendar('removeEvents');
+            $('#calendar').fullCalendar('removeEvents');
             this.ajax('get', api.baseUrl('calendar/doctor/'+doctor_id+'/slot'), null, (response)=>{
                 let create = Object.assign({}, this.state.slot.create, {doctor_id});
                 let slot = Object.assign({}, this.state.slot, {create});
                 let doctor = {changing: false, next: null};
-                let state = Object.assign({}, this.state, {slot, slots: response.slots, doctor});
+                let state = Object.assign({}, this.state, {slot, doctor});
                 this.setState(state);
-                //$('#calendar').fullCalendar('addEventSource', response.slots);
+                $('#calendar').fullCalendar('addEventSource', response.slots);
             }, error=>{});
         }
 
@@ -189,16 +193,11 @@ class OrganizerPage extends Component {
         this.setState(state);
     }
     confirmRemoveSelectedEvent(){
-        /*
         $('#calendar').fullCalendar('removeEvents', (event)=>{
-            return event.timestamp==this.state.slot.select;
-        });
-        */
-        let slots = this.state.slots.filter((slot)=>{
-            return slot.timestamp!==this.state.slot.select;
+            return event._id==this.state.slot.select;
         });
         let slot = Object.assign({}, this.state.slot, {select: null});
-        let state = Object.assign({}, this.state, {slot, slots, removing: false});
+        let state = Object.assign({}, this.state, {slot, removing: false});
         this.setState(state);
     }
     removeSelectedEvent(){
