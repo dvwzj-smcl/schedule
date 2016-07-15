@@ -152,6 +152,9 @@ class OrganizerPage extends Component {
             });
         });
         $('#calendar').fullCalendar('render');
+        $('#calendar').fullCalendar('removeEvents');
+        $('#calendar').fullCalendar('addEventSource', this.state.slots);
+
     }
     discardChangeDoctor(){
         let state = Object.assign({}, this.state, {doctor:{changing: false, next: null}});
