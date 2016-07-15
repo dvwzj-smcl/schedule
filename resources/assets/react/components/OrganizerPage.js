@@ -59,6 +59,7 @@ class OrganizerPage extends Component {
         this.discardSave = this.discardSave.bind(this);
         this.discardRemoveSelectedEvent = this.discardRemoveSelectedEvent.bind(this);
         this.confirmRemoveSelectedEvent = this.confirmRemoveSelectedEvent.bind(this);
+        this.save = this.save.bind(this);
     }
 
     componentDidMount() {
@@ -218,6 +219,13 @@ class OrganizerPage extends Component {
             this.setState(state);
         }, error=>{});
 
+    }
+    save(){
+        let events = $('#calendar').fullCalendar('clientEvents').map((event)=>{
+            event.doctor_id = this.state.slot.create.doctor_id;
+            return event;
+        });
+        console.log('saved!', events);
     }
 
     render() {

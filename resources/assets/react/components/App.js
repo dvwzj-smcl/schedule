@@ -26,11 +26,6 @@ const menus = [
         roles: ['organizer']
     },
     {
-        text: "Organize",
-        icon: <ActionEvent />,
-        to: "/organize"
-    },
-    {
         text: "Event",
         icon: <ActionEventSeat />,
         to: "/event"
