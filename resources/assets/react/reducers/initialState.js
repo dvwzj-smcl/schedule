@@ -6,8 +6,9 @@ export default {
         error: null,
         permissions: [],
         authenticating: true,
-        // todo : remove these
         access_token: sessionStorage.getItem('access_token'),
+
+        // todo : remove these
         isAdmin: JSON.parse(sessionStorage.getItem('isAdmin')),
         isDoctor: JSON.parse(sessionStorage.getItem('isDoctor')),
         isOrganizer: JSON.parse(sessionStorage.getItem('isOrganizer')),

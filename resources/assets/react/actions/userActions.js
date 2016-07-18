@@ -42,7 +42,7 @@ export function isAuthenticated(){
     return (dispatch, getState)=>{
         console.log('getState().user.access_token', getState());
         //dispatch(getState().user.access_token ?  userIsAuthenticated() : userIsNotAuthenticated(null));
-        return !!getState().user.access_token;
+        return !!getState().user.access_token && !getState().user.authenticating;
     };
 }
 export function isAdmin(){
