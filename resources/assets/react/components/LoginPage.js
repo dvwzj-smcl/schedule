@@ -6,9 +6,7 @@ import AppBar from 'material-ui/AppBar';
 import Paper from 'material-ui/Paper';
 import { login, isAuthenticated, getError } from '../actions/userActions';
 
-import Formsy from 'formsy-react';
 import Divider from 'material-ui/Divider';
-import RaisedButton from 'material-ui/RaisedButton';
 import SemiText from './forms/SemiText';
 import SemiForm from './forms/SemiForm';
 
@@ -52,8 +50,8 @@ class LoginPage extends Component {
     }
 
     submitForm(data) {
-        console.log('data', data);
-        this.props.actions.login(data.username, data.password).then(()=>{
+        this.props.actions.login(data.username, data.password).then((json)=>{
+            console.log('json', json);
             if(this.props.actions.isAuthenticated()){
                 this.context.router.replace(this.props.routing.locationBeforeTransitions.query.ref || '/');
             }
@@ -73,12 +71,8 @@ class LoginPage extends Component {
                             <AppBar
                                 title="Login"
                                 showMenuIconButton={false} />
-                            <Formsy.Form
-                                ref="login-form"
-                                onValid={this.enableButton}
-                                onInvalid={this.disableButton}
+                            <SemiForm
                                 onValidSubmit={this.submitForm}
-                                onInvalidSubmit={this.notifyFormError}
                                 style={{padding: '16px 24px'}}>
                                 <SemiText
                                     name="username"
@@ -87,6 +81,7 @@ class LoginPage extends Component {
                                     required
                                     hintText="What is your username?"
                                     floatingLabelText="Username"
+                                    defaultValue="organizera"
                                     underlineShow={false}
                                     />
                                 <Divider />
@@ -97,17 +92,11 @@ class LoginPage extends Component {
                                     required
                                     hintText="What is your password?"
                                     floatingLabelText="Password"
+                                    defaultValue="password"
                                     underlineShow={false}
                                     />
                                 <Divider />
-
-                                <RaisedButton
-                                    secondary={true}
-                                    style={{marginTop: 12}}
-                                    type="submit"
-                                    label="Login"
-                                    disabled={!this.state.canSubmit} />
-                            </Formsy.Form>
+                            </SemiForm>
                         </Paper>
                     </Col>
                 </Row>

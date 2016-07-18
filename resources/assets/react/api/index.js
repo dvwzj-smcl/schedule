@@ -13,8 +13,11 @@ const appKey = 'base64:GLqxLeosxabv4rH6FYsDISUT3yrqdWD3jZGbKiJsqhA=';
 // const appKey = 'base64:lw65FxR9qSD137bNTvrQM6kOSG9dLNyyGx8JTdaO/OQ=';
 
 
-function payload(data){
-    return jwt.sign(data, appKey);
+function payload(payload){
+    return jwt.sign({
+        payload
+    }, appKey);
+    // return jwt.sign(data, appKey);
 }
 function verify(encode){
     return jwt.verify(encode, appKey);

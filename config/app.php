@@ -158,7 +158,14 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        /*
+         * Semi Added Service Providers...
+         */
+
+        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
+        Orangehill\Iseed\IseedServiceProvider::class,
         Zizaco\Entrust\EntrustServiceProvider::class,
+        App\BaseFunction\BaseFunctionServiceProvider::class
 
     ],
 
@@ -206,7 +213,12 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 
+        /*
+         * Semi Added Service Facades...
+         */
+
         'Entrust'   => Zizaco\Entrust\EntrustFacade::class,
+        'Input'     => Illuminate\Support\Facades\Input::class
 
     ],
 

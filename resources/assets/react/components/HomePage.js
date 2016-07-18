@@ -69,7 +69,7 @@ class HomePage extends Component {
                                                     floatingLabelText="Password"
                                                     underlineShow={false}
                                                 />
-                                                <FormsySelect name="select" value={this.state.value} onChange={this.handleChange}>
+                                                <FormsySelect name="select" value={this.state.value}>
                                                     <MenuItem value={1} primaryText="Never" />
                                                     <MenuItem value={2} primaryText="Every Night" />
                                                     <MenuItem value={3} primaryText="Weeknights" />

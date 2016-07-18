@@ -4,7 +4,7 @@ import {
     USER_ACCESS_DENIED,
     USER_SIGN_IN,
     USER_SIGN_OUT,
-    USER_UPDATE_USER,
+    USER_UPDATE_TOKEN,
     USER_REQUEST_FAILED,
     USER_REQUEST_SUCCESS
 } from '../constants/actionTypes';
@@ -13,32 +13,59 @@ import initialState from './initialState';
 
 export default function userReducer(state = initialState.user, action = null) {
     switch (action.type) {
-        case USER_UPDATE_USER:
+        case USER_UPDATE_TOKEN:
+            // console.log('USER_UPDATE_TOKEN', action);
             if(action.user) {
-                const {access_token, isAdmin, isDoctor, isOrganizer, isSale} = action.user;
-                sessionStorage.setItem('access_token', access_token);
-                sessionStorage.setItem('isAdmin', isAdmin);
-                sessionStorage.setItem('isDoctor', JSON.stringify(isDoctor));
-                sessionStorage.setItem('isOrganizer', JSON.stringify(isOrganizer));
-                sessionStorage.setItem('isSale', JSON.stringify(isSale));
-                return Object.assign({}, state, {access_token, isAdmin, isDoctor, isOrganizer, isSale, error: null});
+                const {token, user:{permissions}, login:{username,password}} = action.user;
+                // console.log('token', permissions);
+                // sessionStorage.setItem('access_token', token);
+
+                // for auto login
+                sessionStorage.setItem('username', username);
+                sessionStorage.setItem('password', password);
+
+                // todo : remove this
+                // sessionStorage.setItem('isOrganizer', true);
+
+                return Object.assign({}, state, {access_token: token, permissions, authenticating: false});
             }else{
                 sessionStorage.removeItem('access_token');
-                sessionStorage.removeItem('isAdmin');
-                sessionStorage.removeItem('isDoctor');
-                sessionStorage.removeItem('isOrganizer');
-                sessionStorage.removeItem('isSale');
                 return {};
             }
+            
+            // todo : remove this
+        // case USER_UPDATE_TOKEN:
+        //     console.log('action', action);
+        //     if(action.user) {
+        //         const {access_token, isAdmin, isDoctor, isOrganizer, isSale} = action.user;
+        //         sessionStorage.setItem('access_token', access_token);
+        //         sessionStorage.setItem('isAdmin', isAdmin);
+        //         sessionStorage.setItem('isDoctor', JSON.stringify(isDoctor));
+        //         sessionStorage.setItem('isOrganizer', JSON.stringify(isOrganizer));
+        //         sessionStorage.setItem('isSale', JSON.stringify(isSale));
+        //         return Object.assign({}, state, {access_token, isAdmin, isDoctor, isOrganizer, isSale, error: null});
+        //     }else{
+        //         sessionStorage.removeItem('access_token');
+        //         sessionStorage.removeItem('isAdmin');
+        //         sessionStorage.removeItem('isDoctor');
+        //         sessionStorage.removeItem('isOrganizer');
+        //         sessionStorage.removeItem('isSale');
+        //         return {};
+        //     }
         case USER_IS_NOT_AUTHENTICATED:
             return Object.assign({}, state, {error: action.error});
         case USER_SIGN_IN:
         case USER_SIGN_OUT:
-            sessionStorage.removeItem('access_token');
-            sessionStorage.removeItem('isAdmin');
-            sessionStorage.removeItem('isDoctor');
-            sessionStorage.removeItem('isOrganizer');
-            sessionStorage.removeItem('isSale');
+            sessionStorage.removeItem('username');
+            sessionStorage.removeItem('password');
+
+            // todo : remove these
+            // sessionStorage.removeItem('access_token');
+            // sessionStorage.removeItem('isAdmin');
+            // sessionStorage.removeItem('isDoctor');
+            // sessionStorage.removeItem('isOrganizer');
+            // sessionStorage.removeItem('isSale');
+
             return {};
         case USER_REQUEST_SUCCESS:
         case USER_REQUEST_FAILED:

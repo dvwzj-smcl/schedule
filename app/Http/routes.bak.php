@@ -23,37 +23,26 @@ header('Access-Control-Allow-Headers:  Content-Type, Authorization, Access-Token
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/debugger', 'DebuggerController@index');
 
 //--- Route ที่ไม่มีการเช็ค auth user
 Route::group(['prefix' => 'api', 'middleware' => []], function () {
-    Route::post('auth', 'User\AuthController@Login');
+    Route::post('auth', 'AuthController@Login');
 });
 
 //--- Route ที่มีการเช็ค auth user
 Route::group(['prefix' => 'api', 'middleware' => ['jwt.auth','permission']], function () {
-    Route::controller('auth', 'User\AuthController');
-    Route::resource('user', 'User\UserController');
-    Route::resource('branch', 'User\BranchController');
-    Route::resource('permission', 'User\PermissionController');
-    Route::resource('role', 'User\RoleController');
-
-    // todo : remove all UserType
-    Route::resource('usertype', 'User\UserTypeController');
-
+    Route::controller('auth', 'AuthController');
+    Route::resource('user', 'UserController');
+    Route::resource('branch', 'BranchController');
+    Route::resource('permission', 'PermissionController');
+    Route::resource('role', 'RoleController');
+    Route::resource('usertype', 'UserTypeController');
 });
-
-/**
- * Phai's
- *
- * todo : move to ScheduleController
- */
 
 Route::group(['prefix'=>'api'], function(){
     Route::get('/', function(){
         return response('ready',200);
     });
-    
     /*
     Route::get('test-auth/{username}/{password}', function($username, $password){
         return response()->json([
@@ -61,7 +50,22 @@ Route::group(['prefix'=>'api'], function(){
         ]);
     });
     */
-
+    Route::post('auth', function(Request $request){
+        $token = $request->getContent();
+        $decode = JWT::decode($token, env('APP_KEY'), ['HS256']);
+        if(Auth::once(['username' => $decode->username, 'password' => $decode->password])){
+            $user = Auth::user();
+            $isAdmin = $user->hasRole('admin');
+            $isDoctor = $user->doctor;
+            $isOrganizer = $user->organizer;
+            $isSale = $user->sale;
+            return response()->json(['access_token' => JWT::encode($user, env('APP_KEY')), 'isAdmin'=>$isAdmin, 'isDoctor'=>$isDoctor, 'isOrganizer'=>$isOrganizer, 'isSale'=>$isSale]);
+        }else if(User::where('username', $decode->username)->count()){
+            return response()->json(['error' => 'incorrect password']);
+        }else{
+            return response()->json(['error' => 'user not found']);
+        }
+    });
     Route::group(['prefix'=>'calendar'], function(){
         Route::get('events/{year?}/{month?}', function(Request $request,$year=null,$month=null){
             if(is_null($year)){

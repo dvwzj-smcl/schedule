@@ -11,27 +11,6 @@ import Layout from './Layout';
 
 injectTapEventPlugin();
 
-// menu here
-
-const menus = [
-    {
-        text: "Home",
-        icon: <ActionHome />,
-        to: "/"
-    },
-    {
-        text: "Organizer",
-        icon: <ActionEvent />,
-        to: "/organizer",
-        roles: ['organizer']
-    },
-    {
-        text: "Event",
-        icon: <ActionEventSeat />,
-        to: "/event"
-    }
-];
-
 class App extends Component {
 
     componentWillMount(){
@@ -43,7 +22,7 @@ class App extends Component {
     render() {
         return (
             <MuiThemeProvider >
-                <Layout appBarTitle="Schedule" user={this.props.user} menu={this.props.menu} actions={this.props.actions} sidebarMenu={menus} children={this.props.children} location={this.props.location} />
+                <Layout appBarTitle="Schedule" user={this.props.user} menu={this.props.menu} actions={this.props.actions} children={this.props.children} location={this.props.location} />
             </MuiThemeProvider>
         );
     }
@@ -61,6 +40,7 @@ App.contextTypes = {
 };
 
 function mapStateToProps(state) {
+    console.log('App state', state);
     return {
         user: state.user,
         menu: state.menu

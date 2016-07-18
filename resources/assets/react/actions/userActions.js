@@ -3,7 +3,7 @@ import {
     USER_IS_NOT_AUTHENTICATED,
     USER_SIGN_IN,
     USER_SIGN_OUT,
-    USER_UPDATE_USER,
+    USER_UPDATE_TOKEN,
     USER_REQUEST_SUCCESS,
     USER_REQUEST_FAILED
 } from '../constants/actionTypes';
@@ -22,8 +22,8 @@ function userSignIn(){
 function userSignOut(){
     return {type: USER_SIGN_OUT};
 }
-function userUpdateUser(user){
-    return {type: USER_UPDATE_USER, user};
+function userUpdateToken(user){
+    return {type: USER_UPDATE_TOKEN, user};
 }
 function userRequestSuccess(){
     return {type: USER_REQUEST_SUCCESS};
@@ -40,6 +40,7 @@ export function getError(){
 
 export function isAuthenticated(){
     return (dispatch, getState)=>{
+        console.log('getState().user.access_token', getState());
         //dispatch(getState().user.access_token ?  userIsAuthenticated() : userIsNotAuthenticated(null));
         return !!getState().user.access_token;
     };
@@ -64,28 +65,36 @@ export function isSale(){
         return getState().user.isSale;
     };
 }
+
 export function login(username, password){
     return (dispatch, getState)=>{
         if(getState().user.access_token){
             return Promise.resolve(dispatch(userIsAuthenticated()));
         }
         dispatch(userSignIn());
+        // dispatch(ajaxCallBegin());
         return fetch(
-                api.baseUrl('/auth'),
-                {
-                    method: 'post',
-                    body: api.payload({
-                        username,
-                        password
-                    })
-                }
-            ).then(response=>response.json()).then(json=>{
+            api.baseUrl('/auth'),
+            {
+                method: 'post',
+                body: api.payload({
+                    username,
+                    password
+                })
+            }
+        ).then(response=>response.json()).then(json=>{
             dispatch(userRequestSuccess());
-            //let access_token = json.data.token;
-            // let access_token = json.access_token; // Phai's
-
-            return dispatch(json.access_token ? userUpdateUser(json) : userIsNotAuthenticated(json.error));
-        }, ()=>dispatch(userRequestFailed()));
+            // dispatch(ajaxCallEnd());
+            if(json.status == "error") {
+                return(dispatch(userRequestFailed()));
+            }
+            // let access_token = json.data.token;
+            json.data.login = {username, password};
+            return dispatch(json.data ? userUpdateToken(json.data) : userIsNotAuthenticated(json));
+        }, ()=> {
+            // dispatch(ajaxCallEnd());
+            dispatch(userRequestFailed())
+        });
     };
 }
 export function logout(){
@@ -94,6 +103,6 @@ export function logout(){
             return Promise.resolve(dispatch(userIsNotAuthenticated(null)));
         }
         dispatch(userSignOut());
-        return Promise.resolve(dispatch(userUpdateUser(null)));
+        return Promise.resolve(dispatch(userUpdateToken(null)));
     };
 }

@@ -8,6 +8,8 @@
         "php": ">=5.5.9",
         "laravel/framework": "5.2.*",
         "firebase/php-jwt": "^3.0",
+        "barryvdh/laravel-ide-helper": "^2.2",
+        "orangehill/iseed": "dev-master",
         "zizaco/entrust": "dev-laravel-5"
     },
     "require-dev": {
@@ -43,6 +45,8 @@
         ],
         "post-update-cmd": [
             "Illuminate\\Foundation\\ComposerScripts::postUpdate",
+            "php artisan ide-helper:generate",
+            "php artisan ide-helper:meta",
             "php artisan optimize"
         ]
     },

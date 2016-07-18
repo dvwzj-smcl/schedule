@@ -2,8 +2,11 @@
 
 namespace App\Models\User;
 
+use App\Models\Updater;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Zizaco\Entrust\Traits\EntrustUserTrait;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use DB;
 
 class User extends Authenticatable
 {
@@ -13,8 +16,17 @@ class User extends Authenticatable
      *
      * @var array
      */
+
     protected $fillable = [
-        'name', 'username', 'email', 'password',
+        'name',
+        'username',
+        'email',
+        'password',
+        'remember_token',
+        'branch_id',
+        'phone',
+        'phone_2',
+        'lang',
     ];
 
     /**
@@ -25,7 +37,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
-
+ 
     public function doctor(){
         return $this->hasOne('App\Models\User\Doctor');
     }
@@ -34,6 +46,20 @@ class User extends Authenticatable
     }
     public function sale(){
         return $this->hasOne('App\Models\User\Sale');
+    }
+    public function roles(){
+        return $this->belongsToMany('App\Models\User\Role');
+    }
+    public function getAllPermissions(){
+        $perms = [];
+        $roles = $this->roles;
+        foreach ($roles as $role) {
+            $permissions = $role->permissions;
+            foreach ($permissions as $permission) {
+                $perms[] = $permission->name;
+            }
+        }
+        return $perms;
     }
 
 }

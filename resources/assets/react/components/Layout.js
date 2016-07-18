@@ -1,6 +1,5 @@
 import React, {PropTypes, Component} from 'react';
 import Paper from 'material-ui/Paper';
-import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import IconMenu from 'material-ui/IconMenu';
 import IconButton from 'material-ui/IconButton';
@@ -10,8 +9,7 @@ import {NavigationMenu, ActionAccountBox, ActionPowerSettingsNew, NavigationMore
 import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui/Toolbar';
 import Drawer from 'material-ui/Drawer';
 import RaisedButton from 'material-ui/RaisedButton';
-
-import PageHeading from './widgets/PageHeading';
+import MainMenu from './MainMenu';
 
 // import GeminiScrollbar from 'react-gemini-scrollbar';
 
@@ -21,7 +19,6 @@ class Layout extends Component {
         this.linkTo = this.linkTo.bind(this);
         this.logout = this.logout.bind(this);
         this.toggleSidebar = this.toggleSidebar.bind(this);
-        this.isActiveMenu = this.isActiveMenu.bind(this);
     }
 
     linkTo(pathname) {
@@ -36,45 +33,12 @@ class Layout extends Component {
         this.props.actions.user.logout();
     }
 
-    isActiveMenu(pathname) {
-        return this.props.location.pathname == pathname;
-    }
-
     render() {
         return (this.props.user.access_token)? (
             <div>
                 <Drawer open={true} className="menu-wrapper">
                     <Toolbar className="side-nav-bar"><ToolbarTitle text="Navigation"/></Toolbar>
-                    <Menu autoWidth={false}
-                        style={{display: 'table', width: '100%', tableLayout: 'fixed'}}>
-                        {this.props.sidebarMenu.filter((menu)=>{
-                            return !menu.roles ? true : ((roles)=>{
-                                if(roles.indexOf('admin')>=0 && this.props.user.isAdmin){
-                                    return true;
-                                }
-                                if(roles.indexOf('organizer')>=0 && this.props.user.isOrganizer){
-                                    return true;
-                                }
-                                if(roles.indexOf('doctor')>=0 && this.props.user.isDoctor){
-                                    return true;
-                                }
-                                if(roles.indexOf('sale')>=0 && this.props.user.isSale){
-                                    return true;
-                                }
-                                return false;
-                            })(menu.roles)
-                        }).map((menu, i)=> {
-                            return (
-                                <MenuItem
-                                    className="nav-item"
-                                    key={i}
-                                    primaryText={this.props.menu.sidebar.expanded ? menu.text : "\u00a0"}
-                                    leftIcon={menu.icon}
-                                    onTouchTap={this.linkTo.bind(null, menu.to)}
-                                    style={this.isActiveMenu(menu.to)?{backgroundColor: 'rgba(0,0,0,0.2)'}:null}/>
-                            );
-                        })}
-                    </Menu>
+                    <MainMenu location={this.props.location} />
                 </Drawer>
                 <Paper className="top-nav-wrap" zDepth={1}>
                     <Toolbar className="top-nav-bar">

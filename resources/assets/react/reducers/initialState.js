@@ -4,6 +4,9 @@ var endDate = moment(startDate).endOf('month');
 export default {
     user: {
         error: null,
+        permissions: [],
+        authenticating: true,
+        // todo : remove these
         access_token: sessionStorage.getItem('access_token'),
         isAdmin: JSON.parse(sessionStorage.getItem('isAdmin')),
         isDoctor: JSON.parse(sessionStorage.getItem('isDoctor')),

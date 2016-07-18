@@ -10,28 +10,32 @@ import OrganizerPage from '../components/OrganizerPage';
 import LoginPage from '../components/LoginPage';
 import NotFoundPage from '../components/NotFoundPage';
 
+const UserIsAuthenticated = UserAuthWrapper({
+    authSelector: state => state.user, // how to get the user state
+    authenticatingSelector: state => state.user.authenticating, // for async session loading.
+    LoadingComponent: NotFoundPage, // how to get the user state
+    predicate: auth => auth.access_token,
+    redirectAction: routerActions.replace, // the redux action to dispatch for redirect
+    wrapperDisplayName: 'UserIsAuthenticated' // a nice name for this auth check
+});
+
 export default function configureRoute(store){
-    const UserIsAuthenticated = UserAuthWrapper({
-        authSelector: state => state.user, // how to get the user state
-        predicate: auth => auth.access_token,
-        redirectAction: routerActions.replace, // the redux action to dispatch for redirect
-        wrapperDisplayName: 'UserIsAuthenticated' // a nice name for this auth check
-    });
+
     const connect = (fn) => (nextState, replaceState) => fn(store, nextState, replaceState);
 
     const useLogin = true; // true - to normally have to log in - change here
     return (useLogin) ? (
         <Route path="/" component={App}>
-            <IndexRoute component={UserIsAuthenticated(HomePage)} onEnter={connect(UserIsAuthenticated.onEnter)} />
+            <IndexRoute component={UserIsAuthenticated(HomePage)}/>
             <Route path="/login" component={LoginPage} />
-            <Route path="/organizer" component={UserIsAuthenticated(OrganizerPage)} onEnter={connect(UserIsAuthenticated.onEnter)} />
-            <Route path="*" component={UserIsAuthenticated(NotFoundPage)} onEnter={connect(UserIsAuthenticated.onEnter)} />
+            <Route path="/organizer" component={UserIsAuthenticated(OrganizerPage)} />
+            <Route path="*" component={UserIsAuthenticated(NotFoundPage)}/>
         </Route>
     ):(
         // For testing without logging in
         <Route path="/" component={App}>
             <IndexRoute component={HomePage} />
-            <Route path="/calendar" component={CalendarPage} />
+            <Route path="/calendar" component={CalendarPage} onEnter={connect(UserIsAuthenticated.onEnter)}/>
             <Route path="*" component={HomePage} />
         </Route>
     );
