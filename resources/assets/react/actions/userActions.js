@@ -45,26 +45,6 @@ export function isAuthenticated(){
         return !!getState().user.access_token && !getState().user.authenticating;
     };
 }
-export function isAdmin(){
-    return (dispatch, getState)=>{
-        return getState().user.isAdmin;
-    };
-}
-export function isDoctor(){
-    return (dispatch, getState)=>{
-        return getState().user.isDoctor;
-    };
-}
-export function isOrganizer(){
-    return (dispatch, getState)=>{
-        return getState().user.isOrganizer;
-    };
-}
-export function isSale(){
-    return (dispatch, getState)=>{
-        return getState().user.isSale;
-    };
-}
 
 export function login(username, password){
     return (dispatch, getState)=>{
