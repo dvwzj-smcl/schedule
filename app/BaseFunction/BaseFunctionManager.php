@@ -22,16 +22,22 @@ class BaseFunctionManager {
     }
 
     public static function decodeInput($request) {
-
-        //$data = json_decode($request);
-        //print_r(['data->appKey'=>$data->appKey, 'getenv'=>getenv('APP_KEY')]);
-        //exit();
-      
-//        JWT::$leeway = 60; // $leeway in seconds
-        $decoded = JWT::decode($request, getenv('APP_KEY'), array('HS256'));
-//        $decoded = JWT::decode($request->getContent(), getenv('APP_KEY') , array('HS256'));
+        try {
+            $decoded = JWT::decode($request, env('APP_KEY'), array('HS256'));
+        } catch ( \Firebase\JWT\ExpiredException $e) {
+            return response(BF::result(false, $e->getMessage()), 401);
+        }
         $decoded = (array)$decoded ;
         return (array)$decoded['payload'];
+    }
+
+    public static function dataTable($tbData, $countFilter, $countTotal, $canEdit) {
+        return [
+            'tbData' => $tbData,
+            'recordsFiltered' => $countFilter,
+            'recordsTotal' => $countTotal,
+            'canEdit' => $canEdit
+        ];
     }
 
 }

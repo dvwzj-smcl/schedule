@@ -29,13 +29,13 @@ const menus = [
     {
         text: "Users",
         icon: <SocialPerson />,
-        to: "/user"
+        to: "/users"
     }
 ];
 
 const menuFilter = (menu, permissions) => {
     // todo : filter here
-    console.log('menu', menu, permissions);
+    // console.log('menu', menu, permissions);
     return true;
 };
 
