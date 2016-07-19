@@ -6,8 +6,10 @@ use App\Http\Requests;
 
 use App\Models\User\Branch;
 use App\Models\User\Role;
-use App\Models\UserType;
-use App\User\User;
+use App\Models\User\User;
+
+
+use Illuminate\Support\Facades\DB;
 use Input;
 use BF;
 use Validator;
@@ -18,6 +20,56 @@ class UserController extends Controller
 {
     public function index()
     {
+        
+        
+        $cols = [
+            'id',
+            'email',
+            'branch_id'
+        ] ;
+        $data = [];
+        $sql = User::select($cols);
+
+        // -- Order
+        if (Input::has('order')){
+            foreach (json_decode(Input::get('order')) as $order) {
+                $sql->orderBy($order->column, $order->dir);
+            }
+        }
+        
+        $userID = 1 ;
+        $user = Auth::loginUsingId($userID) ;
+        $canEdit = $user->can("edit-users") ;
+
+
+
+
+        // -- Filter
+        if (Input::has('columns')){
+            foreach (json_decode(Input::get('columns')) as $col) {
+                $column = $col->data;
+                $val = $col->search;
+                if (in_array($column, $cols) && ( $val != '') ) {
+                    $sql->where($column, 'LIKE', '%' . $val . '%');
+                }
+            }
+        }
+
+//        DB::enableQueryLog();
+//        $sql->get();
+//        $query = DB::getQueryLog();
+//        return $query ;
+//        exit();
+
+        try {
+            $count = $sql->count();
+            $data = $sql->skip(Input::get('start'))->take(Input::get('length'))->get();
+            $result = BF::dataTable($data, $count, $count, $canEdit) ;
+        } catch ( \Illuminate\Database\QueryException $e) {
+            return BF::result(false, $e->getMessage());
+        }
+
+        return BF::result(true, $result, '[usertype] index');
     }
 
     public function create()
@@ -159,44 +211,6 @@ class UserController extends Controller
         return BF::result(true, ['redirect' => '/app/users']);
     }
 
-    public function getLogin()
-    {
-
-        $rules = array(
-            'username'    => 'required', // make sure the email is an actual email
-            'password' => 'required|alphaNum|min:3' // password can only be alphanumeric and has to be greater than 3 characters
-        );
-
-        $validator = Validator::make(Input::all(), $rules);
-
-        if ($validator->fails()) {
-            return BF::result(false, $validator);
-        } else {
-
-            $username = Input::get('username') ;
-            $password = Input::get('password') ;
-
-            if (!preg_match("/@/", $username)) {
-                $search_column = 'name';
-            } else {
-                $search_column = 'email';
-            }
-
-            if (Auth::attempt([$search_column => $username, 'password' => $password], Input::has('remember'))) {
-                $userId = Auth::user()->id;
-                Auth::loginUsingId($userId);
-
-                $data = [
-                    'name' => Auth::user()->name ,
-                ];
-
-                return BF::result(true, ['action' => 'create', 'data' => $data]);
-
-            } else {
-                return BF::result(false, "Error!! Username or Password Incorrect. \nPlease try again.");
-            }
-            
-        }
-    }
+   
 
 }

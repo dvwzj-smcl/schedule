@@ -9,6 +9,10 @@ import CalendarPage from '../components/CalendarPage';
 import OrganizerPage from '../components/OrganizerPage';
 import LoginPage from '../components/LoginPage';
 import NotFoundPage from '../components/NotFoundPage';
+import UserPage from '../components/user/UserPage';
+import ManageUserPage from '../components/user/ManageUserPage';
+
+
 
 const UserIsAuthenticated = UserAuthWrapper({
     authSelector: state => state.user, // how to get the user state
@@ -28,6 +32,11 @@ export default function configureRoute(store){
         <Route path="/" component={App}>
             <IndexRoute component={UserIsAuthenticated(HomePage)} />
             <Route path="/login" component={LoginPage} />
+            <Route path="/users" component={UserIsAuthenticated(UserPage)} />
+                <route path="user">
+                    <IndexRoute component={ManageUserPage} />
+                    <route path=":id" component={ManageUserPage} />
+                </route>
             <Route path="/organizer" component={UserIsAuthenticated(OrganizerPage)} />
             <Route path="/schedule" component={UserIsAuthenticated(OrganizerPage)} />
             <Route path="*" component={UserIsAuthenticated(NotFoundPage)} />

@@ -64,8 +64,8 @@ class LoginPage extends Component {
 
     render() {
         return (
-            <Grid>
-                <Row>
+            <Grid className="parent">
+                <Row className="child">
                     <Col xs mdOffset={4} md={4}>
                         <Paper>
                             <AppBar

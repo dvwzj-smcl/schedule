@@ -31,18 +31,22 @@ Route::group(['prefix' => 'api', 'middleware' => []], function () {
 });
 
 //--- Route ที่มีการเช็ค auth user
-Route::group(['prefix' => 'api', 'middleware' => ['jwt.auth','permission']], function () {
+//Route::group(['prefix' => 'api', 'middleware' => ['jwt.auth','permission']], function () {
+//    Route::controller('auth', 'User\AuthController');
+//    Route::resource('user', 'User\UserController');
+//    Route::resource('branch', 'User\BranchController');
+//    Route::resource('permission', 'User\PermissionController');
+//    Route::resource('role', 'User\RoleController');
+//
+//});
+Route::group(['prefix' => 'api', 'middleware' => []], function () {
     Route::controller('auth', 'User\AuthController');
     Route::resource('user', 'User\UserController');
     Route::resource('branch', 'User\BranchController');
     Route::resource('permission', 'User\PermissionController');
     Route::resource('role', 'User\RoleController');
 
-    // todo : remove all UserType
-    Route::resource('usertype', 'User\UserTypeController');
-
 });
-
 /**
  * Phai's
  *

@@ -27,6 +27,11 @@ class PermissionMiddleware
     {
 
         // todo: only for users/roles view/edit. allow otherwise.
+        $user = $request->user();
+
+        return response(BF::result(false, $user->id), 401);
+              
+        User::find(1)->getAllPermissions();
 
 //        $user = $request->user();
 //        if(empty($user)) {
