@@ -72,10 +72,6 @@ class CreateScheduleModuleTables extends Migration
             $table->foreign('sc_organizer_id')->references('id')->on('sc_organizers')->onUpdate('cascade')->onDelete('restrict');
             $table->integer('sc_doctor_id')->unsigned();
             $table->foreign('sc_doctor_id')->references('id')->on('sc_doctors')->onUpdate('cascade')->onDelete('restrict');
-        });
-        Schema::create('sc_slot_categories', function (Blueprint $table) {
-            $table->integer('sc_slot_id')->unsigned();
-            $table->foreign('sc_slot_id')->references('id')->on('sc_slots')->onUpdate('cascade')->onDelete('restrict');
             $table->integer('sc_category_id')->unsigned();
             $table->foreign('sc_category_id')->references('id')->on('sc_categories')->onUpdate('cascade')->onDelete('restrict');
         });
@@ -109,7 +105,6 @@ class CreateScheduleModuleTables extends Migration
     {
         Schema::drop('sc_requests');
         Schema::drop('sc_events');
-        Schema::drop('sc_slot_categories');
         Schema::drop('sc_slots');
         Schema::drop('sc_doctor_sub_categories');
         Schema::drop('sc_doctor_categories');

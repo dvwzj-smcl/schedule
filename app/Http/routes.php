@@ -122,7 +122,13 @@ Route::group(['prefix'=>'api'], function(){
             return response()->json(['result'=>$request->all()],200, array(), JSON_PRETTY_PRINT);
         });
         Route::get('doctor/{doctor_id}/slot', function(Request $request, $doctor_id){
-            $slots = App\Models\Calendar\Slot::where('sc_doctor_id', $doctor_id)->get();
+            $slots = App\Models\Calendar\Slot::where('sc_doctor_id', $doctor_id)->with('category')->get();
+            dd($slots);
+            $slots = array_map(function($slot){
+                $slot['title'] = $slot['category']['name'];
+                unset($slot['category']);
+                return $slot;
+            }, $slots->toArray());
             return response()->json(['slots'=>$slots],200, array(), JSON_PRETTY_PRINT);
         });
     });
