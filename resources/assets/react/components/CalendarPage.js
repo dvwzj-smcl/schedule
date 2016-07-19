@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import {Grid, Row, Col} from 'react-flexbox-grid';
 import Panel from './widgets/Panel';
 import PageHeading from './widgets/PageHeading';
-import { getEvents, getDoctors, getCategories } from '../actions/calendarActions';
+//import { getEvents, getDoctors, getCategories } from '../actions/calendarActions';
 import { isAdmin, isDoctor, isOrganizer, isSale } from '../actions/userActions';
 
 import {List, ListItem} from 'material-ui/List';
@@ -298,17 +298,8 @@ class CalendarPage extends Component {
 
 export default connect((state)=>{
     return {
-        user: state.user,
-        calendar: state.calendar
+        user: state.user
     }
 },(dispatch)=>{
-    return {
-        actions: {
-            calendar: {
-                getEvents: bindActionCreators(getEvents, dispatch),
-                getDoctors: bindActionCreators(getDoctors, dispatch),
-                getCategories: bindActionCreators(getCategories, dispatch)
-            }
-        }
-    }
+    return {}
 })(CalendarPage);

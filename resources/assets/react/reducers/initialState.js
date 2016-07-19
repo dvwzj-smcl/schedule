@@ -9,25 +9,15 @@ export default {
         access_token: sessionStorage.getItem('access_token'),
 
         // todo : remove these
-        isAdmin: JSON.parse(sessionStorage.getItem('isAdmin')),
-        isDoctor: JSON.parse(sessionStorage.getItem('isDoctor')),
-        isOrganizer: JSON.parse(sessionStorage.getItem('isOrganizer')),
-        isSale: JSON.parse(sessionStorage.getItem('isSale'))
+        // isAdmin: JSON.parse(sessionStorage.getItem('isAdmin')),
+        // isDoctor: JSON.parse(sessionStorage.getItem('isDoctor')),
+        // isOrganizer: JSON.parse(sessionStorage.getItem('isOrganizer')),
+        // isSale: JSON.parse(sessionStorage.getItem('isSale'))
         // access_token: 'hack' // change here
     },
     menu: {
         sidebar: {
             expanded: true
         }
-    },
-    calendar: {
-        between: [
-            startDate.format('YYYY-MM-DD'),
-            endDate.format('YYYY-MM-DD')
-        ],
-        events: [],
-        slots: [],
-        doctors: [],
-        categories: []
     }
 };
