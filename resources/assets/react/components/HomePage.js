@@ -27,8 +27,10 @@ class HomePage extends Component {
         this.handleChange = this.handleChange.bind(this);
     }
 
+    componentDidMount() {
+    }
+
     handleChange(event, index, value) {
-        console.log('asdf', index, value);
         this.setState({value});
         console.log('this.getState()', this.state);
     }

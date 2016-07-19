@@ -34,3 +34,8 @@ const api = {
 };
 
 export default api;
+
+/**
+ * normal ajax
+ */
+

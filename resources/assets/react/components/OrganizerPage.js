@@ -229,7 +229,7 @@ class OrganizerPage extends Component {
     }
     loadDoctors(){
         this.ajax('get', api.baseUrl('calendar/doctors'), null, (response)=>{
-            let state = Object.assign({}, this.state, {userlist: response.doctors});
+            let state = Object.assign({}, this.state, {doctors: response.doctors});
             this.setState(state);
         }, error=>{});
 

@@ -127,7 +127,7 @@ Route::group(['prefix'=>'api'], function(){
         });
         Route::get('doctor/{doctor_id}/slot', function(Request $request, $doctor_id){
             $slots = App\Models\Calendar\Slot::where('sc_doctor_id', $doctor_id)->with('category')->get();
-            dd($slots);
+//            dd($slots);
             $slots = array_map(function($slot){
                 $slot['title'] = $slot['category']['name'];
                 unset($slot['category']);
