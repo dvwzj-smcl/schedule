@@ -59,7 +59,14 @@ class UserPage extends Component {
                 }
             ],
             openAlertBox: false,
-            alertText: ''
+            alertText: '',
+            listTable:[
+                {
+                    tbData: [],
+                    canEdit: false
+                }
+            ]
+
             // perPage:1,
             // offset:0,
             // columns: [],
@@ -92,7 +99,7 @@ class UserPage extends Component {
     }
 
     componentDidMount(){
-        console.log('componentDidMount');
+        // console.log('componentDidMount');
         this.getData();
     }
 
@@ -152,7 +159,7 @@ class UserPage extends Component {
         // console.log('[UserPage] (getData) state',this.state);
 
 
-        console.log('getData',columns,order,offset,perPage);
+        // console.log('getData',columns,order,offset,perPage);
 
 
         if (typeof search === "undefined" ){
@@ -224,7 +231,7 @@ class UserPage extends Component {
         let state = Object.assign({}, this.state, {loading: true});
         this.setState(state);
         let access_token = this.props.user.access_token;
-        console.log('access_token',access_token);
+        // console.log('access_token',access_token);
         $.ajax({
             method,
             url,
@@ -253,7 +260,6 @@ class UserPage extends Component {
 
 
     render() {
-        const {user} = this.props ;
 
         console.log('this.state',this.state);
         // console.log('[UserPage] user :',user);
@@ -334,45 +340,7 @@ UserPage.contextTypes = {
 
 
 function mapStateToProps(state, ownProps){
-    // console.log('[UserPage] (mapStateToProps) state',state.user);
-    // console.log('[UserPage] (mapStateToProps) typeof state.user',typeof state.user);
-    // console.log('[UserPage] (mapStateToProps) state.user.length',state.user.length);
-
-    let data = {
-        tbData: [],
-        perm: [],
-        canEdit: false,
-        canDelete: false
-    };
-
-    if ( (( typeof state.user === 'undefined' ) || ( state.user.length == 0 )) || (typeof state.user.error != "undefined") )  {
-        // console.log('[UserPage] state.user == null');
-        state.user = data ;
-    }
-
-    if( typeof state.user.tbData === 'undefined' ){
-        // console.log('[UserPage] typeof state.user.tbData === undefined');
-        state.user = data ;
-    }
-
-    if( typeof state.user.perm !== 'undefined' ){
-        for (let o in state.user.perm){
-            let p = state.user.perm[o].split('.') ;
-            if (p[1]=="edit")
-                state.user.canEdit = true ;
-            if (p[1]=="delete")
-                state.user.canDelete = true ;
-        }
-    }
-
-
-    console.log('mapStateToProps',state.user);
-
-    // if(!Array.isArray(state.user)){
-    //     state.user = [] ;
-    // }
     return {
-
         user: state.user
     };
 }
