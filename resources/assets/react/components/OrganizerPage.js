@@ -63,73 +63,75 @@ class OrganizerPage extends Component {
     }
 
     componentDidMount() {
-        let promises = [];
-        promises.push(this.loadDoctors());
-        promises.push(this.loadCategories());
+        if(this.props.authData.authenticating==false) {
+            let promises = [];
+            promises.push(this.loadDoctors());
+            promises.push(this.loadCategories());
 
-        Promise.all(promises).then(()=>{
-            $('#calendar').fullCalendar({
-                header: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: null
-                },
-                lang: 'en',
-                timezone: 'Asia/Bangkok',
-                defaultView: 'agendaWeek',
-                height: 'auto',
-                minTime: '06:00',
-                maxTime: '21:00',
-                allDaySlot: false,
-                slotDuration: '00:30:00',
-                editable: this.props.user.isOrganizer ? true : false,
-                selectable: this.props.user.isOrganizer ? true : false,
-                droppable: true,
-                unselectAuto: true,
-                slotEventOverlap: false,
-                events: [],
-                forceEventDuration: true,
-                defaultTimedEventDuration: '02:00:00',
-                viewRender: (view, element)=>{
-                },
-                select: (a, b, jsEvent, view)=>{
-                    let start = a.format('YYYY-MM-DD H:mm:ss');
-                    let end = b.format('YYYY-MM-DD H:mm:ss');
-                    let create = Object.assign({}, this.state.slot.create, {start, end});
-                    let slot = Object.assign({}, this.state.slot, {create});
-                    let state = Object.assign({}, this.state, {slot});
-                    this.setState(state);
-                },
-                unselect: (view, jsEvent)=>{
-                    let slot = Object.assign({}, this.state.slot, {select:null});
-                    let state = Object.assign({}, this.state, {slot});
-                    this.setState(state);
-                },
-                drop: (date, jsEvent, ui, resourceObj)=>{
-                    let state = Object.assign({}, this.state, {editing: true});
-                    this.setState(state);
-                },
-                dayClick: ( date, jsEvent, view, resourceObj)=>{
-                    let slot = Object.assign({}, this.state.slot, {select:null});
-                    let state = Object.assign({}, this.state, {slot});
-                    this.setState(state);
-                },
-                eventClick: (calEvent, jsEvent, view)=>{
-                    let select = calEvent._id;
-                    let slot = Object.assign({}, this.state.slot, {select});
-                    let state = Object.assign({}, this.state, {slot});
-                    this.setState(state);
-                },
-                eventDrop: ()=>{
-                    let state = Object.assign({}, this.state, {editing: true});
-                    this.setState(state);
-                },
-                eventResize: ()=>{
-                    let state = Object.assign({}, this.state, {editing: true});
-                    this.setState(state);
-                }
+            Promise.all(promises).then(()=> {
+                $('#calendar').fullCalendar({
+                    header: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: null
+                    },
+                    lang: 'en',
+                    timezone: 'Asia/Bangkok',
+                    defaultView: 'agendaWeek',
+                    height: 'auto',
+                    minTime: '06:00',
+                    maxTime: '21:00',
+                    allDaySlot: false,
+                    slotDuration: '00:30:00',
+                    editable: true,
+                    selectable: true,
+                    droppable: true,
+                    unselectAuto: true,
+                    slotEventOverlap: false,
+                    events: [],
+                    forceEventDuration: true,
+                    defaultTimedEventDuration: '02:00:00',
+                    viewRender: (view, element)=> {
+                    },
+                    select: (a, b, jsEvent, view)=> {
+                        let start = a.format('YYYY-MM-DD H:mm:ss');
+                        let end = b.format('YYYY-MM-DD H:mm:ss');
+                        let create = Object.assign({}, this.state.slot.create, {start, end});
+                        let slot = Object.assign({}, this.state.slot, {create});
+                        let state = Object.assign({}, this.state, {slot});
+                        this.setState(state);
+                    },
+                    unselect: (view, jsEvent)=> {
+                        let slot = Object.assign({}, this.state.slot, {select: null});
+                        let state = Object.assign({}, this.state, {slot});
+                        this.setState(state);
+                    },
+                    drop: (date, jsEvent, ui, resourceObj)=> {
+                        let state = Object.assign({}, this.state, {editing: true});
+                        this.setState(state);
+                    },
+                    dayClick: (date, jsEvent, view, resourceObj)=> {
+                        let slot = Object.assign({}, this.state.slot, {select: null});
+                        let state = Object.assign({}, this.state, {slot});
+                        this.setState(state);
+                    },
+                    eventClick: (calEvent, jsEvent, view)=> {
+                        let select = calEvent._id;
+                        let slot = Object.assign({}, this.state.slot, {select});
+                        let state = Object.assign({}, this.state, {slot});
+                        this.setState(state);
+                    },
+                    eventDrop: ()=> {
+                        let state = Object.assign({}, this.state, {editing: true});
+                        this.setState(state);
+                    },
+                    eventResize: ()=> {
+                        let state = Object.assign({}, this.state, {editing: true});
+                        this.setState(state);
+                    }
+                });
             });
-        })
+        }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -245,11 +247,11 @@ class OrganizerPage extends Component {
             return {
                 sc_doctor_id: this.state.slot.create.doctor_id,
                 sc_category_id: event.category_id,
-                sc_organizer_id: this.props.user.isOrganizer.id,
                 start: event.start.format('YYYY-MM-DD H:mm:ss'),
                 end: event.end.format('YYYY-MM-DD H:mm:ss')
             };
         });
+        console.log(events);
         this.ajax('post', api.baseUrl('calendar/slot'), events, (response)=>{
             //console.log(response);
         }, error=>{});
@@ -271,11 +273,13 @@ class OrganizerPage extends Component {
                                     <Dialog
                                         actions={[
                                             <FlatButton
+                                                key="1"
                                                 label="Cancel"
                                                 primary={true}
                                                 onTouchTap={this.discardChangeDoctor}
                                             />,
                                             <FlatButton
+                                                key="2"
                                                 label="Discard"
                                                 primary={true}
                                                 onTouchTap={this.discardSave}
@@ -289,11 +293,13 @@ class OrganizerPage extends Component {
                                     <Dialog
                                         actions={[
                                             <FlatButton
+                                                key="1"
                                                 label="Cancel"
                                                 primary={true}
                                                 onTouchTap={this.discardRemoveSelectedEvent}
                                             />,
                                             <FlatButton
+                                                key="2"
                                                 label="Remove"
                                                 primary={true}
                                                 onTouchTap={this.confirmRemoveSelectedEvent}

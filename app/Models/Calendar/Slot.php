@@ -8,7 +8,7 @@ use Carbon\Carbon;
 class Slot extends Model
 {
     protected $table = 'sc_slots';
-    protected $fillable = ['start', 'end', 'sc_doctor_id', 'sc_organizer_id'];
+    protected $fillable = ['start', 'end', 'sc_doctor_id', 'sc_organizer_id', 'sc_category_id'];
 
     public function doctor(){
         return $this->belongsTo('App\Models\User\Doctor', 'sc_doctor_id');
@@ -16,12 +16,19 @@ class Slot extends Model
     public function organizer(){
         return $this->belongsTo('App\Models\User\Organizer', 'sc_organizer_id');
     }
-    public function slot_categories(){
-        return $this->hasMany('App\Models\Calendar\SlotCategory', 'sc_slot_id');
+    public function category(){
+        return $this->hasOne('App\Models\Calendar\Category', 'id', 'sc_category_id');
     }
     public function events(){
-        return $this->hasMany('App\Models\Calendar\Event', 'sc_slot_id');
+        return $this->hasMany('App\Models\Calendar\Event', 'id', 'sc_slot_id');
     }
+
+    //public function doctor_category(){
+        //dd($this);
+        //dd($this->sc_doctor_id);
+        //return $this->hasMany('App\Models\Calendar\DoctorCategory', 'sc_category_id', 'sc_category_id')->where('sc_doctor_id', $this->sc_doctor_id);
+        //return $this->sc_category_id;
+    //}
 
     public function response(){
         $events = [];
@@ -108,6 +115,7 @@ class Slot extends Model
         $durations = $this->durations();
         return ($durations['current']+$durations['min'])>$durations['max'];
     }
+    /*
     public function categories(){
         $start = Carbon::parse($this->start);
         $end = Carbon::parse($this->end);
@@ -142,4 +150,5 @@ class Slot extends Model
         }
         return $available;
     }
+    */
 }

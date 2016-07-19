@@ -37,15 +37,10 @@ class ScheduleModuleSeeder extends Seeder
         \App\Models\Calendar\DoctorSubCategory::create(['duration'=>25, 'sc_sub_category_id'=>2,'sc_doctor_id'=>2]);
         \App\Models\Calendar\DoctorSubCategory::create(['duration'=>30, 'sc_sub_category_id'=>3,'sc_doctor_id'=>2]);
 
-        \App\Models\Calendar\Slot::create(['start'=>'2016-07-12 08:00:00', 'end'=>'2016-07-12 12:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>1]);
-        \App\Models\Calendar\Slot::create(['start'=>'2016-07-12 13:00:00', 'end'=>'2016-07-12 17:00:00', 'sc_doctor_id'=>2, 'sc_organizer_id'=>1]);
-        \App\Models\Calendar\Slot::create(['start'=>'2016-07-13 13:00:00', 'end'=>'2016-07-13 17:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>2]);
-        \App\Models\Calendar\Slot::create(['start'=>'2016-09-13 13:00:00', 'end'=>'2016-09-13 17:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>1]);
-
-        \App\Models\Calendar\SlotCategory::create(['sc_slot_id'=>1, 'sc_category_id'=>1]); // for tell organizer what cat available to add into a slot
-        \App\Models\Calendar\SlotCategory::create(['sc_slot_id'=>2, 'sc_category_id'=>1]);
-        \App\Models\Calendar\SlotCategory::create(['sc_slot_id'=>3, 'sc_category_id'=>1]);
-        \App\Models\Calendar\SlotCategory::create(['sc_slot_id'=>4, 'sc_category_id'=>1]);
+        \App\Models\Calendar\Slot::create(['start'=>'2016-07-12 08:00:00', 'end'=>'2016-07-12 12:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>1, 'sc_category_id'=>1]);
+        \App\Models\Calendar\Slot::create(['start'=>'2016-07-12 13:00:00', 'end'=>'2016-07-12 17:00:00', 'sc_doctor_id'=>2, 'sc_organizer_id'=>1, 'sc_category_id'=>1]);
+        \App\Models\Calendar\Slot::create(['start'=>'2016-07-13 13:00:00', 'end'=>'2016-07-13 17:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>2, 'sc_category_id'=>2]);
+        \App\Models\Calendar\Slot::create(['start'=>'2016-09-13 13:00:00', 'end'=>'2016-09-13 17:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>1, 'sc_category_id'=>1]);
 
         \App\Models\Calendar\Event::create(['sc_slot_id'=>1, 'sc_sub_category_id'=>1]);
         \App\Models\Calendar\Event::create(['sc_slot_id'=>1, 'sc_sub_category_id'=>1, 'sc_customer_id'=>1, 'sc_sale_id'=>2]);
