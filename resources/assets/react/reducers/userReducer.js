@@ -18,7 +18,7 @@ export default function userReducer(state = initialState.user, action = null) {
             if(action.user) {
                 const {token, user:{permissions}, login:{username,password}} = action.user;
                 // console.log('token', permissions);
-                sessionStorage.setItem('access_token', token); // todo : if set, auto login won't work
+                // sessionStorage.setItem('access_token', token); // todo : if set, auto login won't work
 
                 // for auto login
                 sessionStorage.setItem('username', username);
@@ -58,7 +58,7 @@ export default function userReducer(state = initialState.user, action = null) {
         case USER_SIGN_OUT:
             sessionStorage.removeItem('username');
             sessionStorage.removeItem('password');
-            sessionStorage.removeItem('access_token');
+            // sessionStorage.removeItem('access_token');
 
             // todo : remove these
             // sessionStorage.removeItem('isAdmin');
