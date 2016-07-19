@@ -29,6 +29,7 @@ export default function configureRoute(store){
             <IndexRoute component={UserIsAuthenticated(HomePage)} />
             <Route path="/login" component={LoginPage} />
             <Route path="/organizer" component={UserIsAuthenticated(OrganizerPage)} />
+            <Route path="/schedule" component={UserIsAuthenticated(OrganizerPage)} />
             <Route path="*" component={UserIsAuthenticated(NotFoundPage)} />
         </Route>
     ):(
