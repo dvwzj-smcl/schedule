@@ -12,16 +12,9 @@ import PageHeading from '../widgets/PageHeading';
 import AlertBox from '../widgets/AlertBox';
 import DataTable from '../widgets/DataTable';
 
-
-// material-ui
-// import Divider from 'material-ui/Divider';
-// import {List, ListItem} from 'material-ui/List';
-// import MenuItem from 'material-ui/MenuItem';
-// import TextField from 'material-ui/TextField';
-// import Toggle from 'material-ui/Toggle';
-
 import {ContentAdd,ContentCreate, ActionAutorenew,ActionDelete} from 'material-ui/svg-icons';
 import RaisedButton from 'material-ui/RaisedButton';
+import SemiButton from '../semi/SemiButton';
 import {fullWhite} from 'material-ui/styles/colors';
 // import IconButton from 'material-ui/IconButton';
 // import {Table, TableBody, TableFooter, TableHeader, TableHeaderColumn, TableRow, TableRowColumn}
@@ -45,8 +38,9 @@ import api from '../../api';
 import $ from 'jquery';
 
 class UserPage extends Component {
-    constructor(props, context) {
-        super(props, context);
+    constructor(props) {
+        // console.log('789789', 789789);
+        super(props);
         this.state = {
             dataTableColumn:[
                 {
@@ -66,27 +60,14 @@ class UserPage extends Component {
                     recordsFiltered: 0,
                     recordsTotal: 0
                 }
-
-
-            // perPage:1,
-            // offset:0,
-            // columns: [],
-            // order:[
-            //     {
-            //         column:'id',
-            //         dir:'DESC'
-            //     }
-            // ]
         };
 
-        this.redirectToAddUserPage = this.redirectToAddUserPage.bind(this);
         this.reloadPage = this.reloadPage.bind(this);
         this.getData = this.getData.bind(this);
 
         this.handleOpen = this.handleOpen.bind(this);
         this.handleClose = this.handleClose.bind(this);
 
-        this.linkTo = this.linkTo.bind(this);
 
         this.deleteData = this.deleteData.bind(this);
 
@@ -120,13 +101,6 @@ class UserPage extends Component {
         // }
         // return updateComponent ;
         return true ;
-    }
-    linkTo(pathname) {
-        return this.context.router.push(pathname);
-    }
-
-    redirectToAddUserPage(){
-        browserHistory.push('/user-type');
     }
 
     deleteData(id){
@@ -198,12 +172,6 @@ class UserPage extends Component {
 
     }
 
-
-    redirect(){
-        //toastr.success('Course saved');
-        this.context.router.push('/users');
-    }
-
     handleOpen(){
         console.log('open Box');
         this.setState({openAlertBox: true});
@@ -250,8 +218,6 @@ class UserPage extends Component {
         }).fail(message=>{
             if(error) error(message);
         });
-
-
     }
 
 
@@ -272,33 +238,17 @@ class UserPage extends Component {
                         <Col md={12}>
                             <Panel title="User Type">
                                 <div className="con-pad">
-                                    <RaisedButton
-                                        backgroundColor="#a4c639"
+                                    <SemiButton
+                                        semiType="add"
                                         label="Add New"
-                                        labelPosition="before"
-                                        labelColor={fullWhite}
-                                        icon={<ContentAdd color={fullWhite} />}
-                                        type="button"
-                                        className="button"
-                                        onClick={this.redirectToAddUserPage}
+                                        link="/users/create"
                                     />
-                                    &nbsp;
-                                    <RaisedButton
-
+                                    <SemiButton
+                                        semiType="refresh"
                                         label="Reload"
-                                        labelPosition="before"
-
-                                        icon={<ActionAutorenew  />}
-                                        type="button"
-                                        className="button"
                                         onClick={this.reloadPage}
                                     />
-
-                                    <br />
-
-
                                 </div>
-
                                 <DataTable
                                     ref="db"
                                     dataTable={this.state.listTable}
@@ -307,23 +257,16 @@ class UserPage extends Component {
                                     deleteDataFunc={this.deleteData}
                                     dataColumn={this.state.dataTableColumn}
                                 />
-
-
-
-
                             </Panel>
                         </Col>
                     </Row>
-
                 </Grid>
+                {this.props.children}
             </div>
-
         );
     }
 }
 UserPage.propTypes = {
-    actions: PropTypes.object.isRequired,
-    routing: PropTypes.object.isRequired,
     user: PropTypes.oneOfType([
         React.PropTypes.object,
         React.PropTypes.array
@@ -333,22 +276,9 @@ UserPage.contextTypes = {
     router: PropTypes.object.isRequired
 };
 
-
-
-function mapStateToProps(state, ownProps){
-    return {
-        user: state.user
-    };
-}
-
-function mapDispatchToProps(dispatch){
-    // console.log('mapDispatchToProps dispatch',dispatch);
-    return {};
-}
-
+const mapStateToProps = ({ user }) => ({ user });
 
 export default connect(
-    mapStateToProps,
-    mapDispatchToProps
+    mapStateToProps
 )(UserPage);
 

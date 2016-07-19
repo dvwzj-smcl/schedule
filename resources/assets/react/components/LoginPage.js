@@ -13,40 +13,12 @@ import SemiForm from './forms/SemiForm';
 class LoginPage extends Component {
     constructor(props, context) {
         super(props, context);
-        this.state = {
-            canSubmit: false
-        };
         this.errorMessages = {
             wordsError: "Please only use letters",
             numericError: "Please provide a number",
             urlError: "Please provide a valid URL"
         };
-
-        this.enableButton = this.enableButton.bind(this);
-        this.disableButton = this.disableButton.bind(this);
         this.submitForm = this.submitForm.bind(this);
-        this.notifyFormError = this.notifyFormError.bind(this);
-    }
-
-    componentDidMount() {
-    }
-    componentDidUpdate() {
-    }
-
-    shouldComponentUpdate(nextProps, nextState) {
-        return (this.state.canSubmit !== nextState.canSubmit) || (this.props.user.error !== nextProps.user.error);
-    }
-
-    enableButton() {
-        this.setState({
-            canSubmit: true
-        });
-    }
-
-    disableButton() {
-        this.setState({
-            canSubmit: false
-        });
     }
 
     submitForm(data) {
@@ -57,11 +29,7 @@ class LoginPage extends Component {
             }
         });
     }
-
-    notifyFormError(/*data*/) {
-        console.error('Form error:', data);
-    }
-
+    
     render() {
         return (
             <Grid className="parent">

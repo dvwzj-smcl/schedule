@@ -1,6 +1,8 @@
 import React, {PropTypes, Component} from 'react';
 // import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
+import api from './api';
+import $ from 'jquery';
 
 class WrappedApi extends Component {
     constructor(props, context) {

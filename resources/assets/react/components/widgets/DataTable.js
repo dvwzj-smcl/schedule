@@ -57,7 +57,7 @@ class DataTable extends Component {
     }
 
     onChange(event){
-        let colName = event.currentTarget.name ;
+        let colName = event.currentTarget.name;
         let colVal = event.currentTarget.value;
         let pushData = true ;
         // let newArray = this.state.columns.slice();

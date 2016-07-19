@@ -12,6 +12,12 @@ class BranchController extends Controller
 {
     public function index()
     {
+        return BF::result(true, Branch::all(), '[branch] index');
+    }
+
+    public function getList()
+    {
+        return BF::result(true, Branch::all(), '[branch] index');
     }
 
     public function create()

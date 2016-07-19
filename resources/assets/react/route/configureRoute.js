@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, IndexRoute } from 'react-router';
-import { UserAuthWrapper } from 'redux-auth-wrapper';
 import { routerActions } from 'react-router-redux';
+import { UserAuthWrapper } from 'redux-auth-wrapper';
 
 import App from '../components/App';
 import HomePage from '../components/HomePage';
@@ -10,9 +10,8 @@ import OrganizerPage from '../components/OrganizerPage';
 import LoginPage from '../components/LoginPage';
 import NotFoundPage from '../components/NotFoundPage';
 import UserPage from '../components/user/UserPage';
+import UserCreateModal from '../components/user/UserCreateModal';
 import ManageUserPage from '../components/user/ManageUserPage';
-
-
 
 const UserIsAuthenticated = UserAuthWrapper({
     authSelector: state => state.user, // how to get the user state
@@ -31,14 +30,12 @@ export default function configureRoute(store){
     return (useLogin) ? (
         <Route path="/" component={App}>
             <IndexRoute component={UserIsAuthenticated(HomePage)} />
-            <Route path="/login" component={LoginPage} />
-            <Route path="/users" component={UserIsAuthenticated(UserPage)} />
-                <route path="user">
-                    <IndexRoute component={ManageUserPage} />
-                    <route path=":id" component={ManageUserPage} />
-                </route>
-            <Route path="/organizer" component={UserIsAuthenticated(OrganizerPage)} />
-            <Route path="/schedule" component={UserIsAuthenticated(OrganizerPage)} />
+            <Route path="login" component={LoginPage} />
+            <Route path="users" component={UserIsAuthenticated(UserPage)}>
+                <Route path="create" component={UserIsAuthenticated(UserCreateModal)} />
+            </Route>
+            <Route path="organizer" component={UserIsAuthenticated(OrganizerPage)} />
+            <Route path="schedule" component={UserIsAuthenticated(OrganizerPage)} />
             <Route path="*" component={UserIsAuthenticated(NotFoundPage)} />
         </Route>
     ):(
