@@ -122,7 +122,6 @@ class DataTable extends Component {
 
 
                             <TableRow style={{borderBottom : 'none'}} >
-
                                 {dataColumn.map( (column, index) => (
                                     <TableHeaderColumn style={{width:column.width}}>{column.col} <br />
                                         <TextField
@@ -133,10 +132,13 @@ class DataTable extends Component {
                                         />
                                     </TableHeaderColumn>
                                 ))}
-                                
 
-                                <TableHeaderColumn style={{width:'30%'}}>Status
-                                </TableHeaderColumn>
+                                {dataTable.canEdit ?
+                                    <TableHeaderColumn style={{width:'30%'}}>Status
+                                    </TableHeaderColumn>
+                                    :
+                                    ""
+                                }
                             </TableRow>
 
                         </TableHeader>
@@ -151,26 +153,18 @@ class DataTable extends Component {
                                     {dataColumn.map( (column, index) => (
                                         <TableRowColumn style={{width:column.width}} >{row[column.col]}</TableRowColumn>
                                     ))}
-
-                                    <TableRowColumn style={{width:'30%'}}>{row.status}
-
-                                        {dataTable.canEdit ?
+                                    {dataTable.canEdit ?
+                                        <TableRowColumn style={{width:'30%'}}>{row.status}
                                             <IconButton tooltip="Edit" tooltipPosition="top-center" backgroundColor="#F00"  onClick={this.linkTo.bind(null,this.props.linkEditPath+row.id)}>
                                                 <ContentCreate />
                                             </IconButton>
-                                            :
-                                            ""
-                                        }
-                                        {dataTable.canEdit ?
                                             <IconButton tooltip="Delete" tooltipPosition="top-center" onClick={this.props.deleteDataFunc.bind(null,row.id)}>
                                                 <ActionDelete />
                                             </IconButton>
-                                            :
-                                            ""
-                                        }
-
-
-                                    </TableRowColumn>
+                                        </TableRowColumn>
+                                        :
+                                        ""
+                                    }
                                 </TableRow>
                             ))}
                         </TableBody>
@@ -179,7 +173,6 @@ class DataTable extends Component {
                         >
                             <TableRow>
                                 <TableRowColumn colSpan="3" style={{textAlign: 'center'}}>
-
                                 </TableRowColumn>
                             </TableRow>
                         </TableFooter>
@@ -226,7 +219,8 @@ const style = {
     }
 };
 function mapStateToProps(state, ownProps){
-    // console.log('[DataTable] (mapStateToProps) state',state);
+    // console.log('[DataTable] (mapStateToProps) state',state,ownProps);
+
     return {
         routing: state.routing
     };

@@ -60,12 +60,13 @@ class UserPage extends Component {
             ],
             openAlertBox: false,
             alertText: '',
-            listTable:[
-                {
+            listTable: {
                     tbData: [],
-                    canEdit: false
+                    canEdit: false,
+                    recordsFiltered: 0,
+                    recordsTotal: 0
                 }
-            ]
+
 
             // perPage:1,
             // offset:0,
@@ -130,21 +131,15 @@ class UserPage extends Component {
 
     deleteData(id){
         // console.log('[UserPage] deleteData');
-        this.props.actions.deleteuser(id).then((json)=>{
-            let result = json.response ;
-            if (result.status == "error"){
-                if(result.data.error=="Expired token"){
-                    console.log('[UserPage] in Expired token');
-                    this.handleOpenLoginBox();
-                }else{
-                    this.setState({alertText: result.data.error});
-                    this.handleOpen();
+        this.ajax('DELETE', api.baseUrl('/usertype/'+id ), null,
+            (response)=>{
+                if(response.status=="success"){
+                    console.log('Delete Redirect');
+                    this.getData();
                 }
-            }else{
-                console.log('Delete Redirect');
-                this.getData();
-            }
-        });
+            },
+            error=>{}
+        );
     }
 
     reloadPage(){
@@ -206,10 +201,11 @@ class UserPage extends Component {
 
     redirect(){
         //toastr.success('Course saved');
-        this.context.router.push('/user-types');
+        this.context.router.push('/users');
     }
 
     handleOpen(){
+        console.log('open Box');
         this.setState({openAlertBox: true});
     }
 
@@ -245,11 +241,11 @@ class UserPage extends Component {
             setTimeout(()=>{
                 let state = Object.assign({}, this.state, {loading: false});
                 this.setState(state);
-                if (response.status == "error"){
-                    this.setState({alertText: response.data.error});
-                    this.handleOpen();
-                }
             }, 1000);
+            if (response.status == "error"){
+                this.setState({alertText: response.data.error});
+                this.handleOpen();
+            }
             if(success) success(response);
         }).fail(message=>{
             if(error) error(message);
@@ -261,7 +257,7 @@ class UserPage extends Component {
 
     render() {
 
-        console.log('this.state',this.state);
+        // console.log('this.state',this.state);
         // console.log('[UserPage] user :',user);
         return (
             <div>

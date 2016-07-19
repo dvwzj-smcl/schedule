@@ -20,8 +20,6 @@ class UserController extends Controller
 {
     public function index()
     {
-        
-        
         $cols = [
             'id',
             'email',

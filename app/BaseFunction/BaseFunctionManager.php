@@ -18,7 +18,7 @@ class BaseFunctionManager {
             if($action) $res['action'] = $action;
             return $res;
         }
-        return ['status' => 'error', ['data' => ['error' => $message]]];
+        return ['status' => 'error', 'data' => ['error' => $message]];
     }
 
     public static function decodeInput($request) {
