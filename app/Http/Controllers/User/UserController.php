@@ -61,7 +61,13 @@ class UserController extends Controller
 
         try {
             $count = $sql->count();
-            $data = $sql->skip(Input::get('start'))->take(Input::get('length'))->get();
+            $data = $sql->skip(Input::get('start'))->take(Input::get('length'))->with('roles','branch')->get();
+            foreach ($data as $key=>$rs) {
+                $rs->role_name = $rs->roles[0]->display_name;
+                $rs->branch_name = $rs->branch->name;
+                unset($rs->branch);
+                unset($rs->roles);
+            }
             $result = BF::dataTable($data, $count, $count, $canEdit) ;
         } catch ( \Illuminate\Database\QueryException $e) {
             return BF::result(false, $e->getMessage());

@@ -9,7 +9,10 @@ import {Table, TableBody, TableFooter, TableHeader, TableHeaderColumn, TableRow,
     from 'material-ui/Table';
 
 import ReactPaginate from 'react-paginate';
+import AlertBox from '../widgets/AlertBox';
 
+import api from '../../api';
+import $ from 'jquery';
 
 class DataTable extends Component {
     constructor(props, context) {
@@ -27,7 +30,8 @@ class DataTable extends Component {
             showCheckboxes: false,
             height: '300px',
             canSubmit:false,
-            perPage:1,
+            pageNum:0,
+            perPage:2,
             offset:0,
             columns: [],
             order:[
@@ -35,12 +39,26 @@ class DataTable extends Component {
                     column:'id',
                     dir:'DESC'
                 }
-            ]
+            ],
+            openAlertBox: false,
+            alertText: '',
+            listTable: {
+                tbData: [],
+                canEdit: false,
+                recordsFiltered: 0,
+                recordsTotal: 0
+            }
         };
         this.linkTo = this.linkTo.bind(this);
         this.onChange = this.onChange.bind(this);
         this.handlePageClick = this.handlePageClick.bind(this);
         this.resetForm = this.resetForm.bind(this);
+
+        this.getData = this.getData.bind(this);
+        this.deleteData = this.deleteData.bind(this);
+
+        this.handleOpen = this.handleOpen.bind(this);
+        this.handleClose = this.handleClose.bind(this);
     }
 
     handlePageClick(data){
@@ -48,7 +66,7 @@ class DataTable extends Component {
         let offset = Math.ceil(selected * this.state.perPage);
         // console.log('[UserTypePage] (handlePageClick) ',selected,offset);
         this.setState({pageSelect: selected,offset: offset}, () => {
-            this.props.getDataFunc(true,this.state.columns,this.state.order,this.state.offset,this.state.perPage);
+            this.getData(true,this.state.columns,this.state.order,this.state.offset);
         });
     }
 
@@ -83,7 +101,7 @@ class DataTable extends Component {
         let textFieldName = colName ;
         // console.log('[UserTypePage] (onChange) textFieldName',textFieldName);
         this.setState({textFieldName : event.target.value,columns: newArray,pageSelect: 0,offset: 0}, () => {
-            this.props.getDataFunc(true,this.state.columns,this.state.order,this.state.offset,this.state.perPage);
+            this.getData(true,this.state.columns,this.state.order,this.state.offset,this.state.perPage);
         });
     }
 
@@ -91,19 +109,105 @@ class DataTable extends Component {
     componentWillReceiveProps(nextProps){
         // console.log('[DataTable] (componentWillReceiveProps) this.props',this.props.dataTable);
         // console.log('[DataTable] (componentWillReceiveProps) nextProps',nextProps.dataTable);
-        this.setState({pageNum: Math.ceil( nextProps.dataTable.recordsFiltered / this.state.perPage )});
     }
 
     resetForm() {
         this.refs.form.reset();
     }
+    ajax(method, url, data, success, error){
+        data = JSON.stringify(data);
+        let state = Object.assign({}, this.state, {loading: true});
+        this.setState(state);
+        let access_token = this.props.user.access_token;
+        // console.log('access_token',access_token);
+        $.ajax({
+            method,
+            url,
+            data,
+            dataType: 'json',
+            headers: {
+                'Access-Token': access_token,
+                'Content-Type': 'application/json'
+            }
+        }).done(response=>{
+            setTimeout(()=>{
+                let state = Object.assign({}, this.state, {loading: false});
+                this.setState(state);
+            }, 1000);
+            if (response.status == "error"){
+                this.setState({alertText: response.data.error});
+                this.handleOpen();
+            }
+            if(success) success(response);
+        }).fail(message=>{
+            if(error) error(message);
+        });
+    }
+    getData(search,columns,order,offset){
+        if (typeof search === "undefined" ){
+            search=false;
+        }
+        if (typeof columns === "undefined" ){
+            columns = [];
+        }
+        if (typeof order === "undefined" ){
+            order = [
+                {
+                    column:'id',
+                    dir:'DESC'
+                }
+            ];
+        }
+        if (typeof offset === "undefined" ){
+            offset = 0 ;
+        }
+
+
+        this.ajax('get', api.baseUrl(this.props.dataUrl+'?columns='+encodeURIComponent(JSON.stringify(columns))+'&order='+encodeURIComponent(JSON.stringify(order))+'&start='+offset+'&length='+this.state.perPage ), null,
+            (response)=>{
+                if(response.status=="success"){
+                    let state = Object.assign({}, this.state, {listTable: response.data});
+                    this.setState(state);
+                    this.setState({pageNum: Math.ceil( response.data.recordsFiltered / this.state.perPage )});
+                }
+            },
+            error=>{}
+        );
+
+    }
+
+    deleteData(id){
+        this.ajax('DELETE', api.baseUrl(this.props.dataUrl+'/'+id ), null,
+            (response)=>{
+                if(response.status=="success"){
+                    console.log('Delete Redirect');
+                    this.getData();
+                }
+            },
+            error=>{}
+        );
+    }
+
+    handleOpen(){
+        this.setState({openAlertBox: true});
+    }
+
+    handleClose(){
+        this.setState({openAlertBox: false});
+    }
 
     render() {
-        const {dataTable,dataColumn} = this.props ;
+        const {dataColumn} = this.props ;
+        let dataTable = this.state.listTable;
         // console.log('dataColumn:',dataColumn);
         // console.log('dataTable:',dataTable);
         return (
             <div >
+                <AlertBox
+                    openAlertBox={this.state.openAlertBox}
+                    alertText={this.state.alertText}
+                    alertFunction={this.handleClose}
+                />
                 <form  ref="form">
                     <Table
                         fixedHeader={this.state.fixedHeader}
@@ -118,15 +222,12 @@ class DataTable extends Component {
                             enableSelectAll={this.state.enableSelectAll}
                             style={{borderBottom : 'none'}}
                         >
-
-
-
                             <TableRow style={{borderBottom : 'none'}} >
                                 {dataColumn.map( (column, index) => (
                                     <TableHeaderColumn style={{width:column.width}}>{column.col} <br />
                                         <TextField
                                             type="text" name={column.col}
-                                            hintText={'Search by'+column.col}
+                                            hintText={'Search by '+column.col}
                                             onChange={this.onChange}
                                             fullWidth={true}
                                         />
@@ -134,7 +235,7 @@ class DataTable extends Component {
                                 ))}
 
                                 {dataTable.canEdit ?
-                                    <TableHeaderColumn style={{width:'30%'}}>Status
+                                    <TableHeaderColumn style={{width:'10%'}}>Status
                                     </TableHeaderColumn>
                                     :
                                     ""
@@ -154,11 +255,11 @@ class DataTable extends Component {
                                         <TableRowColumn style={{width:column.width}} >{row[column.col]}</TableRowColumn>
                                     ))}
                                     {dataTable.canEdit ?
-                                        <TableRowColumn style={{width:'30%'}}>{row.status}
-                                            <IconButton tooltip="Edit" tooltipPosition="top-center" backgroundColor="#F00"  onClick={this.linkTo.bind(null,this.props.linkEditPath+row.id)}>
+                                        <TableRowColumn style={{width:'10%'}}>{row.status}
+                                            <IconButton tooltip="Edit" tooltipPosition="top-center" backgroundColor="#F00"  onClick={this.linkTo.bind(null,this.props.dataUrl+'/'+row.id)}>
                                                 <ContentCreate />
                                             </IconButton>
-                                            <IconButton tooltip="Delete" tooltipPosition="top-center" onClick={this.props.deleteDataFunc.bind(null,row.id)}>
+                                            <IconButton tooltip="Delete" tooltipPosition="top-center" onClick={this.deleteData.bind(null,row.id)}>
                                                 <ActionDelete />
                                             </IconButton>
                                         </TableRowColumn>
@@ -178,34 +279,30 @@ class DataTable extends Component {
                         </TableFooter>
                     </Table>
                 </form>
-                <div className="pagination">
-                    <ReactPaginate previousLabel={"previous"}
-                                   nextLabel={"next"}
-                                   breakLabel={"..."}
-                                   pageNum={this.state.pageNum}
-                                   marginPagesDisplayed={1}
-                                   pageRangeDisplayed={3}
-                                   clickCallback={this.handlePageClick}
-                                   activeClassName="active"
-                                   disabledClassName="disable"
-                                   forceSelected={this.state.pageSelect}
-                    />
-                </div>
-
+                {this.state.pageNum>0 ?
+                    <div className="pagination">
+                        <ReactPaginate previousLabel={"previous"}
+                                       nextLabel={"next"}
+                                       breakLabel={"..."}
+                                       pageNum={this.state.pageNum}
+                                       marginPagesDisplayed={1}
+                                       pageRangeDisplayed={3}
+                                       clickCallback={this.handlePageClick}
+                                       activeClassName="active"
+                                       disabledClassName="disable"
+                                       forceSelected={this.state.pageSelect}
+                        />
+                    </div>
+                    : ""
+                }
             </div>
         );
     }
 }
 
 DataTable.propTypes = {
-    dataTable: PropTypes.oneOfType([
-        React.PropTypes.object,
-        React.PropTypes.array
-    ]).isRequired,
-    linkEditPath:PropTypes.string.isRequired,
-    deleteDataFunc:PropTypes.func,
-    getDataFunc:PropTypes.func,
-    dataColumn:PropTypes.array
+    dataColumn:PropTypes.array,
+    dataUrl:PropTypes.string.isRequired
 };
 
 DataTable.contextTypes = {
@@ -218,13 +315,8 @@ const style = {
         color: '#FFFFFF'
     }
 };
-function mapStateToProps(state, ownProps){
-    // console.log('[DataTable] (mapStateToProps) state',state,ownProps);
 
-    return {
-        routing: state.routing
-    };
-}
+const mapStateToProps = ({ user }) => ({ user });
 
 export default connect(
     mapStateToProps,null,null,{ withRef: true }
