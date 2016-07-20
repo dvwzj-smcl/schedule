@@ -1,5 +1,6 @@
 import React, { PropTypes, Component } from 'react';
 import FormsyText from 'formsy-material-ui/lib/FormsyText';
+import ErrorMessage from '../forms/ErrorMessage';
 
 // verification on every change is slow, so debouncing helps
 const debounceFunc = function(fn, delay) {
@@ -45,7 +46,18 @@ class SemiText extends Component{
     }
 
     render() {
-        return <FormsyText ref="input" {...this.props} onChange={this.onChange} />;
+        return (
+            <FormsyText 
+                ref="input"
+                validationErrors={{
+                    minLength: ErrorMessage.minLength,
+                    maxLength: ErrorMessage.maxLength,
+                    isEmail: ErrorMessage.email,
+                    equalsField: ErrorMessage.equalsField
+                }}
+                {...this.props} 
+                onChange={this.onChange} />
+        );
     }
 }
 

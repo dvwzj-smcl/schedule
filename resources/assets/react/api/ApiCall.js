@@ -1,17 +1,30 @@
 import React, {PropTypes, Component} from 'react';
 // import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
-import api from './api';
+import api from './index';
 import $ from 'jquery';
 
 class ApiCall extends Component {
     constructor(props) {
         super(props);
         this.callAjax = this.callAjax.bind(this);
-        this.isActiveMenu = this.isActiveMenu.bind(this);
+        // this.isActiveMenu = this.isActiveMenu.bind(this);
     }
     
     componentDidMount() {
+        if(this.props.getUrl) {
+            let promises = [];
+            console.log('this.props.promises', this.props.getUrl);
+            for (let url of this.props.getUrl) {
+                promises.push(this.ajax('get', api.baseUrl(url), null, (response)=>{
+                    let state = Object.assign({}, this.state, {doctors: response.doctors});
+                    this.setState(state);
+                }, error=>{}));
+            }
+            // Promise.all(this.props.promises).then(()=> {
+            //     console.log('78978979', 78978979);
+            // });
+        }
     }
 
     ajax(method, url, data, success, error) {

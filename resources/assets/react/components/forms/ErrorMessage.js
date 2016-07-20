@@ -7,10 +7,10 @@ const ErrorMessage = {
     numeric: "Please provide a number",
     url: "Please provide a valid URL",
     alphanumeric: "Please provide a letters or number",
-    email: "Please provide a email",
+    email: "Please provide a valid email",
     maxLength: "You can not type in more than 50 characters",
     minLength: "You can not type in less than 3 characters",
-    equalsField: "Please fill equal to above fill"
+    equalsField: "Passwords do not match"
 };
 
 export default ErrorMessage;
