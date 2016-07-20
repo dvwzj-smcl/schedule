@@ -66,7 +66,9 @@ class UserPage extends Component {
 
     componentDidMount(){
         // console.log('componentDidMount');
-        this.refs['db'].getWrappedInstance().getData();
+        let access_token = this.props.user.access_token;
+        if (typeof access_token !== "undefined" )
+            this.refs['db'].getWrappedInstance().getData();
     }
 
     componentWillReceiveProps(nextProps){

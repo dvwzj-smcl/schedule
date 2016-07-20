@@ -54,7 +54,7 @@ class SemiForm extends Component {
             />
         ) : null;
 
-        let submitBtn = (
+        let submitBtn = this.props.noSubmit ? null : (
             <RaisedButton
                 formNoValidate
                 secondary={true}
@@ -91,7 +91,8 @@ SemiForm.propTypes = {
     children: React.PropTypes.oneOfType([
         React.PropTypes.object,
         React.PropTypes.array
-    ])
+    ]),
+    noSubmit: PropTypes.bool
 };
 
 export default SemiForm;

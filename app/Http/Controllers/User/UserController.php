@@ -58,13 +58,15 @@ class UserController extends Controller
 //        $query = DB::getQueryLog();
 //        return $query ;
 //        exit();
-
         try {
             $count = $sql->count();
             $data = $sql->skip(Input::get('start'))->take(Input::get('length'))->with('roles','branch')->get();
             foreach ($data as $key=>$rs) {
-                $rs->role_name = $rs->roles[0]->display_name;
-                $rs->branch_name = $rs->branch->name;
+                if (!empty($rs->roles[0]))
+                    $rs->role_name = $rs->roles[0]->display_name;
+                if (!empty($rs->branch))
+                    $rs->branch_name = $rs->branch->name;
+
                 unset($rs->branch);
                 unset($rs->roles);
             }
@@ -88,12 +90,27 @@ class UserController extends Controller
 
     public function store()
     {
+
+        $testMode = true ;
+        $userId =  ($testMode)? 1 : Auth::user()->id ;
+
         $data = Input::all();
-        $auth = BF::authLoginFail($data);
-        if($auth) {
-            return $auth ;
+        $rules = array(
+            'username' => 'required|min:3|max:50',
+            'password' => 'required|min:3|max:50',
+            'confirmPassword' => 'required|min:3|max:50',
+            'name' => 'required|min:3|max:50',
+            'email' => 'required|email',
+            'branch' => 'required|numeric',
+            'phone' => 'required|min:3|max:50',
+            'phone2' => 'min:3|max:50',
+        );
+        $validator = Validator::make($data, $rules);
+        if ($validator->fails()) {
+            return BF::result(false, $validator->messages()->first());
         }
-        if ($data["password"] != $data["confirm_password"] ){
+
+        if ($data["password"] != $data["confirmPassword"] ){
             return BF::result(false, 'กรุณากรอกพาสเวิดให้ตรงกันค่ะ!');
         }
         if(empty($data["email"])){
@@ -110,11 +127,22 @@ class UserController extends Controller
             }
             return BF::result(false, $e->getMessage());
         }
+        try {
+            $chk = User::where('username', $data["username"])->first();
+            if(isset($chk)){
+                return BF::result(false, 'failed!'); //--- check email repeat
+            }
+        } catch ( \Illuminate\Database\QueryException $e) {
+            if($e->getCode() == 23000) {
+                return BF::result(false, "user name ซ้ำ : {$data['email']}");
+            }
+            return BF::result(false, $e->getMessage());
+        }
 
         $data["password"] = bcrypt($data["password"]) ;
         $data = array_diff_key($data, array_flip(['id','_method','deleted_at','deleted_by','updated_at','created_at']));
-
-        $data["created_by"] = Auth::user()->id ;
+        $data["created_by"] = $userId ;
+        $data["branch_id"] = $data["branch"] ;
         try {
             $status = User::create($data);
             if($status === NULL) {
@@ -126,7 +154,7 @@ class UserController extends Controller
             }
             return BF::result(false, $e->getMessage());
         }
-        return BF::result(true, ['action' => 'create', 'id' => $status->id]);
+        return BF::result(true, [] , '[user] create');
     }
 
     public function show($id)
