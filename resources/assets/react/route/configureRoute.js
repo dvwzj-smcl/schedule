@@ -11,7 +11,7 @@ import LoginPage from '../components/LoginPage';
 import NotFoundPage from '../components/NotFoundPage';
 import UserPage from '../components/user/UserPage';
 import UserCreateModal from '../components/user/UserCreateModal';
-// import UserModal from '../components/user/UserModal';
+import UserModal from '../components/user/UserModal';
 // import ManageUserPage from '../components/user/ManageUserPage';
 
 const UserIsAuthenticated = UserAuthWrapper({

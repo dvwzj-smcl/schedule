@@ -6,6 +6,8 @@ import { bindActionCreators } from 'redux';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
 
 class AlertBox extends Component {
     constructor(props, context) {
@@ -26,18 +28,20 @@ class AlertBox extends Component {
             />
         ];
         return (
-            <Dialog
-                titleStyle={style.dialogTitleError}
-                title="Alert!"
-                actions={actions}
-                modal={false}
-                open={this.props.openAlertBox}
-                onRequestClose={this.handleClose}
-                bodyStyle={{marginTop:'20px'}}
-                autoScrollBodyContent={true}
-            >
-                {this.props.alertText}
-            </Dialog>
+            <MuiThemeProvider >
+                <Dialog
+                    titleStyle={style.dialogTitleError}
+                    title="Alert!"
+                    actions={actions}
+                    modal={false}
+                    open={this.props.openAlertBox}
+                    onRequestClose={this.handleClose}
+                    bodyStyle={{marginTop:'20px'}}
+                    autoScrollBodyContent={true}
+                >
+                    {this.props.alertText}
+                </Dialog>
+            </MuiThemeProvider>
         );
     }
 }

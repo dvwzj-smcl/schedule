@@ -7,6 +7,7 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import ApiCall from '../../api/ApiCall';
 import SemiForm from '../forms/SemiForm';
+import Confirm from '../widgets/Confirm';
 
 class SemiModal extends Component {
     constructor(props, context) {
@@ -34,8 +35,14 @@ class SemiModal extends Component {
     };
 
     handleClose() {
-        this.setState({ open: false });
-        this.context.router.push('/users');
+        Confirm('asdf', {
+            description: 'Would you like to remove this item from the list?',
+            confirmLabel: 'Yes',
+            abortLabel: 'No'
+        }).then(() => {
+            console.log('them', 456);});
+        // this.setState({ open: false });
+        // this.context.router.push('/users');
     };
 
     clickSubmit() {
