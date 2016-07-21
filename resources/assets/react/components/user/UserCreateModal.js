@@ -115,9 +115,9 @@ class UserCreateModal extends Component {
                 let state = Object.assign({}, this.state, {loading: false});
                 this.setState(state);
             }, 1000);
-            console.log(response);
+
             if (response.status == "error"){
-                // this.setState({alertText: response.data.error});
+                this.setState({alertText: response.data.error});
                 this.handleAlertOpen();
 
             }
@@ -128,17 +128,16 @@ class UserCreateModal extends Component {
     }
 
     getData(){
-        const {userId} = this.props;
-        console.log('userId ',userId);
         (typeof this.props.userId!=="undefined") ? this.editData() :  this.createData();
     }
 
     editData(){
-        console.log('edit data');
         this.ajax('GET', api.baseUrl('/user/' + this.props.userId + '/edit'), null,
             (response)=> {
                 if (response.status == "success") {
-                    // this.setState({user: Object.assign({}, response.data)});
+                    this.setState({branches: response.data.branches});
+                    this.setState({roles: response.data.roles});
+                    this.setState({user: response.data});
                 }
             },
             error=> {
@@ -228,6 +227,37 @@ class UserCreateModal extends Component {
             );
         }
         const {user} = this.state ;
+
+        const {password} = (typeof this.props.userId!=="undefined") ? "" :
+            <div>
+                <SemiText
+                    name="password"
+                    type="password"
+                    value={user.password}
+                    ref="password"
+                    validations={{minLength: 3,maxLength: 50}}
+                    required
+                    hintText="What is login password?"
+                    floatingLabelText="password"
+                    underlineShow={true}
+                />
+                <br />
+                <SemiText
+                    name="confirmPassword"
+                    type="password"
+                    value={user.password}
+                    ref="confirmPassword"
+                    validations="equalsField:password"
+                    validationError={ErrorMessage.equalsField}
+                    required
+                    hintText="What is login password?"
+                    floatingLabelText="confim password"
+                    underlineShow={true}
+                />
+                <br />
+            </div>
+            ;
+
         // console.log('render state',this.state);
         return (
             <div>
@@ -244,6 +274,7 @@ class UserCreateModal extends Component {
                     open={this.state.open}
                     onRequestClose={this.handleClose}
                     autoScrollBodyContent={true}
+                    style={{zIndex :'900'}}
                 >
                     <Formsy.Form
                         noSubmit
@@ -260,68 +291,21 @@ class UserCreateModal extends Component {
                             name="username"
                             value={user.username}
                             ref="username"
-                            validations={{
-                                            minLength: 3,
-                                            maxLength: 50
-                                          }}
-                            validationErrors={{
-                                            minLength: ErrorMessage.minLength,
-                                            maxLength: ErrorMessage.maxLength
-                                          }}
+                            validations={{minLength: 3,maxLength: 50}}
                             required
                             hintText="What is user login name?"
                             floatingLabelText="username"
                             underlineShow={true}
                         />
                         <br />
-                        <SemiText
-                            name="password"
-                            type="password"
-                            value={user.password}
-                            ref="password"
-                            validations={{
-                                            minLength: 3,
-                                            maxLength: 50
-                                          }}
-                            validationErrors={{
-                                            minLength: ErrorMessage.minLength,
-                                            maxLength: ErrorMessage.maxLength
-                                          }}
-                            required
-                            hintText="What is login password?"
-                            floatingLabelText="password"
-                            underlineShow={true}
-                        />
-                        <br />
-                        <SemiText
-                            name="confirmPassword"
-                            type="password"
-                            value={user.password}
-                            ref="confirmPassword"
-                            validations="equalsField:password"
-                            validationError={ErrorMessage.equalsField}
-                            validationErrors={{
-                                            minLength: ErrorMessage.minLength,
-                                            maxLength: ErrorMessage.maxLength
-                                          }}
-                            required
-                            hintText="What is login password?"
-                            floatingLabelText="confim password"
-                            underlineShow={true}
-                        />
-                        <br />
+
+                        {password}
+
                         <SemiText
                             name="name"
                             value={user.name}
                             ref="name"
-                            validations={{
-                                            minLength: 3,
-                                            maxLength: 50
-                                          }}
-                            validationErrors={{
-                                            minLength: ErrorMessage.minLength,
-                                            maxLength: ErrorMessage.maxLength
-                                          }}
+                            validations={{minLength: 3, maxLength: 50}}
                             required
                             hintText="What is user name?"
                             floatingLabelText="Name"
@@ -333,7 +317,6 @@ class UserCreateModal extends Component {
                             value={user.email}
                             ref="email"
                             validations="isEmail"
-                            validationError={ErrorMessage.email}
                             required
                             hintText="What is user email?"
                             floatingLabelText="email"
@@ -354,10 +337,6 @@ class UserCreateModal extends Component {
                             value={user.phone}
                             ref="phone"
                             validations={{minLength: 3,maxLength: 50}}
-                            validationErrors={{
-                                            minLength: ErrorMessage.minLength,
-                                            maxLength: ErrorMessage.maxLength
-                                          }}
                             required
                             hintText="What is user phone?"
                             floatingLabelText="phone"
@@ -369,10 +348,6 @@ class UserCreateModal extends Component {
                             value={user.phone2}
                             ref="phone2"
                             validations={{minLength: 3,maxLength: 50}}
-                            validationErrors={{
-                                            minLength: ErrorMessage.minLength,
-                                            maxLength: ErrorMessage.maxLength
-                                          }}
                             hintText="What is user phone2?"
                             floatingLabelText="phone2"
                             underlineShow={true}

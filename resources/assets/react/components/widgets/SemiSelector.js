@@ -32,13 +32,19 @@ class SemiSelector extends Component {
         this.setValidate = debounceFunc(this.refs.select.setValue, debounce);
     }
 
-    // componentWillReceiveProps(nextProps, nextState){
-    //     console.log('[SemiSelector] (componentWillReceiveProps) this props',this.props);
-    //     console.log('[SemiSelector] (componentWillReceiveProps) nextState',nextState);
-    //     console.log('[SemiSelector] (componentWillReceiveProps) nextProps',nextProps);
-    //     const input = this.refs.select;
-    //     input.setState({ value: input.getValue() || 0 });
-    // }
+    componentWillReceiveProps(nextProps, nextState){
+        // console.log('[SemiSelector] (componentWillReceiveProps) this props',this.props);
+        // console.log('[SemiSelector] (componentWillReceiveProps) nextState',nextState);
+        // console.log('[SemiSelector] (componentWillReceiveProps) nextProps',nextProps);
+        if(typeof nextProps.selectValue !== "undefined"){
+            console.log('set Value');
+            // const input = this.refs.select;
+            // input.setState({ value: nextProps.selectValue  });
+            this.handleChange(null,null,1) ;
+        }
+
+
+    }
 
     handleChange(event, index, value){
          // this.setState({value});

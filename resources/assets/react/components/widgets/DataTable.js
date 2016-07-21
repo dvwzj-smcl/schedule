@@ -256,7 +256,7 @@ class DataTable extends Component {
                                     ))}
                                     {dataTable.canEdit ?
                                         <TableRowColumn style={{width:'10%'}}>{row.status}
-                                            <IconButton tooltip="Edit" tooltipPosition="top-center" backgroundColor="#F00"  onClick={this.linkTo.bind(null,this.props.dataUrl+'/'+row.id)}>
+                                            <IconButton tooltip="Edit" tooltipPosition="top-center" backgroundColor="#F00"  onClick={this.linkTo.bind(null,this.props.clientPath+'/'+row.id)}>
                                                 <ContentCreate />
                                             </IconButton>
                                             <IconButton tooltip="Delete" tooltipPosition="top-center" onClick={this.deleteData.bind(null,row.id)}>
@@ -302,7 +302,8 @@ class DataTable extends Component {
 
 DataTable.propTypes = {
     dataColumn:PropTypes.array,
-    dataUrl:PropTypes.string.isRequired
+    dataUrl:PropTypes.string.isRequired,
+    clientPath:PropTypes.string
 };
 
 DataTable.contextTypes = {

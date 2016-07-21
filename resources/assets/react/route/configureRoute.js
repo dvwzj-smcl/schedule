@@ -34,6 +34,7 @@ export default function configureRoute(store){
             <Route path="login" component={LoginPage} />
             <Route path="users" component={UserIsAuthenticated(UserPage)}>
                 <Route path="create" component={UserIsAuthenticated(UserCreateModal)} />
+                <Route path=":id" component={UserIsAuthenticated(UserCreateModal)} />
             </Route>
             <Route path="organizer" component={UserIsAuthenticated(OrganizerPage)} />
             <Route path="schedule" component={UserIsAuthenticated(OrganizerPage)} />

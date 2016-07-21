@@ -119,7 +119,7 @@ class UserController extends Controller
         try {
             $chk = User::where('email', $data["email"])->first();
             if(isset($chk)){
-                return BF::result(false, 'failed!'); //--- check email repeat
+                return BF::result(false, 'อีเมล์นี้มีในระบบอยู่แล้วค่ะ!'); //--- check email repeat
             }
         } catch ( \Illuminate\Database\QueryException $e) {
             if($e->getCode() == 23000) {
@@ -130,7 +130,7 @@ class UserController extends Controller
         try {
             $chk = User::where('username', $data["username"])->first();
             if(isset($chk)){
-                return BF::result(false, 'failed!'); //--- check email repeat
+                return BF::result(false, 'ผู้ใช้นี้มีอยู่ในระบบอยู่แล้วค่ะ!'); //--- check email repeat
             }
         } catch ( \Illuminate\Database\QueryException $e) {
             if($e->getCode() == 23000) {
@@ -167,9 +167,20 @@ class UserController extends Controller
 
     public function edit($id)
     {
-        $user = User::find($id);
+        if(empty($id)){
+            return BF::result(false, 'ไม่พบข้อมูลนี้ค่ะ');
+        }
+        $user = User::with('roles')->find($id);
         $user->password = '';
-        return BF::result(true, ['action' => 'edit', 'data' => $user]);
+        $user->branchId = $user->branch_id;
+        //---  ใช้ isEmpty เพราะ collection มัน return ค่าบางอย่างมาแม้ array เป็น null
+        $user->roleId = ($user->roles->isEmpty()) ?  0 : $user->roles[0]->id ;
+        unset($user->roles);
+        unset($user->branch_id);
+        unset($user->password);
+        $user->roles = Role::all() ;
+        $user->branches = Branch::all() ;
+        return BF::result(true,$user , '[user] create');
     }
 
     public function update($id)
@@ -177,38 +188,54 @@ class UserController extends Controller
         if(empty($id)){
             return BF::result(false, 'ไม่พบข้อมูลนี้ค่ะ');
         }
-        $data = Input::all();
-        $data = array_diff_key($data, array_flip(['id','confirm_password', '_method','deleted_at','deleted_by','updated_at','created_at']));
 
-        if(isset($data["change_pass"]) && $data["change_pass"] == true) {
-            if (!empty($data["password"])) {
-                $data["password"] = \Hash::make($data["password"]);
-            } else {
-                unset($data["password"]);
-            }
-        } else {
-            unset($data["password"]);
+
+        if(empty($id)){
+            return BF::result(false, 'ไม่พบข้อมูลนี้ค่ะ');
         }
-        unset($data["change_pass"]);
-        $auth = BF::authLoginFail($data);
-        if($auth) {
-            return $auth ;
+        $testMode = true ;
+        $userId =  ($testMode)? 1 : Auth::user()->id ;
+
+        $data = Input::all();
+        $rules = array(
+            'username' => 'required|min:3|max:50',
+            'name' => 'required|min:3|max:50',
+            'email' => 'required|email',
+            'branch' => 'required|numeric',
+            'phone' => 'required|min:3|max:50',
+            'phone2' => 'min:3|max:50',
+            'roles' => 'required|numeric',
+        );
+        $validator = Validator::make($data, $rules);
+        if ($validator->fails()) {
+            return BF::result(false, $validator->messages()->first());
         }
-        $data["updated_by"] = Auth::user()->id ;
-//        $data["updated_by"] = Session::get('user_id');
+
+        if(empty($data["email"])){
+            return BF::result(false, 'กรุณากรอกอีเมล์ค่ะ!');
+        }
+
+        $data = array_diff_key($data, array_flip(['id','_method','deleted_at','deleted_by','updated_at','created_at']));
+        $data["updated_at"] = $userId ;
+        $data["branch_id"] = $data["branch"] ;
         try {
+            unset($data['branch']);
             $status = User::whereId($id)->update($data);
-            if($status == 1) {
-                return BF::result(true, ['action' => 'update', 'id' => $id]);
+            if($status === NULL) {
+                return BF::result(false, 'failed!');
             }
+            $role = [
+                $data['roles']
+            ];
+            $status->roleUser()->sync($role);
         } catch ( \Illuminate\Database\QueryException $e) {
             if($e->getCode() == 23000) {
                 return BF::result(false, "ชื่อซ้ำ: {$data['name']}");
             }
             return BF::result(false, $e->getMessage());
         }
+        return BF::result(true, [] , '[user] update');
 
-        return BF::result(false, 'failed!');
     }
 
     public function destroy($id)

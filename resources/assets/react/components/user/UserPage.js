@@ -120,6 +120,7 @@ class UserPage extends Component {
                                     ref="db"
                                     dataColumn={this.state.dataTableColumn}
                                     dataUrl={'/user'}
+                                    clientPath={'/users'}
                                 />
                             </Panel>
                         </Col>

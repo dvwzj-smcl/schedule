@@ -38,6 +38,7 @@ class AlertBox extends Component {
                     onRequestClose={this.handleClose}
                     bodyStyle={{marginTop:'20px'}}
                     autoScrollBodyContent={true}
+                    style={{zIndex :'990'}}
                 >
                     {this.props.alertText}
                 </Dialog>
