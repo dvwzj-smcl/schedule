@@ -35,14 +35,8 @@ class SemiModal extends Component {
     };
 
     handleClose() {
-        Confirm('asdf', {
-            description: 'Would you like to remove this item from the list?',
-            confirmLabel: 'Yes',
-            abortLabel: 'No'
-        }).then(() => {
-            console.log('them', 456);});
-        // this.setState({ open: false });
-        // this.context.router.push('/users');
+        this.context.dialog.confirm();
+        console.log('this.context.dialog.confirm', this.context.dialog.confirm);
     };
 
     clickSubmit() {
@@ -68,11 +62,10 @@ class SemiModal extends Component {
         ];
         return (
             <div>
-                <ApiCall getUrl={['10','asdf']} />
                 <Dialog
                     title={props.title}
                     actions={actions}
-                    modal={false}
+                    modal={true}
                     open={true}
                     onRequestClose={this.handleClose}
                     autoScrollBodyContent={true} >
@@ -86,13 +79,11 @@ class SemiModal extends Component {
 }
 
 SemiModal.propTypes = {
-    openAlertBox: PropTypes.bool.isRequired,
-    alertText: PropTypes.string.isRequired,
-    alertFunction: PropTypes.func.isRequired
 };
 
 SemiModal.contextTypes = {
-    router: PropTypes.object.isRequired
+    router: PropTypes.object.isRequired,
+    dialog: PropTypes.object.isRequired
 };
 
 export default SemiModal;

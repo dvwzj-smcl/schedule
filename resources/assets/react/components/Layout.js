@@ -10,6 +10,7 @@ import {Toolbar, ToolbarGroup, ToolbarSeparator, ToolbarTitle} from 'material-ui
 import Drawer from 'material-ui/Drawer';
 import RaisedButton from 'material-ui/RaisedButton';
 import MainMenu from './MainMenu';
+import Confirm from './widgets/Confirm';
 
 // import GeminiScrollbar from 'react-gemini-scrollbar';
 
@@ -19,6 +20,7 @@ class Layout extends Component {
         this.linkTo = this.linkTo.bind(this);
         this.logout = this.logout.bind(this);
         this.toggleSidebar = this.toggleSidebar.bind(this);
+        this.openConfirm = this.openConfirm.bind(this);
     }
 
     linkTo(pathname) {
@@ -33,9 +35,18 @@ class Layout extends Component {
         this.props.actions.user.logout();
     }
 
+    getChildContext() {
+        return { dialog: { confirm: this.openConfirm } }
+    }
+
+    openConfirm() {
+        this.refs.confirm.open();
+    }
+
     render() {
         return (this.props.user.access_token)? (
-            <div>
+            <div id="layout">
+                <Confirm description="asdf" ref="confirm" />
                 <Drawer open={true} className="menu-wrapper">
                     <Toolbar className="side-nav-bar"><ToolbarTitle text="Navigation"/></Toolbar>
                     <MainMenu location={this.props.location} />
@@ -97,6 +108,10 @@ Layout.propTypes = {
 Layout.contextTypes = {
     router: PropTypes.object
 };
+Layout.childContextTypes = {
+    dialog: PropTypes.object
+};
+
 
 
 export default Layout;
