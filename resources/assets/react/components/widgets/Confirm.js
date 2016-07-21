@@ -7,16 +7,24 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import ReactDOM from 'react-dom';
 
-
-class AlertBox extends Component {
+class Confirm extends Component {
     constructor(props, context) {
         super(props, context);
-        this.handleClose = this.handleClose.bind(this);
+        this.state = {
+            open: false
+        };
+        this.close = this.close.bind(this);
+        this.open = this.open.bind(this);
     }
 
-    handleClose(){
+    close(){
         console.log('close');
+        this.setState({ open: false });
         // this.props.alertFunction() ;
+    }
+
+    open(){
+        this.setState({ open: true });
     }
 
     render() {
@@ -24,18 +32,17 @@ class AlertBox extends Component {
             <FlatButton
                 label="Ok"
                 primary={true}
-                onTouchTap={this.handleClose}
+                onTouchTap={this.close}
             />
         ];
         return (
             <Dialog
-                muiTheme
                 titleStyle={{ backgroundColor: '#C62828', color: '#FFFFFF' }}
                 title="Alert!"
                 actions={actions}
                 modal={false}
-                open={true}
-                onRequestClose={this.handleClose}
+                open={this.state.open}
+                onRequestClose={this.close}
                 bodyStyle={{ marginTop: 20 }}
                 autoScrollBodyContent={true}
             >
@@ -55,22 +62,22 @@ class AlertBox extends Component {
 //     router: PropTypes.object.isRequired
 // };
 
-const Confirm = (message, options) => {
-    let cleanup, component, props, wrapper;
-    if (options == null) {
-        options = {};
-    }
-    props = Object.assign({}, options, {message: message});
-    wrapper = document.body.appendChild(document.createElement('div'));
-    component = ReactDOM.render(<AlertBox {...props}/>, wrapper);
-    cleanup = function() {
-        React.unmountComponentAtNode(wrapper);
-        return setTimeout(function() {
-            return wrapper.remove();
-        });
-    };
-    return component.promise.always(cleanup).promise();
-};
+// const Confirm = (message, options) => {
+//     let cleanup, component, props, wrapper;
+//     if (options == null) {
+//         options = {};
+//     }
+//     props = Object.assign({}, options, {message: message});
+//     wrapper = document.getElementById('layout').appendChild(document.createElement('div'));
+//     component = ReactDOM.render(<AlertBox {...props}/>, wrapper);
+//     cleanup = function() {
+//         React.unmountComponentAtNode(wrapper);
+//         return setTimeout(function() {
+//             return wrapper.remove();
+//         });
+//     };
+//     return component.promise.always(cleanup).promise();
+// };
 
 export default Confirm;
 
