@@ -8,31 +8,55 @@ class ApiCall extends Component {
     constructor(props) {
         super(props);
         this.callAjax = this.callAjax.bind(this);
+        this.state = {
+            data: false
+        };
         // this.isActiveMenu = this.isActiveMenu.bind(this);
     }
     
     componentDidMount() {
-        if(this.props.getUrl) {
+        // only call when user have access token
+        if(!this.props.user.access_token) return;
+
+        if(this.props.get) {
             let promises = [];
-            console.log('this.props.promises', this.props.getUrl);
-            for (let url of this.props.getUrl) {
-                promises.push(this.ajax('get', api.baseUrl(url), null, (response)=>{
-                    let state = Object.assign({}, this.state, {doctors: response.doctors});
-                    this.setState(state);
-                }, error=>{}));
+            let urls = this.props.get;
+            console.log('this.props.get', this.props.get);
+            for (let get of urls) {
+                let promise = new Promise((resolve, reject) => {
+                    this.ajax('get', api.baseUrl(get.url), null, (response)=>{
+                        resolve(response.data);
+                        // should be array instead of object
+                        // resolve(Object.assign({}, response.data));
+                    }, error=>{
+                        console.log('error', 1234);
+                    });
+
+                });
+                promises.push(promise);
+                // promises.push(this.ajax('get', api.baseUrl(get.url), null, (response)=>{
+                //     data[get.name] = response.data;
+                //     console.log('response', response, data[get.name]);
+                //     // this.setState(state);
+                // }, error=>{
+                //     console.log('error', 1234);
+                // }));
             }
-            // Promise.all(this.props.promises).then(()=> {
-            //     console.log('78978979', 78978979);
-            // });
+            Promise.all(promises).then((responses)=> {
+                let data = {};
+                // cannot use for in because not iterable.
+                for(let i in responses) {
+                    data[urls[i].name] = responses[i];
+                }
+                // callback
+                this.props.callback(data);
+            });
         }
     }
 
     ajax(method, url, data, success, error) {
         data = JSON.stringify(data);
-        let state = Object.assign({}, this.state, {loading: true});
-        this.setState(state);
         let access_token = this.props.user.access_token;
-        // console.log('access_token',access_token);
         $.ajax({
             method,
             url,
@@ -43,13 +67,8 @@ class ApiCall extends Component {
                 'Content-Type': 'application/json'
             }
         }).done(response=>{
-            setTimeout(()=>{
-                let state = Object.assign({}, this.state, {loading: false});
-                this.setState(state);
-            }, 1000);
             if (response.status == "error"){
-                this.setState({alertText: response.data.error});
-                // this.handleOpen();
+                // todo : show error
             }
             if(success) success(response);
         }).fail(message=>{
@@ -67,17 +86,4 @@ class ApiCall extends Component {
 }
 
 const mapStateToProps = ({ user }) => ({ user });
-
-// const mapDispatchToProps = dispatch => ({
-// });
-
-// WrappedApi.propTypes = {
-//     location: PropTypes.object.isRequired
-// };
-//
-// WrappedApi.contextTypes = {
-//     router: PropTypes.object
-// };
-
-
 export default connect(mapStateToProps)(ApiCall);

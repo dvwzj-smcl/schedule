@@ -2,6 +2,7 @@ import React, { PropTypes, Component } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import { Form } from 'formsy-react';
 import ReactDOM from 'react-dom';
+import ApiCall from '../../api/ApiCall';
 
 class SemiForm extends Component {
     constructor(props) {
@@ -18,9 +19,9 @@ class SemiForm extends Component {
         this.submit = this.submit.bind(this);
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        return this.state.canSubmit !== nextState.canSubmit;
-    }
+    // shouldComponentUpdate(nextProps, nextState) {
+    //     return this.state.canSubmit !== nextState.canSubmit;
+    // }
 
     enableButton() {
         this.setState({
@@ -51,7 +52,12 @@ class SemiForm extends Component {
         this.refs.form.reset();
     }
 
+    apiCallback(data) {
+        console.log('callback - data', data);
+    }
+
     render() {
+        // console.log('render: form');
         let props = this.props;
         let resetBtn = props.hasReset && !props.noButton ? (
             <RaisedButton
@@ -79,10 +85,15 @@ class SemiForm extends Component {
                 onValidSubmit={this.submitForm}
                 onInvalidSubmit={this.notifyFormError}
                 ref="form"
-                {...props} >
+                {...props} 
+            >
                 {props.children}
                 {submitBtn}
                 {resetBtn}
+                <ApiCall
+                    get={props.get} callback={props.getCallback}
+                    submit={props.get} submitCallback={props.getCallback}
+                />
                 <button style={{display:'none'}} ref="submitBtn" type="submit">Submit</button>
             </Form>);
     }

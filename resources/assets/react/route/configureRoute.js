@@ -33,7 +33,7 @@ export default function configureRoute(store){
             <IndexRoute component={UserIsAuthenticated(HomePage)} />
             <Route path="login" component={LoginPage} />
             <Route path="users" component={UserIsAuthenticated(UserPage)}>
-                <Route path="create" component={UserIsAuthenticated(UserCreateModal)} />
+                <Route path="create" component={UserIsAuthenticated(UserModal)} />
                 <Route path=":id" component={UserIsAuthenticated(UserCreateModal)} />
             </Route>
             <Route path="organizer" component={UserIsAuthenticated(OrganizerPage)} />

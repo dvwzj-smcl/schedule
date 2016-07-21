@@ -11,6 +11,7 @@ import Drawer from 'material-ui/Drawer';
 import RaisedButton from 'material-ui/RaisedButton';
 import MainMenu from './MainMenu';
 import Confirm from './widgets/Confirm';
+import Alert from './widgets/Alert';
 
 // import GeminiScrollbar from 'react-gemini-scrollbar';
 
@@ -21,6 +22,7 @@ class Layout extends Component {
         this.logout = this.logout.bind(this);
         this.toggleSidebar = this.toggleSidebar.bind(this);
         this.openConfirm = this.openConfirm.bind(this);
+        this.openAlert = this.openAlert.bind(this);
     }
 
     linkTo(pathname) {
@@ -36,17 +38,22 @@ class Layout extends Component {
     }
 
     getChildContext() {
-        return { dialog: { confirm: this.openConfirm } }
+        return { dialog: { confirm: this.openConfirm, alert: this.openAlert } }
     }
 
-    openConfirm() {
-        this.refs.confirm.open();
+    openConfirm(params) {
+        this.refs.confirm.open(params);
+    }
+
+    openAlert(params) {
+        this.refs.alert.open(params);
     }
 
     render() {
         return (this.props.user.access_token)? (
             <div id="layout">
-                <Confirm description="asdf" ref="confirm" />
+                <Confirm ref="confirm" />
+                <Alert ref="alert" />
                 <Drawer open={true} className="menu-wrapper">
                     <Toolbar className="side-nav-bar"><ToolbarTitle text="Navigation"/></Toolbar>
                     <MainMenu location={this.props.location} />
@@ -77,8 +84,6 @@ class Layout extends Component {
                         </ToolbarGroup>
                     </Toolbar>
                 </Paper>
-
-
                 <Paper style={{display: this.props.user.error ? 'block' : 'none', padding: 5}}>
                     {this.props.user.error}
                 </Paper>

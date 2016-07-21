@@ -46,6 +46,7 @@ class SemiText extends Component{
     }
 
     render() {
+        // console.log('render: text');
         return (
             <FormsyText 
                 ref="input"

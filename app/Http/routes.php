@@ -43,7 +43,8 @@ Route::group(['prefix' => 'api', 'middleware' => []], function () {
     Route::controller('auth', 'User\AuthController');
     Route::resource('user', 'User\UserController');
     Route::resource('branch', 'User\BranchController');
-    Route::controller('branch', 'User\BranchController');
+    Route::controller('branches', 'User\BranchController');
+    Route::controller('roles', 'User\RoleController');
     Route::resource('permission', 'User\PermissionController');
     Route::resource('role', 'User\RoleController');
 

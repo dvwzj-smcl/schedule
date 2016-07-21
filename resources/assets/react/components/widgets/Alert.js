@@ -7,32 +7,26 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import ReactDOM from 'react-dom';
 
-class Confirm extends Component {
+class Alert extends Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
             open: false,
-            title: 'Confirm',
+            title: 'Alert',
             description: 'Something happened!'
         };
         this.close = this.close.bind(this);
         this.open = this.open.bind(this);
-        this.onConfirm = this.onConfirm.bind(this);
     }
 
     close(){
+        console.log('close');
         this.setState({ open: false });
         // this.props.alertFunction() ;
     }
 
-    open({description, title, callback}){
-        this.setState({ open: true, description, title, callback });
-    }
-
-    onConfirm() {
-        // todo : confirm function
-        if(this.state.callback) this.state.callback();
-        this.close();
+    open({description, title}){
+        this.setState({ open: true, description, title });
     }
 
     render() {
@@ -42,11 +36,6 @@ class Confirm extends Component {
                 label="Ok"
                 primary={true}
                 onTouchTap={this.close}
-            />,
-            <FlatButton
-                label="Confirm"
-                primary={true}
-                onTouchTap={this.onConfirm}
             />
         ];
         return (
@@ -94,6 +83,6 @@ class Confirm extends Component {
 //     return component.promise.always(cleanup).promise();
 // };
 
-export default Confirm;
+export default Alert;
 
 

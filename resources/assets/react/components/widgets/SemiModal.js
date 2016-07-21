@@ -35,8 +35,8 @@ class SemiModal extends Component {
     };
 
     handleClose() {
-        this.context.dialog.confirm();
-        console.log('this.context.dialog.confirm', this.context.dialog.confirm);
+        // this.context.dialog.alert({description: 'Test Description', title: 'Test Title'});
+        // this.context.dialog.confirm({description: 'Test Description', title: 'Test Title', callback: () => {console.log('callback!')}});
     };
 
     clickSubmit() {
@@ -44,6 +44,7 @@ class SemiModal extends Component {
     }
 
     render() {
+        // console.log('render: modal');
         let props = this.props;
         const actions = [
             <FlatButton
@@ -69,7 +70,17 @@ class SemiModal extends Component {
                     open={true}
                     onRequestClose={this.handleClose}
                     autoScrollBodyContent={true} >
-                    <SemiForm ref="form" noSubmit onValidSubmit={props.submitForm} onValid={this.enableButton} onInvalid={this.disableButton} >
+                    <SemiForm
+                        ref="form"
+                        noSubmit
+                        onValidSubmit={props.submitForm}
+                        onValid={this.enableButton}
+                        onInvalid={this.disableButton}
+                        get={props.get}
+                        getCallback={props.getCallback}
+                        submit={props.post}
+                        submitCallback={props.postCallback}
+                    >
                         {props.children}
                     </SemiForm>
                 </Dialog>

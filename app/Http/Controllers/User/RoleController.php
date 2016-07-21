@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Models\User\Role;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
@@ -18,7 +19,13 @@ class RoleController extends Controller
     public function create()
     {
     }
-    
+
+    public function getList()
+    {
+        return BF::result(true, Role::all(), '[role] list');
+    }
+
+
     public function store()
     {
         $data = Input::all();

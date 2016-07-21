@@ -11,15 +11,19 @@ import RaisedButton from 'material-ui/RaisedButton';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import Divider from 'material-ui/Divider';
 import SemiText from '../forms/SemiText';
+import SemiSelect from '../forms/SemiSelect';
 
 class UserModal extends Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
             open: true,
-            user: {}
+            user: {},
+            data: {},
+            value: { branch: 1 }
         };
         this.submitForm = this.submitForm.bind(this);
+        this.getCallback = this.getCallback.bind(this);
     }
 
     submitForm(data) {
@@ -28,10 +32,28 @@ class UserModal extends Component {
         // this.refs.modal.handleClose();
     }
 
+    getCallback(data) {
+        this.setState({data});
+        // this.refs.branch.setValue(1);
+    }
+
+    submitCallback(data) {
+        console.log('submitCallback', ...data);
+    }
+
     render() {
+        console.log('render: usermodal', this.state);
         let user = this.state.user;
         return (
-            <SemiModal ref="modal" submitForm={this.submitForm} title="Create User">
+            <SemiModal 
+                ref="modal" 
+                submitForm={this.submitForm} 
+                title="Create User"
+                get={[{url:'branches/list', name: 'branches'}, {url:'roles/list', name: 'roles'}]}
+                getCallback={this.getCallback}
+                submit={{url: 'user', data: {}}}
+                submitCallback={this.getCallback}
+            >
                 <Row>
                     <Col xs md={6}>
                         <SemiText
@@ -89,6 +111,15 @@ class UserModal extends Component {
                         />
                     </Col>
                     <Col xs md={6}>
+                        <SemiSelect
+                            name="branch"
+                            ref="branch"
+                            data={this.state.data.branches}
+                            value={this.state.value.branch}
+                            required
+                            floatingLabelText={'branch'}
+                            fullWidth={true}
+                        />
                     </Col>
                 </Row>
             </SemiModal>
