@@ -75,17 +75,16 @@ class UserController extends Controller
             return BF::result(false, $e->getMessage());
         }
 
-        return BF::result(true, $result, '[usertype] index');
+        return BF::result(true, $result, '[user] index');
     }
 
     public function create()
     {
         $data = [
             'roles' => Role::all(),
-            'usertypes' => UserType::all(),
             'branches' => Branch::all()
         ];
-        return BF::result(true, ['action' => 'create', 'data' => $data]);
+        return BF::result(true, $data, '[user] create');
     }
 
     public function store()
@@ -104,6 +103,7 @@ class UserController extends Controller
             'branch' => 'required|numeric',
             'phone' => 'required|min:3|max:50',
             'phone2' => 'min:3|max:50',
+            'roles' => 'required|numeric',
         );
         $validator = Validator::make($data, $rules);
         if ($validator->fails()) {
@@ -148,6 +148,10 @@ class UserController extends Controller
             if($status === NULL) {
                 return BF::result(false, 'failed!');
             }
+            $role = [
+                $data['roles']
+            ];
+            $status->roleUser()->sync($role);
         } catch ( \Illuminate\Database\QueryException $e) {
             if($e->getCode() == 23000) {
                 return BF::result(false, "ชื่อซ้ำ: {$data['name']}");

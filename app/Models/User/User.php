@@ -54,7 +54,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo('App\Models\User\Branch');
     }
-
+    public function roleUser() {
+        return $this->belongsToMany('App\Models\User\Role','role_user');
+    }
 
     public function getAllPermissions(){
         $perms = [];

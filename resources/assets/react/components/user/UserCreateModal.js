@@ -16,6 +16,8 @@ import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 
+import SemiSelector from '../widgets/SemiSelector';
+
 import AlertBox from '../widgets/AlertBox';
 
 import api from '../../api';
@@ -27,7 +29,9 @@ class UserCreateModal extends Component {
             open: true,
             user: [],
             openAlertBox: false,
-            alertText:''
+            alertText: '',
+            branches: [],
+            roles: []
         };
         this.handleOpen = this.handleOpen.bind(this);
         this.handleClose = this.handleClose.bind(this);
@@ -41,14 +45,54 @@ class UserCreateModal extends Component {
         this.enableButton = this.enableButton.bind(this);
         this.disableButton = this.disableButton.bind(this);
         this.submitForm = this.submitForm.bind(this);
+
+
+
+        this.createData =  this.createData.bind(this);
+        this.editData =  this.editData.bind(this);
+        this.storeData =  this.storeData.bind(this);
+        this.updateData =  this.updateData.bind(this);
     }
 
     componentDidMount(){
         // console.log('[ManageUserTypePage] componentDidMount');
-        if (typeof this.props.userId!="undefined"){
-            console.log('load Edit data');
-            this.getData();
-        }
+        // if (typeof this.props.userId!="undefined"){
+        //     console.log('load Edit data');
+        //     this.getData();
+        // }
+        this.getData();
+    }
+
+
+
+
+    handleOpen() {
+        this.setState({open: true});
+    };
+
+    handleClose() {
+        this.setState({open: false});
+        this.redirect();
+    };
+
+    handleAlertOpen(){
+        this.setState({openAlertBox: true});
+    }
+
+    handleAlertClose(){
+        this.setState({openAlertBox: false});
+    }
+
+    enableButton() {
+        this.setState({
+            canSubmit: true
+        });
+    }
+
+    disableButton() {
+        this.setState({
+            canSubmit: false
+        });
     }
 
     ajax(method, url, data, success, error){
@@ -86,71 +130,68 @@ class UserCreateModal extends Component {
     getData(){
         const {userId} = this.props;
         console.log('userId ',userId);
-        this.ajax('GET', api.baseUrl('/user/'+userId+'/edit'), null,
-            (response)=>{
-                if(response.status=="success"){
+        (typeof this.props.userId!=="undefined") ? this.editData() :  this.createData();
+    }
+
+    editData(){
+        console.log('edit data');
+        this.ajax('GET', api.baseUrl('/user/' + this.props.userId + '/edit'), null,
+            (response)=> {
+                if (response.status == "success") {
                     // this.setState({user: Object.assign({}, response.data)});
+                }
+            },
+            error=> {
+            }
+        );
+    }
+    createData(){
+        console.log('create data');
+        this.ajax('GET', api.baseUrl('/user/create'), null,
+            (response)=> {
+                if (response.status == "success") {
+                    this.setState({branches: response.data.branches});
+                    this.setState({roles: response.data.roles});
+                    console.log(response);
+                }
+            },
+            error=> {
+            }
+        );
+    }
+
+    submitForm(data) {
+
+        if (typeof this.props.userId!="undefined"){
+            this.updateData(data);
+        }else{
+            this.storeData(data);
+        }
+    }
+
+    updateData(data){
+        console.log('update');
+        this.ajax('PUT', api.baseUrl('/user/'+this.props.userId ), data,
+            (response)=>{
+                console.log('response',response);
+                if(response.status=="success"){
+                    this.handleClose();
                 }
             },
             error=>{}
         );
     }
-
-    handleOpen() {
-        this.setState({open: true});
-    };
-
-    handleClose() {
-        this.setState({open: false});
-        this.context.router.push('/users');
-    };
-
-    handleAlertOpen(){
-        // this.setState({openAlertBox: true});
-    }
-
-    handleAlertClose(){
-        this.setState({openAlertBox: false});
-    }
-
-    enableButton() {
-        this.setState({
-            canSubmit: true
-        });
-    }
-
-    disableButton() {
-        this.setState({
-            canSubmit: false
-        });
-    }
-
-    submitForm(data) {
-        this.handleClose();
-        if (typeof this.props.userId!="undefined"){
-            console.log('update');
-            const {userId} = this.props;
-            this.ajax('PUT', api.baseUrl('/user/'+userId ), data,
-                (response)=>{
-                    console.log('response',response);
-                    if(response.status=="success"){
-                        this.redirect();
-                    }
-                },
-                error=>{}
-            );
-        }else{
-            console.log('create');
-            this.ajax('post', api.baseUrl('/user' ), data,
-                (response)=>{
-                    console.log('response',response);
-                    if(response.status=="success"){
-                        this.redirect();
-                    }
-                },
-                error=>{}
-            );
-        }
+    storeData(data){
+        console.log('store',data);
+        this.ajax('post', api.baseUrl('/user' ), data,
+            (response)=>{
+                console.log('response',response);
+                if(response.status=="success"){
+                    this.handleClose();
+                }
+            },
+            error=>{}
+        );
     }
 
     redirect(){
@@ -187,6 +228,7 @@ class UserCreateModal extends Component {
             );
         }
         const {user} = this.state ;
+        // console.log('render state',this.state);
         return (
             <div>
                 <AlertBox
@@ -298,32 +340,20 @@ class UserCreateModal extends Component {
                             underlineShow={true}
                         />
                         <br />
-                        <SemiText
-                            name="branch"
-                            value={user.branchId}
-                            ref="branch"
-                            validations={{
-                                            minLength: 1,
-                                            maxLength: 50
-                                          }}
-                            validationErrors={{
-                                            minLength: ErrorMessage.minLength,
-                                            maxLength: ErrorMessage.maxLength
-                                          }}
-                            required
-                            hintText="What is user branch?"
-                            floatingLabelText="branch"
-                            underlineShow={true}
-                        />
+                        <SemiSelector  name="branch"
+                                       ref="branch"
+                                       dataSelector={this.state.branches}
+                                       selectValue={user.branchId}
+                                       required
+                                       floatingLabelText={'branch'}
+                        >
+                        </SemiSelector>
                         <br />
                         <SemiText
                             name="phone"
                             value={user.phone}
                             ref="phone"
-                            validations={{
-                                            minLength: 3,
-                                            maxLength: 50
-                                          }}
+                            validations={{minLength: 3,maxLength: 50}}
                             validationErrors={{
                                             minLength: ErrorMessage.minLength,
                                             maxLength: ErrorMessage.maxLength
@@ -338,10 +368,7 @@ class UserCreateModal extends Component {
                             name="phone2"
                             value={user.phone2}
                             ref="phone2"
-                            validations={{
-                                            minLength: 3,
-                                            maxLength: 50
-                                          }}
+                            validations={{minLength: 3,maxLength: 50}}
                             validationErrors={{
                                             minLength: ErrorMessage.minLength,
                                             maxLength: ErrorMessage.maxLength
@@ -350,6 +377,17 @@ class UserCreateModal extends Component {
                             floatingLabelText="phone2"
                             underlineShow={true}
                         />
+                        <br />
+                        <SemiSelector  name="roles"
+                                       ref="roles"
+                                       dataSelector={this.state.roles}
+                                       selectValue={user.roleId}
+                                       required
+                                       floatingLabelText={'roles'}
+                        >
+                        </SemiSelector>
+
+
                     </Formsy.Form>
                 </Dialog>
             </div>
