@@ -35,25 +35,23 @@ class SemiForm extends Component {
         });
     }
 
+    /** default for sumbit form
+     * override by onValidSubmitC
+     * ajax: POST
+     */
     submitForm(data) {
-        console.log('data', data);
+        this.refs.apiCall.post(data);
     }
 
-    notifyFormError(/*data*/) {
-        // console.error('Form error:', data);
-    }
+    notifyFormError(/*data*/) {}
 
-    // submit programatically
+    // can submit by calling this, instead of submit button press
     submit() {
         ReactDOM.findDOMNode(this.refs.submitBtn).click();
     }
 
     resetForm() {
         this.refs.form.reset();
-    }
-
-    apiCallback(data) {
-        console.log('callback - data', data);
     }
 
     render() {
@@ -90,9 +88,9 @@ class SemiForm extends Component {
                 {props.children}
                 {submitBtn}
                 {resetBtn}
-                <ApiCall
-                    get={props.get} callback={props.getCallback}
-                    submit={props.get} submitCallback={props.getCallback}
+                <ApiCall ref="apiCall"
+                    get={props.get} getCallback={props.getCallback}
+                    submit={props.submit} submitCallback={props.submitCallback}
                 />
                 <button style={{display:'none'}} ref="submitBtn" type="submit">Submit</button>
             </Form>);

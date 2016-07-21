@@ -4,24 +4,41 @@ import { connect } from 'react-redux';
 import api from './index';
 import $ from 'jquery';
 
+// deep object setter
+const setter = (obj, propString, value) => {
+    if (!propString)
+        return obj;
+
+    let prop, ref = obj, props = propString.split('.');
+    for (var i = 0, iLen = props.length - 1; i <= iLen; i++) {
+        prop = props[i];
+        if(i == iLen) {
+            return ref[prop] = value;
+        } else {
+            if(ref[prop] == undefined) {
+                ref[prop] = {};
+            }
+            ref = ref[prop];
+        }
+    }
+    return obj;
+};
+
 class ApiCall extends Component {
     constructor(props) {
         super(props);
-        this.callAjax = this.callAjax.bind(this);
         this.state = {
             data: false
         };
-        // this.isActiveMenu = this.isActiveMenu.bind(this);
+        this.post = this.post.bind(this);
     }
     
     componentDidMount() {
         // only call when user have access token
         if(!this.props.user.access_token) return;
-
         if(this.props.get) {
             let promises = [];
             let urls = this.props.get;
-            console.log('this.props.get', this.props.get);
             for (let get of urls) {
                 let promise = new Promise((resolve, reject) => {
                     this.ajax('get', api.baseUrl(get.url), null, (response)=>{
@@ -29,27 +46,21 @@ class ApiCall extends Component {
                         // should be array instead of object
                         // resolve(Object.assign({}, response.data));
                     }, error=>{
-                        console.log('error', 1234);
+                        // todo : error handling later
+                        console.log('api error:', get.url);
                     });
 
                 });
                 promises.push(promise);
-                // promises.push(this.ajax('get', api.baseUrl(get.url), null, (response)=>{
-                //     data[get.name] = response.data;
-                //     console.log('response', response, data[get.name]);
-                //     // this.setState(state);
-                // }, error=>{
-                //     console.log('error', 1234);
-                // }));
             }
             Promise.all(promises).then((responses)=> {
                 let data = {};
-                // cannot use for in because not iterable.
                 for(let i in responses) {
-                    data[urls[i].name] = responses[i];
+                    // data[urls[i].name] = responses[i];
+                    setter(data, urls[i].name, responses[i]);
                 }
                 // callback
-                this.props.callback(data);
+                this.props.getCallback(data);
             });
         }
     }
@@ -76,8 +87,14 @@ class ApiCall extends Component {
         });
     }
 
-    callAjax() {
-        console.log('123456789', 123456789);
+    post(data) {
+        if(this.props.submit) {
+            this.ajax('post', api.baseUrl(this.props.submit.url), data, (response)=>{
+                if(this.props.submitCallback) this.props.submitCallback(response.data);
+            }, error=>{
+                console.log('api error:', this.props.submit.url);
+            });
+        }
     }
 
     render() {

@@ -10,7 +10,6 @@ class SemiSelect extends Component {
             value: 0,
             data: props.data || false
         };
-        this.handleChange = this.handleChange.bind(this);
     }
 
     componentWillReceiveProps(nextProps, nextState){
@@ -27,13 +26,14 @@ class SemiSelect extends Component {
 
     }
 
+    // not used
     setData(data) {
         this.setState({data});
     }
 
     render(){
         let {data} = this.props;
-        // console.log('render: select', data);
+        console.log('render: select', data, this.props.value);
         let items = data? (
             data.map((column, index) => (
                 <MenuItem value={column.id} key={index} primaryText={column.name} />

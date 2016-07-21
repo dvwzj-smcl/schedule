@@ -40,6 +40,7 @@ Route::group(['prefix' => 'api', 'middleware' => []], function () {
 //
 //});
 Route::group(['prefix' => 'api', 'middleware' => []], function () {
+    // todo : เติม s ทุกอันด้วยครับ
     Route::controller('auth', 'User\AuthController');
     Route::resource('user', 'User\UserController');
     Route::resource('branch', 'User\BranchController');

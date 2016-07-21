@@ -4,10 +4,6 @@ import { bindActionCreators } from 'redux';
 import { Row, Col } from 'react-flexbox-grid';
 
 import SemiModal from '../widgets/SemiModal';
-import ApiCall from '../../api/ApiCall';
-import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
-import RaisedButton from 'material-ui/RaisedButton';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import Divider from 'material-ui/Divider';
 import SemiText from '../forms/SemiText';
@@ -18,47 +14,44 @@ class UserModal extends Component {
         super(props, context);
         this.state = {
             open: true,
-            user: {},
             data: {},
-            value: { branch: 1 }
+            values: {}
         };
-        this.submitForm = this.submitForm.bind(this);
         this.getCallback = this.getCallback.bind(this);
     }
 
-    submitForm(data) {
-        // to do
-        console.log('data', data);
-        // this.refs.modal.handleClose();
-    }
-
     getCallback(data) {
-        this.setState({data});
+        console.log('*data', data);
+        this.setState(data);
         // this.refs.branch.setValue(1);
     }
 
     submitCallback(data) {
-        console.log('submitCallback', ...data);
+        console.log('submitCallback', data);
     }
 
     render() {
-        console.log('render: usermodal', this.state);
-        let user = this.state.user;
+        let values = this.state.values;
+        console.log('render: usermodal', this.state, values.branchId, values.roleId);
         return (
             <SemiModal 
                 ref="modal" 
                 submitForm={this.submitForm} 
                 title="Create User"
-                get={[{url:'branches/list', name: 'branches'}, {url:'roles/list', name: 'roles'}]}
+                get={[
+                    {url:'branches/list', name: 'data.branches'},
+                    {url:'roles/list', name: 'data.roles'},
+                    {url:'user/1/edit', name: 'values'}
+                ]}
                 getCallback={this.getCallback}
-                submit={{url: 'user', data: {}}}
+                submit={{url: 'user'}}
                 submitCallback={this.getCallback}
             >
                 <Row>
                     <Col xs md={6}>
                         <SemiText
                             name="username"
-                            value={user.username}
+                            value={values.username}
                             validations={{ minLength: 3, maxLength: 50 }}
                             required
                             hintText="What is login username?"
@@ -69,7 +62,7 @@ class UserModal extends Component {
                     <Col xs md={6}>
                         <SemiText
                             name="email"
-                            value={user.email}
+                            value={values.email}
                             validations="isEmail"
                             required
                             floatingLabelText="email"
@@ -81,7 +74,6 @@ class UserModal extends Component {
                         <SemiText
                             name="password"
                             type="password"
-                            value={user.password}
                             validations={{ minLength: 3, maxLength: 50 }}
                             hintText="Longer the better"
                             floatingLabelText="password"
@@ -92,7 +84,6 @@ class UserModal extends Component {
                         <SemiText
                             name="confirmPassword"
                             type="password"
-                            value={user.password}
                             validations="equalsField:password"
                             required
                             floatingLabelText="confim password"
@@ -103,7 +94,7 @@ class UserModal extends Component {
                     <Col xs md={6}>
                         <SemiText
                             name="name"
-                            value={user.name}
+                            value={values.name}
                             validations={{ minLength: 3, maxLength: 50 }}
                             required
                             floatingLabelText="full name"
@@ -113,13 +104,48 @@ class UserModal extends Component {
                     <Col xs md={6}>
                         <SemiSelect
                             name="branch"
-                            ref="branch"
                             data={this.state.data.branches}
-                            value={this.state.value.branch}
+                            value={values.branchId}
                             required
                             floatingLabelText={'branch'}
                             fullWidth={true}
                         />
+                    </Col>
+                </Row><Row>
+                    <Col xs md={6}>
+                        <SemiText
+                            name="phone"
+                            value={values.phone}
+                            validations={{minLength: 3,maxLength: 50}}
+                            required
+                            hintText="Primary phone number"
+                            floatingLabelText="phone"
+                            fullWidth={true}
+                        />
+
+                    </Col>
+                    <Col xs md={6}>
+                        <SemiText
+                            name="phone2"
+                            value={values.phone_2}
+                            validations={{minLength: 3,maxLength: 50}}
+                            hintText="Secondary phone number"
+                            floatingLabelText="another phone"
+                            fullWidth={true}
+                        />
+                    </Col>
+                </Row><Row>
+                    <Col xs md={6}>
+                        <SemiSelect
+                            name="roles"
+                            data={this.state.data.roles}
+                            value={values.roleId}
+                            required
+                            floatingLabelText={'roles'}
+                            fullWidth={true}
+                        />
+                    </Col>
+                    <Col xs md={6}>
                     </Col>
                 </Row>
             </SemiModal>
