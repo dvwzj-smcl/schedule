@@ -10,9 +10,8 @@ import OrganizerPage from '../components/OrganizerPage';
 import LoginPage from '../components/LoginPage';
 import NotFoundPage from '../components/NotFoundPage';
 import UserPage from '../components/user/UserPage';
-import UserCreateModal from '../components/user/UserCreateModal';
 import UserModal from '../components/user/UserModal';
-// import ManageUserPage from '../components/user/ManageUserPage';
+
 
 const UserIsAuthenticated = UserAuthWrapper({
     authSelector: state => state.user, // how to get the user state
@@ -34,7 +33,7 @@ export default function configureRoute(store){
             <Route path="login" component={LoginPage} />
             <Route path="users" component={UserIsAuthenticated(UserPage)}>
                 <Route path="create" component={UserIsAuthenticated(UserModal)} />
-                <Route path=":id" component={UserIsAuthenticated(UserCreateModal)} />
+                <Route path=":id" component={UserIsAuthenticated(UserModal)} />
             </Route>
             <Route path="organizer" component={UserIsAuthenticated(OrganizerPage)} />
             <Route path="schedule" component={UserIsAuthenticated(OrganizerPage)} />

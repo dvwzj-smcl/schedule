@@ -42,10 +42,12 @@ class Layout extends Component {
     }
 
     openConfirm(params) {
+        console.log('openConfirm');
         this.refs.confirm.open(params);
     }
 
     openAlert(params) {
+        console.log('openAlert');
         this.refs.alert.open(params);
     }
 

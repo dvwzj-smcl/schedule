@@ -32,7 +32,7 @@ class UserModal extends Component {
 
     render() {
         let values = this.state.values;
-        console.log('render: usermodal', this.state, values.branchId, values.roleId);
+        // console.log('render: usermodal', this.state, values.branchId, values.roleId);
         return (
             <SemiModal 
                 ref="modal" 
@@ -45,7 +45,7 @@ class UserModal extends Component {
                 ]}
                 getCallback={this.getCallback}
                 submit={{url: 'user'}}
-                submitCallback={this.getCallback}
+                submitCallback={this.submitCallback}
             >
                 <Row>
                     <Col xs md={6}>

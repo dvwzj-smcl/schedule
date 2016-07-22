@@ -60,6 +60,7 @@ class ApiCall extends Component {
                     setter(data, urls[i].name, responses[i]);
                 }
                 // callback
+                console.log('Promise data :',data);
                 this.props.getCallback(data);
             });
         }

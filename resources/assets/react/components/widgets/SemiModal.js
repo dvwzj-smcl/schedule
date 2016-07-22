@@ -31,10 +31,13 @@ class SemiModal extends Component {
     }
 
     handleOpen() {
+        console.log('handle Open');
         this.setState({ open: true });
     };
 
     handleClose() {
+        console.log('handleClose');
+        this.setState({ open: false });
         // this.context.dialog.alert({description: 'Test Description', title: 'Test Title'});
         // this.context.dialog.confirm({description: 'Test Description', title: 'Test Title', callback: () => {console.log('callback!')}});
     };
@@ -79,7 +82,7 @@ class SemiModal extends Component {
                         get={props.get}
                         getCallback={props.getCallback}
                         submit={props.post}
-                        submitCallback={props.postCallback}
+                        submitCallback={props.submitCallback}
                     >
                         {props.children}
                     </SemiForm>
