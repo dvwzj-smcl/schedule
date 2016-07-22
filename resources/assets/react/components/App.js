@@ -40,7 +40,7 @@ App.contextTypes = {
 };
 
 function mapStateToProps(state) {
-    console.log('App state', state);
+    // console.log('App state', state);
     return {
         user: state.user,
         menu: state.menu

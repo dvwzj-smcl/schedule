@@ -18,10 +18,12 @@ class UserModal extends Component {
             values: {}
         };
         this.getCallback = this.getCallback.bind(this);
+        this.submitCallback = this.submitCallback.bind(this);
+        this.submitForm = this.submitForm.bind(this);
     }
 
     getCallback(data) {
-        console.log('*data', data);
+        // console.log('*data', data);
         this.setState(data);
         // this.refs.branch.setValue(1);
     }
@@ -30,13 +32,17 @@ class UserModal extends Component {
         console.log('submitCallback', data);
     }
 
+    submitForm(data) {
+        // todo: Filter or Change data before POST to server
+        return data;
+    }
+
     render() {
         let values = this.state.values;
         // console.log('render: usermodal', this.state, values.branchId, values.roleId);
         return (
             <SemiModal 
                 ref="modal" 
-                submitForm={this.submitForm} 
                 title="Create User"
                 get={[
                     {url:'branches/list', name: 'data.branches'},
@@ -44,8 +50,9 @@ class UserModal extends Component {
                     {url:'user/1/edit', name: 'values'}
                 ]}
                 getCallback={this.getCallback}
-                submit={{url: 'user'}}
-                submitCallback={this.submitCallback}
+                submit={{url: 'user'}} // url
+                submitForm={this.submitForm} // filter
+                submitCallback={this.submitCallback} // callback from server
             >
                 <Row>
                     <Col xs md={6}>
@@ -74,6 +81,7 @@ class UserModal extends Component {
                         <SemiText
                             name="password"
                             type="password"
+                            // defaultValue="asdfasdf"
                             validations={{ minLength: 3, maxLength: 50 }}
                             hintText="Longer the better"
                             floatingLabelText="password"
@@ -84,6 +92,7 @@ class UserModal extends Component {
                         <SemiText
                             name="confirmPassword"
                             type="password"
+                            // defaultValue="asdfasdf"
                             validations="equalsField:password"
                             required
                             floatingLabelText="confim password"
@@ -118,7 +127,7 @@ class UserModal extends Component {
                             value={values.phone}
                             validations={{minLength: 3,maxLength: 50}}
                             required
-                            hintText="Primary phone number"
+                            hintText="Primary phone number"u
                             floatingLabelText="phone"
                             fullWidth={true}
                         />

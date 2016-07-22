@@ -91,6 +91,7 @@ class ApiCall extends Component {
     post(data) {
         if(this.props.submit) {
             this.ajax('post', api.baseUrl(this.props.submit.url), data, (response)=>{
+                console.log('success', response);
                 if(this.props.submitCallback) this.props.submitCallback(response.data);
             }, error=>{
                 console.log('api error:', this.props.submit.url);
@@ -104,4 +105,4 @@ class ApiCall extends Component {
 }
 
 const mapStateToProps = ({ user }) => ({ user });
-export default connect(mapStateToProps)(ApiCall);
+export default connect(mapStateToProps,null,null,{ withRef: true })(ApiCall);

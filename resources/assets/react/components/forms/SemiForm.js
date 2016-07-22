@@ -40,7 +40,9 @@ class SemiForm extends Component {
      * ajax: POST
      */
     submitForm(data) {
-        this.refs.apiCall.post(data);
+        if(this.props.submitForm) data = this.props.submitForm(data);
+        console.log('semiform: default submit', data, this.props.submit);
+        this.refs.apiCall.getWrappedInstance().post(data);
     }
 
     notifyFormError(/*data*/) {}

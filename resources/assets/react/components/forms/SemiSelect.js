@@ -33,7 +33,7 @@ class SemiSelect extends Component {
 
     render(){
         let {data} = this.props;
-        console.log('render: select', data, this.props.value);
+        // console.log('render: select', data, this.props.value);
         let items = data? (
             data.map((column, index) => (
                 <MenuItem value={column.id} key={index} primaryText={column.name} />

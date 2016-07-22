@@ -76,12 +76,12 @@ class SemiModal extends Component {
                     <SemiForm
                         ref="form"
                         noSubmit
-                        onValidSubmit={props.submitForm}
+                        submitForm={props.submitForm}
                         onValid={this.enableButton}
                         onInvalid={this.disableButton}
                         get={props.get}
                         getCallback={props.getCallback}
-                        submit={props.post}
+                        submit={props.submit}
                         submitCallback={props.submitCallback}
                     >
                         {props.children}
