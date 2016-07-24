@@ -45,6 +45,7 @@ class Calendar extends Component {
     }
 
     render() {
+        console.log('render: calendar');
         let state = this.state;
         return (
             <div id="calendar"></div>

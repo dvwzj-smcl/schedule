@@ -41,7 +41,6 @@ class SchedulePage extends Component {
     
     loadSlots(doctor_id) {
         this.ajax('get', `calendar/doctor/${doctor_id}/slot`, null, (response)=>{
-            console.log('response', response);
             // this.setState(state);
             this.refs.calendar.addEventSource(response.slots);
         }, error=>{});
@@ -55,16 +54,17 @@ class SchedulePage extends Component {
     }
 
     componentDidUpdate() {
-        if(this.initialized() && !this.initCalendar) {
-            this.initCalendar = true;
-            this.loadSlots(1);
-        }
+        // if(this.initialized() && !this.initCalendar) {
+        //     this.initCalendar = true;
+        //     this.loadSlots(1);
+        // }
     }
 
     componentDidMount() {
         if(!this.initialized()) {
             this.props.actions.init();
         }
+        this.loadSlots(1);
     }
 
     onSelectSubcategory(data) {
