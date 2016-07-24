@@ -5,21 +5,21 @@ import { bindActionCreators } from 'redux';
 
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import ApiCall from '../../api/ApiCall';
 import SemiForm from '../forms/SemiForm';
-import Confirm from '../widgets/Confirm';
 
 class SemiModal extends Component {
     constructor(props, context) {
         super(props, context);
-        this.handleOpen = this.handleOpen.bind(this);
-        this.handleClose = this.handleClose.bind(this);
+        this.open = this.open.bind(this);
+        this.close = this.close.bind(this);
         this.enableButton = this.enableButton.bind(this);
         this.disableButton = this.disableButton.bind(this);
         this.clickSubmit = this.clickSubmit.bind(this);
+        this.submitCallback = this.submitCallback.bind(this);
         this.state = {
-            canSubmit: false
-        }
+            canSubmit: false,
+            open: props.alwaysOpen ? true : props.open || false
+        };
     }
 
     enableButton() {
@@ -30,14 +30,23 @@ class SemiModal extends Component {
         this.setState({ canSubmit: false });
     }
 
-    handleOpen() {
-        console.log('handle Open');
+    submitCallback(data) {
+        if(this.props.submitCallback) {
+            if(this.props.submitCallback(data)) this.close();
+        }
+    };
+
+    open() {
         this.setState({ open: true });
     };
 
-    handleClose() {
-        console.log('handleClose');
-        this.setState({ open: false });
+    close() {
+        if(this.props.alwaysOpen) {
+            this.context.router.goBack();
+        } else {
+            if(this.props.onClose) this.props.onClose();
+            this.setState({ open: false });
+        }
         // this.context.dialog.alert({description: 'Test Description', title: 'Test Title'});
         // this.context.dialog.confirm({description: 'Test Description', title: 'Test Title', callback: () => {console.log('callback!')}});
     };
@@ -53,7 +62,7 @@ class SemiModal extends Component {
             <FlatButton
                 label="Cancel"
                 primary={true}
-                onTouchTap={this.handleClose}
+                onTouchTap={this.close}
             />,
             <FlatButton
                 label="Submit"
@@ -70,8 +79,8 @@ class SemiModal extends Component {
                     title={props.title}
                     actions={actions}
                     modal={true}
-                    open={true}
-                    onRequestClose={this.handleClose}
+                    open={this.state.open}
+                    onRequestClose={this.close}
                     autoScrollBodyContent={true} >
                     <SemiForm
                         ref="form"
@@ -82,7 +91,7 @@ class SemiModal extends Component {
                         get={props.get}
                         getCallback={props.getCallback}
                         submit={props.submit}
-                        submitCallback={props.submitCallback}
+                        submitCallback={this.submitCallback}
                     >
                         {props.children}
                     </SemiForm>

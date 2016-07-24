@@ -1,22 +1,37 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+// import { bindActionCreators } from 'redux';
 import { Row, Col } from 'react-flexbox-grid';
 
 import SemiModal from '../widgets/SemiModal';
-import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
-import Divider from 'material-ui/Divider';
+// import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
+// import Divider from 'material-ui/Divider';
 import SemiText from '../forms/SemiText';
 import SemiSelect from '../forms/SemiSelect';
 
 class UserModal extends Component {
     constructor(props, context) {
         super(props, context);
+        
+        let userId = props.params.id;
         this.state = {
             open: true,
             data: {},
-            values: {}
+            values: {},
+            ready: false,
+            get: [
+                {url:'branches/list', name: 'data.branches'},
+                {url:'roles/list', name: 'data.roles'}
+            ],
+            submit: userId? {url: `user/${userId}`, method: 'put'} : {url: 'user'},
+            title: userId? 'Edit User' : 'Create User'
         };
+
+        // todo: Additional Create/Edit settings here...
+        if(userId) { // edit
+            this.state.get.push({url:`user/${userId}/edit`, name: 'values'});
+        }
+
         this.getCallback = this.getCallback.bind(this);
         this.submitCallback = this.submitCallback.bind(this);
         this.submitForm = this.submitForm.bind(this);
@@ -25,11 +40,16 @@ class UserModal extends Component {
     getCallback(data) {
         // console.log('*data', data);
         this.setState(data);
-        // this.refs.branch.setValue(1);
     }
 
     submitCallback(data) {
-        console.log('submitCallback', data);
+        // todo : check error
+        if(data.error) {
+            this.context.dialog.alert(data.error, 'Error');
+            return false;
+        }
+        return true; // will goBack browser history
+
     }
 
     submitForm(data) {
@@ -43,16 +63,13 @@ class UserModal extends Component {
         return (
             <SemiModal 
                 ref="modal" 
-                title="Create User"
-                get={[
-                    {url:'branches/list', name: 'data.branches'},
-                    {url:'roles/list', name: 'data.roles'},
-                    {url:'user/1/edit', name: 'values'}
-                ]}
+                title={this.state.title}
+                get={this.state.get}
+                alwaysOpen // disable open/close
                 getCallback={this.getCallback}
-                submit={{url: 'user'}} // url
-                submitForm={this.submitForm} // filter
-                submitCallback={this.submitCallback} // callback from server
+                submit={this.state.submit} // url. REMOVE if no need to send data
+                submitForm={this.submitForm} // filter data before sending to server -or- just process here if no need to send data
+                submitCallback={this.submitCallback} // callback from server. REMOVE if no need to send data
             >
                 <Row>
                     <Col xs md={6}>
@@ -76,30 +93,35 @@ class UserModal extends Component {
                             fullWidth={true}
                         />
                     </Col>
-                </Row><Row>
-                    <Col xs md={6}>
-                        <SemiText
-                            name="password"
-                            type="password"
-                            // defaultValue="asdfasdf"
-                            validations={{ minLength: 3, maxLength: 50 }}
-                            hintText="Longer the better"
-                            floatingLabelText="password"
-                            fullWidth={true}
-                        />
-                    </Col>
-                    <Col xs md={6}>
-                        <SemiText
-                            name="confirmPassword"
-                            type="password"
-                            // defaultValue="asdfasdf"
-                            validations="equalsField:password"
-                            required
-                            floatingLabelText="confim password"
-                            fullWidth={true}
-                        />
-                    </Col>
-                </Row><Row>
+                </Row>
+                {(() => {
+                    if(!this.props.params.id) return(
+                        <Row>
+                        <Col xs md={6}>
+                            <SemiText
+                                name="password"
+                                type="password"
+                                // defaultValue="asdfasdf"
+                                validations={{ minLength: 3, maxLength: 50 }}
+                                hintText="Longer the better"
+                                floatingLabelText="password"
+                                fullWidth={true}
+                            />
+                        </Col>
+                        <Col xs md={6}>
+                            <SemiText
+                                name="confirmPassword"
+                                type="password"
+                                // defaultValue="asdfasdf"
+                                validations="equalsField:password"
+                                required
+                                floatingLabelText="confim password"
+                                fullWidth={true}
+                            />
+                        </Col>
+                    </Row>)
+                })()}
+                <Row>
                     <Col xs md={6}>
                         <SemiText
                             name="name"
@@ -165,9 +187,11 @@ class UserModal extends Component {
 UserModal.propTypes = {
     // actions: PropTypes.object.isRequired,
     // routing: PropTypes.object.isRequired
+    params: PropTypes.object
 };
 UserModal.contextTypes = {
-    router: PropTypes.object.isRequired
+    router: PropTypes.object.isRequired,
+    dialog: PropTypes.object.isRequired
 };
 
 export default connect(({user})=>({user}))(UserModal);

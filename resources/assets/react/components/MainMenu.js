@@ -17,7 +17,7 @@ const menus = [
     {
         text: "Schedule",
         icon: <ActionEvent />,
-        to: "/schedule",
+        to: "/schedules",
         permissions : ['organize-schedules']
     },
     {
@@ -65,7 +65,7 @@ class MainMenu extends Component {
                     <MenuItem
                         className="nav-item"
                         key={i}
-                        primaryText={props.menu.sidebar.expanded ? menuItem.text : "\u00a0"}
+                        primaryText={props.app.sidebar.expanded ? menuItem.text : "\u00a0"}
                         leftIcon={menuItem.icon}
                         onTouchTap={this.linkTo.bind(null, menuItem.to)}
                         style={this.isActiveMenu(menuItem.to)?{backgroundColor: 'rgba(0,0,0,0.2)'}:null}/>
@@ -75,8 +75,8 @@ class MainMenu extends Component {
     }
 }
 
-const mapStateToProps = ({ menu, user }) => ({
-    menu, user
+const mapStateToProps = ({ app, user }) => ({
+    app, user
 });
 
 // const mapDispatchToProps = dispatch => ({

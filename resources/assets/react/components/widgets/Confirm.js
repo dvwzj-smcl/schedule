@@ -25,7 +25,7 @@ class Confirm extends Component {
         // this.props.alertFunction() ;
     }
 
-    open({description, title, callback}){
+    open([description, title, callback]){
         this.setState({ open: true, description, title, callback });
     }
 
@@ -39,7 +39,7 @@ class Confirm extends Component {
         let state = this.state;
         const actions = [
             <FlatButton
-                label="Ok"
+                label="Cancel"
                 primary={true}
                 onTouchTap={this.close}
             />,

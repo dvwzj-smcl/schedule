@@ -24,6 +24,35 @@ const setter = (obj, propString, value) => {
     return obj;
 };
 
+export function ajax (method, url, data, success, error, access_token) {
+    url = api.baseUrl(url);
+    if(method === 'put') {
+        method = 'post';
+        data._method = 'PUT';
+    } else if(method === 'delete') {
+        method = 'post';
+        data._method = 'DELETE';
+    }
+    data = JSON.stringify(data);
+    $.ajax({
+        method,
+        url,
+        data,
+        dataType: 'json',
+        headers: {
+            'Access-Token': access_token,
+            'Content-Type': 'application/json'
+        }
+    }).done(response=>{
+        if (response.status == "error"){
+            // todo : show error
+        }
+        if(success) success(response);
+    }).fail(message=>{
+        if(error) error(message);
+    });
+}
+
 class ApiCall extends Component {
     constructor(props) {
         super(props);
@@ -31,24 +60,32 @@ class ApiCall extends Component {
             data: false
         };
         this.post = this.post.bind(this);
+        this.get = this.get.bind(this);
     }
     
     componentDidMount() {
         // only call when user have access token
         if(!this.props.user.access_token) return;
+        // call get immediately
         if(this.props.get) {
+            this.get(this.props.get);
+        }
+    }
+
+    // call get manually
+    get(urls) {
+        if(this.props.submit) {
             let promises = [];
-            let urls = this.props.get;
             for (let get of urls) {
                 let promise = new Promise((resolve, reject) => {
-                    this.ajax('get', api.baseUrl(get.url), null, (response)=>{
+                    ajax('get', get.url, null, (response)=>{
                         resolve(response.data);
                         // should be array instead of object
                         // resolve(Object.assign({}, response.data));
                     }, error=>{
                         // todo : error handling later
                         console.log('api error:', get.url);
-                    });
+                    }, this.props.user.access_token);
 
                 });
                 promises.push(promise);
@@ -66,37 +103,26 @@ class ApiCall extends Component {
         }
     }
 
-    ajax(method, url, data, success, error) {
-        data = JSON.stringify(data);
-        let access_token = this.props.user.access_token;
-        $.ajax({
-            method,
-            url,
-            data,
-            dataType: 'json',
-            headers: {
-                'Access-Token': access_token,
-                'Content-Type': 'application/json'
-            }
-        }).done(response=>{
-            if (response.status == "error"){
-                // todo : show error
-            }
-            if(success) success(response);
-        }).fail(message=>{
-            if(error) error(message);
-        });
-    }
-
-    post(data) {
+    // call post from props
+    callPost(data) {
         if(this.props.submit) {
-            this.ajax('post', api.baseUrl(this.props.submit.url), data, (response)=>{
-                console.log('success', response);
-                if(this.props.submitCallback) this.props.submitCallback(response.data);
-            }, error=>{
-                console.log('api error:', this.props.submit.url);
+            this.post({
+                url: this.props.submit.url,
+                method: this.props.submit.method,
+                submitCallback: this.props.submitCallback,
+                data
             });
         }
+    }
+
+    // call post manually
+    post({url, method, data, submitCallback}) {
+        ajax(method, url, data, (response)=>{
+            console.log('success', response);
+            if(submitCallback) submitCallback(response.data);
+        }, error=>{
+            console.log('api error:', url);
+        }, this.props.user.access_token);
     }
 
     render() {

@@ -7,6 +7,7 @@ import App from '../components/App';
 import HomePage from '../components/HomePage';
 import CalendarPage from '../components/CalendarPage';
 import OrganizerPage from '../components/OrganizerPage';
+import SchedulePage from '../components/SchedulePage';
 import LoginPage from '../components/LoginPage';
 import NotFoundPage from '../components/NotFoundPage';
 import UserPage from '../components/user/UserPage';
@@ -36,7 +37,7 @@ export default function configureRoute(store){
                 <Route path=":id" component={UserIsAuthenticated(UserModal)} />
             </Route>
             <Route path="organizer" component={UserIsAuthenticated(OrganizerPage)} />
-            <Route path="schedule" component={UserIsAuthenticated(OrganizerPage)} />
+            <Route path="schedules" component={UserIsAuthenticated(SchedulePage)} />
             <Route path="*" component={UserIsAuthenticated(NotFoundPage)} />
         </Route>
     ):(

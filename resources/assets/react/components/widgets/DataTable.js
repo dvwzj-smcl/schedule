@@ -144,6 +144,7 @@ class DataTable extends Component {
         });
     }
     getData(search,columns,order,offset){
+        
         if (typeof search === "undefined" ){
             search=false;
         }
@@ -177,15 +178,18 @@ class DataTable extends Component {
     }
 
     deleteData(id){
-        this.ajax('DELETE', api.baseUrl(this.props.dataUrl+'/'+id ), null,
-            (response)=>{
-                if(response.status=="success"){
-                    console.log('Delete Redirect');
-                    this.getData();
-                }
-            },
-            error=>{}
-        );
+        this.context.dialog.confirm('Are you sure?', 'Warning!', () => {
+            this.ajax('DELETE', api.baseUrl(this.props.dataUrl+'/'+id ), null,
+                (response)=>{
+                    if(response.status=="success"){
+                        console.log('Delete Redirect');
+                        this.getData();
+                    }
+                },
+                error=>{}
+            );
+        });
+
     }
 
     handleOpen(){
@@ -307,7 +311,8 @@ DataTable.propTypes = {
 };
 
 DataTable.contextTypes = {
-    router: PropTypes.object.isRequired
+    router: PropTypes.object.isRequired,
+    dialog: PropTypes.object.isRequired
 };
 
 const style = {

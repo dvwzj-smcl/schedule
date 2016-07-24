@@ -3,6 +3,7 @@ import rootReducer from '../reducers';
 import thunk from 'redux-thunk';
 import { routerMiddleware } from 'react-router-redux';
 import { browserHistory } from 'react-router';
+import callAPIMiddleware from '../middlewares/callAPIMiddleware';
 
 const routingMiddleware = routerMiddleware(browserHistory);
 
@@ -11,7 +12,7 @@ export default function configureStore(initialState) {
         rootReducer,
         initialState,
         compose(
-            applyMiddleware(thunk, routingMiddleware),
+            applyMiddleware(thunk, routingMiddleware, callAPIMiddleware),
             window.devToolsExtension ? window.devToolsExtension() : f => f // add support for Redux dev tools
         )
     );

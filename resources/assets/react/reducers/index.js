@@ -1,11 +1,13 @@
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 import userReducer from './userReducer';
-import menuReducer from './menuReducer';
+import appReducer from './appReducer';
+import scheduleReducer from './scheduleReducer';
 
 const rootReducer = combineReducers({
-    menu: menuReducer,
+    app: appReducer,
     user: userReducer,
+    schedule: scheduleReducer,
     routing: routerReducer
 });
 

@@ -3,17 +3,21 @@ import RaisedButton from 'material-ui/RaisedButton';
 import { Form } from 'formsy-react';
 import ReactDOM from 'react-dom';
 import ApiCall from '../../api/ApiCall';
+import Loading from '../widgets/Loading';
 
 class SemiForm extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            canSubmit: false
+            canSubmit: false,
+            ready: props.get? false : true
+            // ready: false
         };
 
         this.enableButton = this.enableButton.bind(this);
         this.disableButton = this.disableButton.bind(this);
         this.submitForm = this.submitForm.bind(this);
+        this.getCallback = this.getCallback.bind(this);
         this.notifyFormError = this.notifyFormError.bind(this);
         this.resetForm = this.resetForm.bind(this);
         this.submit = this.submit.bind(this);
@@ -29,6 +33,16 @@ class SemiForm extends Component {
         });
     }
 
+    getCallback(data) {
+        if(this.props.getCallback) {
+            this.setState({
+                ready: true
+            });
+            // todo: error handling
+            this.props.getCallback(data);
+        }
+    }
+
     disableButton() {
         this.setState({
             canSubmit: false
@@ -42,7 +56,7 @@ class SemiForm extends Component {
     submitForm(data) {
         if(this.props.submitForm) data = this.props.submitForm(data);
         console.log('semiform: default submit', data, this.props.submit);
-        this.refs.apiCall.getWrappedInstance().post(data);
+        this.refs.apiCall.getWrappedInstance().callPost(data);
     }
 
     notifyFormError(/*data*/) {}
@@ -87,11 +101,14 @@ class SemiForm extends Component {
                 ref="form"
                 {...props} 
             >
-                {props.children}
+                {(()=>{
+                    if(this.state.ready) return props.children;
+                    else return <Loading inline />;
+                })()}
                 {submitBtn}
                 {resetBtn}
                 <ApiCall ref="apiCall"
-                    get={props.get} getCallback={props.getCallback}
+                    get={props.get} getCallback={this.getCallback}
                     submit={props.submit} submitCallback={props.submitCallback}
                 />
                 <button style={{display:'none'}} ref="submitBtn" type="submit">Submit</button>
@@ -106,7 +123,7 @@ SemiForm.propTypes = {
     enableButton: PropTypes.func,
     disableButton: PropTypes.func,
     submitForm: PropTypes.func,
-    submit: PropTypes.func,
+    submit: PropTypes.object,
     resetForm: PropTypes.func,
     notifyFormError: PropTypes.func,
     children: React.PropTypes.oneOfType([

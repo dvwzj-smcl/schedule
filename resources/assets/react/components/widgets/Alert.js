@@ -25,7 +25,7 @@ class Alert extends Component {
         // this.props.alertFunction() ;
     }
 
-    open({description, title}){
+    open([description, title]){
         this.setState({ open: true, description, title });
     }
 

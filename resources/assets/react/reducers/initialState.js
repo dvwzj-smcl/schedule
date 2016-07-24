@@ -6,7 +6,7 @@ export default {
         error: null,
         permissions: [],
         authenticating: true,
-        access_token: sessionStorage.getItem('access_token'),
+        access_token: sessionStorage.getItem('access_token')
 
         // todo : remove these
         // isAdmin: JSON.parse(sessionStorage.getItem('isAdmin')),
@@ -15,7 +15,8 @@ export default {
         // isSale: JSON.parse(sessionStorage.getItem('isSale'))
         // access_token: 'hack' // change here
     },
-    menu: {
+    schedule: {},
+    app: {
         sidebar: {
             expanded: true
         }

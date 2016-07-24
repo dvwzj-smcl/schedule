@@ -6,6 +6,11 @@ import {
 
 import api from '../api';
 
+
+
+/**
+ * menu
+ */
 function menuSidebarIsExpanded(){
     return {type: MENU_SIDEBAR_IS_EXPANDED};
 }

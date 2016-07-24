@@ -41,18 +41,20 @@ class Layout extends Component {
         return { dialog: { confirm: this.openConfirm, alert: this.openAlert } }
     }
 
-    openConfirm(params) {
+    openConfirm(...params) {
         console.log('openConfirm');
         this.refs.confirm.open(params);
     }
 
-    openAlert(params) {
+    openAlert(...params) {
+        // console.log('description', title, description);
         console.log('openAlert');
         this.refs.alert.open(params);
     }
 
     render() {
-        return (this.props.user.access_token)? (
+        // console.log('render: layout');
+        return (
             <div id="layout">
                 <Confirm ref="confirm" />
                 <Alert ref="alert" />
@@ -86,30 +88,19 @@ class Layout extends Component {
                         </ToolbarGroup>
                     </Toolbar>
                 </Paper>
-                <Paper style={{display: this.props.user.error ? 'block' : 'none', padding: 5}}>
-                    {this.props.user.error}
-                </Paper>
                 <div>
                     {this.props.children}
                 </div>
             </div>
-        ) : this.props.children;
+        );
     }
 }
 
 Layout.propTypes = {
-    user: PropTypes.object.isRequired,
-    menu: PropTypes.object.isRequired,
-    actions: PropTypes.object.isRequired,
+    // user: PropTypes.object.isRequired,
+    // actions: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     appBarTitle: PropTypes.string.isRequired,
-    sidebarMenu: PropTypes.arrayOf(
-        PropTypes.shape({
-            text: PropTypes.string.isRequired,
-            icon: PropTypes.element.isRequired,
-            to: PropTypes.string.isRequired
-        }).isRequired
-    ),
     children: PropTypes.object.isRequired
 };
 Layout.contextTypes = {
@@ -119,6 +110,18 @@ Layout.childContextTypes = {
     dialog: PropTypes.object
 };
 
-
-
+// const mapStateToProps = ({module}) => ({module});
+// const mapDispatchToProps = (dispatch) => ({actions: {
+//     sidebar: {
+//         isExpanded: bindActionCreators(appActions.sidebarIsExpanded, dispatch),
+//         toggle: bindActionCreators(appActions.sidebarToggle, dispatch)
+//     },
+//     user: {
+//         login: bindActionCreators(userActions.login, dispatch),
+//         logout: bindActionCreators(userActions.logout, dispatch),
+//         isAuthenticated: bindActionCreators(userActions.isAuthenticated, dispatch)
+//     }
+// }});
+//
+// export default connect(mapStateToProps, mapDispatchToProps)(Layout);
 export default Layout;
