@@ -26,7 +26,11 @@ const setter = (obj, propString, value) => {
 
 export function ajax (method, url, data, success, error, access_token) {
     url = api.baseUrl(url);
-    if(method === 'put') {
+
+    if (typeof method === "undefined") {
+        method = 'post';
+        data._method = 'POST';
+    } else if(method === 'put') {
         method = 'post';
         data._method = 'PUT';
     } else if(method === 'delete') {
@@ -79,6 +83,9 @@ class ApiCall extends Component {
             for (let get of urls) {
                 let promise = new Promise((resolve, reject) => {
                     ajax('get', get.url, null, (response)=>{
+
+                        console.log('response',response);
+
                         resolve(response.data);
                         // should be array instead of object
                         // resolve(Object.assign({}, response.data));

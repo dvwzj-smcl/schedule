@@ -39,9 +39,6 @@ class UserController extends Controller
         $user = Auth::loginUsingId($userID) ;
         $canEdit = $user->can("edit-users") ;
 
-
-
-
         // -- Filter
         if (Input::has('columns')){
             foreach (json_decode(Input::get('columns')) as $col) {
@@ -105,6 +102,7 @@ class UserController extends Controller
             'phone2' => 'min:3|max:50',
             'roles' => 'required|numeric',
         );
+
         $validator = Validator::make($data, $rules);
         if ($validator->fails()) {
             return BF::result(false, $validator->messages()->first());
@@ -143,6 +141,8 @@ class UserController extends Controller
         $data = array_diff_key($data, array_flip(['id','_method','deleted_at','deleted_by','updated_at','created_at']));
         $data["created_by"] = $userId ;
         $data["branch_id"] = $data["branch"] ;
+        $data["phone_2"] = $data["phone2"] ;
+
         try {
             $status = User::create($data);
             if($status === NULL) {
@@ -188,11 +188,6 @@ class UserController extends Controller
         if(empty($id)){
             return BF::result(false, 'ไม่พบข้อมูลนี้ค่ะ');
         }
-
-
-        if(empty($id)){
-            return BF::result(false, 'ไม่พบข้อมูลนี้ค่ะ');
-        }
         $testMode = true ;
         $userId =  ($testMode)? 1 : Auth::user()->id ;
 
@@ -215,19 +210,60 @@ class UserController extends Controller
             return BF::result(false, 'กรุณากรอกอีเมล์ค่ะ!');
         }
 
+        if (!empty($data["password"])) {
+            if (empty($data["confirmPassword"])){
+                return BF::result(false, 'กรุณาคอนเฟริมพาสเวิดค่ะ!');
+            }
+            if ($data["password"] != $data["confirmPassword"]){
+                return BF::result(false, 'กรุณากรอกพาสเวิดให้ตรงกันค่ะ!');
+            }
+            $data["password"] = \Hash::make($data["password"]);
+        } else {
+            unset($data["password"]);
+        }
+
+        try {
+            $chk = User::where('email', $data["email"])->where('id','!=',$id)->first();
+            if(isset($chk)){
+                return BF::result(false, 'อีเมล์นี้มีในระบบอยู่แล้วค่ะ!'); //--- check email repeat
+            }
+        } catch ( \Illuminate\Database\QueryException $e) {
+            if($e->getCode() == 23000) {
+                return BF::result(false, "อีเมล์ซ้ำ: {$data['email']}");
+            }
+            return BF::result(false, $e->getMessage());
+        }
+        try {
+            $chk = User::where('username', $data["username"])->where('id','!=',$id)->first();
+            if(isset($chk)){
+                return BF::result(false, 'ผู้ใช้นี้มีอยู่ในระบบอยู่แล้วค่ะ!'); //--- check email repeat
+            }
+        } catch ( \Illuminate\Database\QueryException $e) {
+            if($e->getCode() == 23000) {
+                return BF::result(false, "user name ซ้ำ : {$data['email']}");
+            }
+            return BF::result(false, $e->getMessage());
+        }
+
         $data = array_diff_key($data, array_flip(['id','_method','deleted_at','deleted_by','updated_at','created_at']));
         $data["updated_at"] = $userId ;
         $data["branch_id"] = $data["branch"] ;
+        $data["phone_2"] = $data["phone2"] ;
+        $sync = [];
+        $sync['roles'] = $data['roles'] ;
         try {
             unset($data['branch']);
-            $status = User::whereId($id)->update($data);
+            unset($data['phone2']);
+            unset($data['roles']);
+            $obj =  User::find($id) ;
+            $status = $obj->update($data);
             if($status === NULL) {
                 return BF::result(false, 'failed!');
             }
             $role = [
-                $data['roles']
+                $sync['roles']
             ];
-            $status->roleUser()->sync($role);
+            $obj->roleUser()->sync($role);
         } catch ( \Illuminate\Database\QueryException $e) {
             if($e->getCode() == 23000) {
                 return BF::result(false, "ชื่อซ้ำ: {$data['name']}");

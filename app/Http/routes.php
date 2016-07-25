@@ -42,13 +42,17 @@ Route::group(['prefix' => 'api', 'middleware' => []], function () {
 Route::group(['prefix' => 'api', 'middleware' => []], function () {
     // todo : เติม s ทุกอันด้วยครับ
     Route::controller('auth', 'User\AuthController');
-    Route::resource('user', 'User\UserController');
-    Route::resource('branch', 'User\BranchController');
+    Route::resource('users', 'User\UserController');
+
     Route::controller('branches', 'User\BranchController');
+    Route::resource('branches', 'User\BranchController');
+
     Route::controller('roles', 'User\RoleController');
+    Route::resource('roles', 'User\RoleController');
+
+    Route::resource('permissions', 'User\PermissionController');
     Route::controller('schedules', 'Schedule\ScheduleController');
-    Route::resource('permission', 'User\PermissionController');
-    Route::resource('role', 'User\RoleController');
+   
 
 });
 /**

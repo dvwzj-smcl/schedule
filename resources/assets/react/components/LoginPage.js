@@ -44,7 +44,7 @@ class LoginPage extends Component {
                                 style={{padding: '16px 24px'}}>
                                 <SemiText
                                     name="username"
-                                    validations="isWords"
+                                    validations="isAlphanumeric"
                                     validationError={this.errorMessages.wordsError}
                                     required
                                     hintText="What is your username?"
