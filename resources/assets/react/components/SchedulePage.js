@@ -19,6 +19,7 @@ import * as scheduleActions from '../actions/scheduleActions';
 
 // Forms
 import SemiSelect from './forms/SemiSelect';
+// import MultiSelect from './forms/MultiSelect';
 import Calendar from './widgets/Calendar';
 import SemiModal from './widgets/SemiModal';
 
@@ -26,13 +27,19 @@ class SchedulePage extends Component {
     constructor(props, context) {
         super(props, context);
         this.state = {};
+
+        // variables
         this.initCalendar = false;
+        this.data = {};
+
         this.initialized = this.initialized.bind(this);
         this.ajax = this.ajax.bind(this);
         this.loadSlots = this.loadSlots.bind(this);
-        this.eventClick = this.eventClick.bind(this);
         this.onSelectSubcategory = this.onSelectSubcategory.bind(this);
         this.onClose = this.onClose.bind(this);
+
+        this.eventClick = this.eventClick.bind(this);
+        this.dayClick = this.dayClick.bind(this);
     }
 
     ajax(method, url, data, success, error) {
@@ -41,8 +48,15 @@ class SchedulePage extends Component {
     
     loadSlots(doctor_id) {
         this.ajax('get', `calendar/doctor/${doctor_id}/slot`, null, (response)=>{
-            // this.setState(state);
-            this.refs.calendar.addEventSource(response.slots);
+            var me = this;
+            var slots = response.slots;
+            // avoid refs.calendar undefined
+            var interval = setInterval(function(){
+                if(me.refs.calendar) {
+                    me.refs.calendar.addEventSource(slots);
+                    clearInterval(interval);
+                }
+            }, 500);
         }, error=>{});
     }
 
@@ -70,6 +84,7 @@ class SchedulePage extends Component {
     onSelectSubcategory(data) {
         console.log('data from modal', data);
         this.refs.modal.close();
+        return data;
     }
 
     onClose() {
@@ -79,6 +94,10 @@ class SchedulePage extends Component {
     // --- Calendar Functions
     eventClick(calEvent) {
         this.refs.modal.open();
+    }
+
+    dayClick(date, jsEvent, view, resourceObj) {
+        console.log('dayClick', date);
     }
 
     render() {
@@ -111,6 +130,7 @@ class SchedulePage extends Component {
                                 <div className="con-pad">
                                     <Calendar droppable={false} editable={false} ref="calendar"
                                               eventClick={this.eventClick}
+                                              dayClick={this.dayClick}
                                     />
                                 </div>
                             </Panel>

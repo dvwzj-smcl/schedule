@@ -17,7 +17,7 @@ class AuthController extends Controller
 {
     public function Login(Request $request)
     {
-        sleep(1);
+//        sleep(1);
         $input = BF::decodeInput($request->getContent());
         $rules = array(
             'username' => 'required',

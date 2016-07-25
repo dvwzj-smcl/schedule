@@ -83,6 +83,7 @@ class UserModal extends Component {
 
     submitForm(data) {
         // todo: Filter or Change data before POST to server
+        console.log('***data', data);
         return data;
     }
 

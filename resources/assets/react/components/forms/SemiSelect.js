@@ -1,7 +1,8 @@
 import React, { Component, PropTypes } from 'react';
-// import { connect } from 'react-redux';
 import MenuItem from 'material-ui/MenuItem';
-import FormsySelect from 'formsy-material-ui/lib/FormsySelect';
+import FormsySelect from '../../libs/FormsySelect';
+import ErrorMessage from '../forms/ErrorMessage';
+// import FormsySelect from 'formsy-material-ui/lib/FormsySelect';
 
 class SemiSelect extends Component {
     constructor(props, context) {
@@ -10,20 +11,7 @@ class SemiSelect extends Component {
             value: 0,
             data: props.data || false
         };
-    }
-
-    componentWillReceiveProps(nextProps, nextState){
-        // console.log('[SemiSelector] (componentWillReceiveProps) this props',this.props);
-        // console.log('[SemiSelector] (componentWillReceiveProps) nextState',nextState);
-        // console.log('[SemiSelector] (componentWillReceiveProps) nextProps',nextProps);
-        // if(typeof nextProps.selectValue !== "undefined"){
-        //     console.log('set Value');
-        //     // const input = this.refs.select;
-        //     // input.setState({ value: nextProps.selectValue  });
-        //     this.handleChange(null,null,1) ;
-        // }
-
-
+        this.value = (props.multiple && !props.value) ? [] : props.value;
     }
 
     // not used
@@ -32,7 +20,7 @@ class SemiSelect extends Component {
     }
 
     render(){
-        let {data} = this.props;
+        let {data, ...rest} = this.props;
         // console.log('render: select', data, this.props.value);
         let items = data? (
             data.map((column, index) => (
@@ -40,29 +28,32 @@ class SemiSelect extends Component {
             ))
         ) : null;
         return (
-                <FormsySelect ref="select" {...this.props} hintText="-- Please Select --" >
-                    {items}
-                </FormsySelect>
+            <FormsySelect ref="select" {...rest} value={this.value}
+                validationErrors={{isArray: ErrorMessage.minLength}}
+                // validations={{ // loop error
+                //     myCustomIsFiveValidation: function (values, value) {
+                //         return 'errrrror';
+                //     }
+                // }}
+            >
+                {items}
+            </FormsySelect>
         );
     }
 }
 
 SemiSelect.propTypes = {
-    dataSelector: React.PropTypes.oneOfType([
-        React.PropTypes.object,
-        React.PropTypes.array
+    data: PropTypes.oneOfType([
+        PropTypes.object,
+        PropTypes.array
     ]),
-    selectValue:React.PropTypes.number,
-    name:React.PropTypes.string
+    selectValue:PropTypes.number,
+    name:PropTypes.string
 };
 
 SemiSelect.contextTypes = {
     router: PropTypes.object.isRequired
 };
-
-
-// const mapStateToProps = ({ routing }) => ({ routing });
-// export default connect(mapStateToProps,null,null,{ withRef: true })(SemiSelector);
 
 export default SemiSelect;
 
