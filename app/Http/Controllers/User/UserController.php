@@ -87,6 +87,7 @@ class UserController extends Controller
     public function store()
     {
 
+       
         $testMode = true ;
         $userId =  ($testMode)? 1 : Auth::user()->id ;
 
@@ -100,7 +101,7 @@ class UserController extends Controller
             'branch' => 'required|numeric',
             'phone' => 'required|min:3|max:50',
             'phone2' => 'min:3|max:50',
-            'roles' => 'required|numeric',
+            'roles' => 'required',
         );
 
         $validator = Validator::make($data, $rules);
@@ -148,10 +149,8 @@ class UserController extends Controller
             if($status === NULL) {
                 return BF::result(false, 'failed!');
             }
-            $role = [
-                $data['roles']
-            ];
-            $status->roleUser()->sync($role);
+
+            $status->roleUser()->sync($data['roles']);
         } catch ( \Illuminate\Database\QueryException $e) {
             if($e->getCode() == 23000) {
                 return BF::result(false, "ชื่อซ้ำ: {$data['name']}");
@@ -174,7 +173,15 @@ class UserController extends Controller
         $user->password = '';
         $user->branchId = $user->branch_id;
         //---  ใช้ isEmpty เพราะ collection มัน return ค่าบางอย่างมาแม้ array เป็น null
-        $user->roleId = ($user->roles->isEmpty()) ?  0 : $user->roles[0]->id ;
+
+        $roles = [] ;
+        if(!$user->roles->isEmpty()){
+            foreach ($user->roles as $r) {
+                $roles[] = $r->id ;
+            }
+        }
+
+        $user->roleId = $roles ;
         unset($user->roles);
         unset($user->branch_id);
         unset($user->password);
@@ -192,6 +199,7 @@ class UserController extends Controller
         $userId =  ($testMode)? 1 : Auth::user()->id ;
 
         $data = Input::all();
+
         $rules = array(
             'username' => 'required|min:3|max:50',
             'name' => 'required|min:3|max:50',
@@ -199,7 +207,7 @@ class UserController extends Controller
             'branch' => 'required|numeric',
             'phone' => 'required|min:3|max:50',
             'phone2' => 'min:3|max:50',
-            'roles' => 'required|numeric',
+            'roles' => 'required',
         );
         $validator = Validator::make($data, $rules);
         if ($validator->fails()) {
@@ -260,10 +268,8 @@ class UserController extends Controller
             if($status === NULL) {
                 return BF::result(false, 'failed!');
             }
-            $role = [
-                $sync['roles']
-            ];
-            $obj->roleUser()->sync($role);
+
+            $obj->roleUser()->sync($sync['roles']);
         } catch ( \Illuminate\Database\QueryException $e) {
             if($e->getCode() == 23000) {
                 return BF::result(false, "ชื่อซ้ำ: {$data['name']}");

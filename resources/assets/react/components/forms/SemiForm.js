@@ -92,7 +92,6 @@ class SemiForm extends Component {
                 label={props.submitLabel || 'Submit'}
                 disabled={!this.state.canSubmit}
             />);
-
         return (
             <Form
                 className="semiForm"
