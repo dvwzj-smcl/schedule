@@ -17,6 +17,7 @@ class ScheduleController extends Controller
         $res = [
             'doctors' => Doctor::with('user')->get(),
             'categories' => Category::with('sub_categories')->get(),
+            'colors' => Category::with('sub_categories')->get(),
         ];
         return BF::result(true, $res, '[schedule] init');
     }

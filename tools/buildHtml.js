@@ -36,6 +36,7 @@ fs.readFile('resources/assets/react/index.html', 'utf8', (readError, markup) => 
 
   fs.writeFile('public/react/index.html', $.html(), 'utf8', (writeError) => {
     if (writeError) {
+      console.log('write error: index.html written to /public/react');
       return console.log(chalkError(writeError));
     }
     console.log(chalkSuccess('index.html written to /public/react'));

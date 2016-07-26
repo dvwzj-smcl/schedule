@@ -1,11 +1,7 @@
 /* eslint-disable import/default */
-import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-
+import React, { Component } from 'react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import ReactDOM from 'react-dom';
 
 class Alert extends Component {
     constructor(props, context) {
@@ -20,9 +16,7 @@ class Alert extends Component {
     }
 
     close(){
-        console.log('close');
         this.setState({ open: false });
-        // this.props.alertFunction() ;
     }
 
     open([description, title]){
@@ -34,6 +28,7 @@ class Alert extends Component {
         const actions = [
             <FlatButton
                 label="Ok"
+                key="okBtn"
                 primary={true}
                 onTouchTap={this.close}
             />
@@ -55,33 +50,6 @@ class Alert extends Component {
         );
     }
 }
-
-// AlertBox.propTypes = {
-//     openAlertBox: PropTypes.bool.isRequired,
-//     alertText: PropTypes.string.isRequired,
-//     alertFunction: PropTypes.func.isRequired
-// };
-//
-// AlertBox.contextTypes = {
-//     router: PropTypes.object.isRequired
-// };
-
-// const Confirm = (message, options) => {
-//     let cleanup, component, props, wrapper;
-//     if (options == null) {
-//         options = {};
-//     }
-//     props = Object.assign({}, options, {message: message});
-//     wrapper = document.getElementById('layout').appendChild(document.createElement('div'));
-//     component = ReactDOM.render(<AlertBox {...props}/>, wrapper);
-//     cleanup = function() {
-//         React.unmountComponentAtNode(wrapper);
-//         return setTimeout(function() {
-//             return wrapper.remove();
-//         });
-//     };
-//     return component.promise.always(cleanup).promise();
-// };
 
 export default Alert;
 

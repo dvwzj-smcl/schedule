@@ -178,7 +178,8 @@ class DataTable extends Component {
     }
 
     deleteData(id){
-        this.context.dialog.confirm('Are you sure?', 'Warning!', () => {
+        this.context.dialog.confirm('Are you sure?', 'Warning!', (confirmData) => {
+            console.log('confirmData', confirmData);
             this.ajax('DELETE', api.baseUrl(this.props.dataUrl+'/'+id ), null,
                 (response)=>{
                     if(response.status=="success"){

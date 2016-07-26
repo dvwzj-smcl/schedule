@@ -47,12 +47,16 @@ class SchedulePage extends Component {
     }
     
     loadSlots(doctor_id) {
-        this.ajax('get', `calendar/doctor/${doctor_id}/slot`, null, (response)=>{
+        this.ajax('get', `calendar/doctors/${doctor_id}/slot`, null, (response)=>{
             var me = this;
             var slots = response.slots;
+            for(let slot of slots) {
+                slot.rendering = 'background';
+            }
             // avoid refs.calendar undefined
             var interval = setInterval(function(){
                 if(me.refs.calendar) {
+                    console.log('slots', slots);
                     me.refs.calendar.addEventSource(slots);
                     clearInterval(interval);
                 }

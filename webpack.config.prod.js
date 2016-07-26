@@ -14,13 +14,14 @@ export default {
   entry: './resources/assets/react/index',
   target: 'web', // necessary per https://webpack.github.io/docs/testing.html#compile-and-test
   output: {
-    path: `${__dirname}/public`,
+    path: `${__dirname}/public/react`,
     publicPath: '/',
     filename: 'bundle.js'
   },
   node: {
     net: "empty",
-    dns: "empty"
+    dns: "empty",
+    fs: "empty"
   },
   plugins: [
     new webpack.optimize.OccurenceOrderPlugin(),
@@ -38,10 +39,11 @@ export default {
       {test: /\.svg(\?v=\d+.\d+.\d+)?$/, loader: 'file-loader?limit=10000&mimetype=image/svg+xml'},
       {test: /\.(jpe?g|png|gif)$/i, loaders: ['file']},
       {test: /\.ico$/, loader: 'file-loader?name=[name].[ext]'},
+      {test: /(\.css|\.scss)$/, loaders: ['style', 'css?sourceMap', 'sass?sourceMap'], exclude: /flexboxgrid/},
       {
-        test: /(\.css|\.scss)$/,
-        include: path.join(__dirname, 'resources/assets/react'),
-        loader: ExtractTextPlugin.extract('css?sourceMap&modules!sass?sourceMap')
+        test: /\.css$/,
+        loader: 'style!css?modules',
+        include: /flexboxgrid/
       }
     ]
   }

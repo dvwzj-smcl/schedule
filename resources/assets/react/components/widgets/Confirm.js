@@ -1,11 +1,8 @@
 /* eslint-disable import/default */
-import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import React, { Component } from 'react';
 
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import ReactDOM from 'react-dom';
 
 class Confirm extends Component {
     constructor(props, context) {
@@ -41,12 +38,13 @@ class Confirm extends Component {
         const actions = [
             <FlatButton
                 label="Cancel"
-                key=""
+                key="cancelBtn"
                 primary={true}
                 onTouchTap={this.close}
             />,
             <FlatButton
                 label="Confirm"
+                key="okBtn"
                 primary={true}
                 onTouchTap={this.onConfirm}
             />
@@ -68,6 +66,8 @@ class Confirm extends Component {
         );
     }
 }
+
+Confirm.propTypes = {};
 
 export default Confirm;
 
