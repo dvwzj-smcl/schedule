@@ -184,11 +184,31 @@ class OrganizerPage extends Component {
                             }
                         });
                     },
-                    eventResize: ()=> {
+                    eventResize: (calEvent)=> {
                         /*
                         let state = Object.assign({}, this.state, {editing: true});
                         this.setState(state);
                         */
+
+                        this.context.dialog.confirm('ยืนยันการเปลี่ยนแปลง', null, (confirm)=>{
+                            //console.log(confirm);
+                            if(confirm) {
+                                //let {start, end, sc_doctor_id, sc_organizer_id, sc_category_id} = calEvent;
+                                let {start, end, sc_doctor_id, sc_organizer_id, sc_category_id} = calEvent;
+                                let data = {start: start.format('YYYY-MM-DD H:mm:ss'), end: end.format('YYYY-MM-DD H:mm:ss'), sc_doctor_id, sc_organizer_id, sc_category_id};
+                                this.ajax('put', api.baseUrl('calendar/slots/' + calEvent.id), data, (response)=> {
+                                    if (response.status == 'success') {
+                                        $('#calendar').fullCalendar('removeEvents');
+                                        $('#calendar').fullCalendar('addEventSource', response.data.slots);
+                                        this.refs.create_modal.close();
+                                    } else {
+                                        this.context.dialog.alert(response.data.error);
+                                    }
+                                });
+                            }else{
+                                $('#calendar').fullCalendar('updateEvent', Object.assign({}, calEvent, {start: calEvent.start._i, end: calEvent.end._i}));
+                            }
+                        });
                     }
                 });
             });
