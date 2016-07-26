@@ -21,6 +21,7 @@ class Confirm extends Component {
     }
 
     close(){
+        if(this.state.callback) this.state.callback(false);
         this.setState({ open: false });
         // this.props.alertFunction() ;
     }
@@ -66,33 +67,6 @@ class Confirm extends Component {
         );
     }
 }
-
-// AlertBox.propTypes = {
-//     openAlertBox: PropTypes.bool.isRequired,
-//     alertText: PropTypes.string.isRequired,
-//     alertFunction: PropTypes.func.isRequired
-// };
-//
-// AlertBox.contextTypes = {
-//     router: PropTypes.object.isRequired
-// };
-
-// const Confirm = (message, options) => {
-//     let cleanup, component, props, wrapper;
-//     if (options == null) {
-//         options = {};
-//     }
-//     props = Object.assign({}, options, {message: message});
-//     wrapper = document.getElementById('layout').appendChild(document.createElement('div'));
-//     component = ReactDOM.render(<AlertBox {...props}/>, wrapper);
-//     cleanup = function() {
-//         React.unmountComponentAtNode(wrapper);
-//         return setTimeout(function() {
-//             return wrapper.remove();
-//         });
-//     };
-//     return component.promise.always(cleanup).promise();
-// };
 
 export default Confirm;
 
