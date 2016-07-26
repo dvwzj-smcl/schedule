@@ -14,14 +14,12 @@ class SemiSelect extends Component {
         this.value = (props.multiple && !props.value) ? [] : props.value;
     }
 
-    // not used
-    setData(data) {
-        this.setState({data});
+    componentWillReceiveProps(nextProps){
+        this.value = (nextProps.multiple && !nextProps.value) ? [] : nextProps.value;
     }
 
     render(){
         let {data, ...rest} = this.props;
-        // console.log('render: select', data, this.props.value);
         let items = data? (
             data.map((column, index) => (
                 <MenuItem value={column.id} key={index} primaryText={column.name} />
@@ -30,11 +28,6 @@ class SemiSelect extends Component {
         return (
             <FormsySelect ref="select" {...rest} value={this.value}
                 validationErrors={{isArray: ErrorMessage.minLength}}
-                // validations={{ // loop error
-                //     myCustomIsFiveValidation: function (values, value) {
-                //         return 'errrrror';
-                //     }
-                // }}
             >
                 {items}
             </FormsySelect>

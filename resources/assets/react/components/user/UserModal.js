@@ -6,10 +6,7 @@ import { Row, Col } from 'react-flexbox-grid';
 import SemiModal from '../widgets/SemiModal';
 // import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import Toggle from 'material-ui/Toggle';
-// import Divider from 'material-ui/Divider';
 import SemiText from '../forms/SemiText';
-
-
 import SemiSelect from '../forms/SemiSelect';
 
 class UserModal extends Component {
@@ -35,8 +32,6 @@ class UserModal extends Component {
         // todo: Additional Create/Edit settings here...
         if(userId) { // edit
             this.state.get.push({url:`users/${userId}/edit`, name: 'values'});
-
-
         }
 
         this.getCallback = this.getCallback.bind(this);
@@ -74,10 +69,11 @@ class UserModal extends Component {
         }
         // return true; // will goBack browser history
 
-        // console.log('submitCallback', data);
         if (data.length <= 0) {
             console.log('redirect!');
             this.context.router.push('/users');
+            location.reload();
+            // window.location.href = '/users' ;
         }
     }
 
@@ -96,6 +92,7 @@ class UserModal extends Component {
     render() {
         let values = this.state.values;
         const {title,get,submit,togglePass,changePass} = this.state ;
+
         return (
             <SemiModal 
                 ref="modal" 
@@ -211,6 +208,7 @@ class UserModal extends Component {
                             required
                             floatingLabelText={'roles'}
                             fullWidth={true}
+                            multiple
                         />
                     </Col>
 
