@@ -32,8 +32,8 @@ class Confirm extends Component {
 
     onConfirm() {
         // todo : confirm function
-        if(this.state.callback) this.state.callback();
-        this.close();
+        if(this.state.callback) this.state.callback(true);
+        this.setState({ open: false });
     }
 
     render() {
