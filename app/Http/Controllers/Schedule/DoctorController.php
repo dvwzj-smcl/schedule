@@ -86,7 +86,7 @@ class DoctorController extends Controller
     }
 
     public function doctorSlot($doctor_id){
-        $slots = \App\Models\Calendar\Slot::where('sc_doctor_id', $doctor_id)->with('category')->get();
+        $slots = \App\Models\User\Doctor::with('slots.category')->find($doctor_id)->slots;
         $slots = array_map(function($slot){
             $slot['title'] = $slot['category']['name'];
             unset($slot['category']);

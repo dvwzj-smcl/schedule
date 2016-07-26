@@ -139,12 +139,50 @@ class OrganizerPage extends Component {
                         let state = Object.assign({}, this.state, {slot});
                         this.setState(state);
                         */
+                        this.context.dialog.confirm('ยืนยันการลบ', null, (confirm)=>{
+                            //console.log(confirm);
+                            if(confirm) {
+                                console.log('confirm');
+                                this.ajax('delete', api.baseUrl('calendar/slots/' + calEvent.id), null, (response)=> {
+                                    if (response.status == 'success') {
+                                        $('#calendar').fullCalendar('removeEvents');
+                                        $('#calendar').fullCalendar('addEventSource', response.data.slots);
+                                        this.refs.create_modal.close();
+                                    } else {
+                                        this.context.dialog.alert(response.data.error);
+                                    }
+                                });
+                            }else{
+                                console.log('cancel');
+                            }
+                        });
                     },
-                    eventDrop: ()=> {
+                    eventDrop: (calEvent)=> {
+
                         /*
                         let state = Object.assign({}, this.state, {editing: true});
                         this.setState(state);
                         */
+
+                        this.context.dialog.confirm('ยืนยันการเปลี่ยนแปลง', null, (confirm)=>{
+                            //console.log(confirm);
+                            if(confirm) {
+                                //let {start, end, sc_doctor_id, sc_organizer_id, sc_category_id} = calEvent;
+                                let {start, end, sc_doctor_id, sc_organizer_id, sc_category_id} = calEvent;
+                                let data = {start: start.format('YYYY-MM-DD H:mm:ss'), end: end.format('YYYY-MM-DD H:mm:ss'), sc_doctor_id, sc_organizer_id, sc_category_id};
+                                this.ajax('put', api.baseUrl('calendar/slots/' + calEvent.id), data, (response)=> {
+                                    if (response.status == 'success') {
+                                        $('#calendar').fullCalendar('removeEvents');
+                                        $('#calendar').fullCalendar('addEventSource', response.data.slots);
+                                        this.refs.create_modal.close();
+                                    } else {
+                                        this.context.dialog.alert(response.data.error);
+                                    }
+                                });
+                            }else{
+                                $('#calendar').fullCalendar('updateEvent', Object.assign({}, calEvent, {start: calEvent.start._i, end: calEvent.end._i}));
+                            }
+                        });
                     },
                     eventResize: ()=> {
                         /*
@@ -183,10 +221,16 @@ class OrganizerPage extends Component {
     }
     assignCategory({category_id}){
         let create = Object.assign({}, this.state.slot.create, {category_id});
-        this.ajax('post',  api.baseUrl('calendar/slots'), create, (res)=>{
-            console.log(res);
+        this.ajax('post',  api.baseUrl('calendar/slots'), create, (response)=>{
+            if(response.status == 'success') {
+                $('#calendar').fullCalendar('removeEvents');
+                $('#calendar').fullCalendar('addEventSource', response.data.slots);
+                this.refs.create_modal.close();
+            }else{
+                this.context.dialog.alert(response.data.error);
+            }
         });
-        this.refs.create_modal.close();
+
     }
     slotSelecting(){
         return this.state.slot.create.start&&this.state.slot.create.end ? true : false;

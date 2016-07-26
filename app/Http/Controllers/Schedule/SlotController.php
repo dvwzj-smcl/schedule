@@ -8,6 +8,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Firebase\JWT\JWT;
 use BF;
+use Mockery\CountValidator\Exception;
 
 class SlotController extends Controller
 {
@@ -26,24 +27,9 @@ class SlotController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request)
+    public function create()
     {
-        $data = $request->all();
-        $access_token = $request->headers('access-token');
-        $user = JWT::decode($access_token, env('APP_KEY'));
-        dd($user);
-        //return BF::result(false, $e->getMessage());
-        /*
-        $data['sc_organizer_id'] = Auth::user()->id;
-        \App\Models\Calendar\Slot::create($data);
-        $slots = \App\Models\Calendar\Slot::where('sc_doctor_id', $request->doctor_id)->with('category')->get();
-        $slots = array_map(function($slot){
-            $slot['title'] = $slot['category']['name'];
-            unset($slot['category']);
-            return $slot;
-        }, $slots->toArray());
-        return response()->json(['slots'=>$slots], 200, array(), JSON_PRETTY_PRINT);
-        */
+        //
     }
 
     /**
@@ -54,7 +40,28 @@ class SlotController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $access_token = $request->header('access-token');
+        $user = JWT::decode($access_token, env('APP_KEY'), ['HS256']);
+        $organizer = \App\Models\User\Organizer::where('user_id', $user->id)->first();
+        $data = [
+            'sc_organizer_id' => $organizer->id,
+            'sc_doctor_id' => $request->get('doctor_id'),
+            'sc_category_id' => $request->get('category_id'),
+            'start' => $request->get('start'),
+            'end' => $request->get('end')
+        ];
+        try {
+            \App\Models\Calendar\Slot::create($data);
+            $slots = \App\Models\User\Doctor::with('slots.category')->find($request->get('doctor_id'))->slots;
+            $slots = array_map(function ($slot) {
+                $slot['title'] = $slot['category']['name'];
+                unset($slot['category']);
+                return $slot;
+            }, $slots->toArray());
+            return BF::result(true, ['slots' => $slots]);
+        }catch(\Exception $e){
+            return BF::result(false, $e->getMessage());
+        }
     }
 
     /**
@@ -88,7 +95,18 @@ class SlotController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        try {
+            \App\Models\Calendar\Slot::find($id)->update($request->all());
+            $slots = \App\Models\User\Doctor::with('slots.category')->find($request->get('sc_doctor_id'))->slots;
+            $slots = array_map(function ($slot) {
+                $slot['title'] = $slot['category']['name'];
+                unset($slot['category']);
+                return $slot;
+            }, $slots->toArray());
+            return BF::result(true, ['slots' => $slots]);
+        }catch(\Exception $e){
+            return BF::result(false, $e->getMessage());
+        }
     }
 
     /**
@@ -99,6 +117,18 @@ class SlotController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $slot = \App\Models\Calendar\Slot::find($id);
+            $slot->delete();
+            $slots = \App\Models\User\Doctor::with('slots.category')->find($slot->sc_doctor_id)->slots;
+            $slots = array_map(function ($slot) {
+                $slot['title'] = $slot['category']['name'];
+                unset($slot['category']);
+                return $slot;
+            }, $slots->toArray());
+            return BF::result(true, ['slots' => $slots]);
+        }catch(\Exception $e){
+            return BF::result(false, $e->getMessage());
+        }
     }
 }

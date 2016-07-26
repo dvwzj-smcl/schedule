@@ -18,4 +18,7 @@ class Doctor extends Model
     public function sub_categories(){
         return $this->hasMany('App\Models\Calendar\DoctorSubCategory', 'sc_doctor_id');
     }
+    public function slots(){
+        return $this->hasMany('App\Models\Calendar\Slot', 'sc_doctor_id', 'id');
+    }
 }
