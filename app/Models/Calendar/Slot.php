@@ -30,6 +30,7 @@ class Slot extends Model
         //return $this->sc_category_id;
     //}
 
+    /*
     public function response(){
         $events = [];
         $events[] = [
@@ -115,6 +116,7 @@ class Slot extends Model
         $durations = $this->durations();
         return ($durations['current']+$durations['min'])>$durations['max'];
     }
+    */
     /*
     public function categories(){
         $start = Carbon::parse($this->start);

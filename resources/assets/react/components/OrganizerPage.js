@@ -4,6 +4,8 @@ import { bindActionCreators } from 'redux';
 import {Grid, Row, Col} from 'react-flexbox-grid';
 import Panel from './widgets/Panel';
 import PageHeading from './widgets/PageHeading';
+import SemiModal from './widgets/SemiModal';
+import SemiSelect from './forms/SemiSelect';
 
 import {List, ListItem} from 'material-ui/List';
 import Paper from 'material-ui/Paper';
@@ -53,6 +55,8 @@ class OrganizerPage extends Component {
             doctors: [],
             categories: []
         };
+        this.assignCategory = this.assignCategory.bind(this);
+        this.slotSelecting = this.slotSelecting.bind(this);
         this.changeDoctorOnCreateSlot = this.changeDoctorOnCreateSlot.bind(this);
         this.removeSelectedEvent = this.removeSelectedEvent.bind(this);
         this.discardChangeDoctor = this.discardChangeDoctor.bind(this);
@@ -96,38 +100,57 @@ class OrganizerPage extends Component {
                     select: (a, b, jsEvent, view)=> {
                         let start = a.format('YYYY-MM-DD H:mm:ss');
                         let end = b.format('YYYY-MM-DD H:mm:ss');
+
                         let create = Object.assign({}, this.state.slot.create, {start, end});
                         let slot = Object.assign({}, this.state.slot, {create});
                         let state = Object.assign({}, this.state, {slot});
                         this.setState(state);
+                        if(this.state.slot.create.doctor_id) {
+                            this.refs.create_modal.open();
+                        }else{
+                            this.context.dialog.alert('กรุณาเลือกแพทย์ก่อน');
+                        }
+
                     },
                     unselect: (view, jsEvent)=> {
+                        /*
                         let slot = Object.assign({}, this.state.slot, {select: null});
                         let state = Object.assign({}, this.state, {slot});
                         this.setState(state);
+                        */
                     },
                     drop: (date, jsEvent, ui, resourceObj)=> {
+                        /*
                         let state = Object.assign({}, this.state, {editing: true});
                         this.setState(state);
+                        */
                     },
                     dayClick: (date, jsEvent, view, resourceObj)=> {
+                        /*
                         let slot = Object.assign({}, this.state.slot, {select: null});
                         let state = Object.assign({}, this.state, {slot});
                         this.setState(state);
+                        */
                     },
                     eventClick: (calEvent, jsEvent, view)=> {
+                        /*
                         let select = calEvent._id;
                         let slot = Object.assign({}, this.state.slot, {select});
                         let state = Object.assign({}, this.state, {slot});
                         this.setState(state);
+                        */
                     },
                     eventDrop: ()=> {
+                        /*
                         let state = Object.assign({}, this.state, {editing: true});
                         this.setState(state);
+                        */
                     },
                     eventResize: ()=> {
+                        /*
                         let state = Object.assign({}, this.state, {editing: true});
                         this.setState(state);
+                        */
                     }
                 });
             });
@@ -158,6 +181,16 @@ class OrganizerPage extends Component {
         //$('#calendar').fullCalendar('addEventSource', this.state.slots);
 
     }
+    assignCategory({category_id}){
+        let create = Object.assign({}, this.state.slot.create, {category_id});
+        this.ajax('post',  api.baseUrl('calendar/slots'), create, (res)=>{
+            console.log(res);
+        });
+        this.refs.create_modal.close();
+    }
+    slotSelecting(){
+        return this.state.slot.create.start&&this.state.slot.create.end ? true : false;
+    }
     discardChangeDoctor(){
         let state = Object.assign({}, this.state, {doctor:{changing: false, next: null}});
         this.setState(state);
@@ -175,7 +208,7 @@ class OrganizerPage extends Component {
         this.setState(state);
         if(!this.state.editing) {
             $('#calendar').fullCalendar('removeEvents');
-            this.ajax('get', api.baseUrl('calendar/doctor/'+doctor_id+'/slot'), null, (response)=>{
+            this.ajax('get', api.baseUrl('calendar/doctors/'+doctor_id+'/slot'), null, (response)=>{
                 let create = Object.assign({}, this.state.slot.create, {doctor_id});
                 let slot = Object.assign({}, this.state.slot, {create});
                 let doctor = {changing: false, next: null};
@@ -245,15 +278,15 @@ class OrganizerPage extends Component {
         //console.log('save!');
         let events = $('#calendar').fullCalendar('clientEvents').map((event)=>{
             return {
+                id: event.id,
                 sc_doctor_id: this.state.slot.create.doctor_id,
                 sc_category_id: event.category_id,
                 start: event.start.format('YYYY-MM-DD H:mm:ss'),
                 end: event.end.format('YYYY-MM-DD H:mm:ss')
             };
         });
-        console.log(events);
         this.ajax('post', api.baseUrl('calendar/slot'), events, (response)=>{
-            //console.log(response);
+            console.log(response);
         }, error=>{});
     }
 
@@ -270,6 +303,23 @@ class OrganizerPage extends Component {
                                         <CircularProgress size={2} />
                                     </div>
                                     <div id="calendar" style={{ display: this.state.loading ? 'none': 'block'}}></div>
+                                    <SemiModal
+                                        ref="create_modal"
+                                        submitForm={this.assignCategory}
+                                        >
+                                        <Row>
+                                            <Col xs md={6}>
+                                                <SemiSelect
+                                                    name="category_id"
+                                                    data={this.state.categories}
+                                                    required
+                                                    hintText="What is category you want to assign?"
+                                                    floatingLabelText="Category"
+                                                    fullWidth={true}
+                                                    />
+                                            </Col>
+                                        </Row>
+                                    </SemiModal>
                                     <Dialog
                                         actions={[
                                             <FlatButton
@@ -323,13 +373,6 @@ class OrganizerPage extends Component {
                                             );
                                         })}
                                     </SelectField>
-                                    <List style={{display: this.state.slot.create.doctor_id?'block':'none'}}>
-                                        {this.state.categories.map((category, i)=>{
-                                            return(
-                                                <ListItem key={i} className="draggable-category" data-id={category.id} primaryText={category.name} leftIcon={<ActionEventSeat />} />
-                                            );
-                                        })}
-                                    </List>
                                 </div>
                             </Panel>
                             <Panel>
@@ -351,6 +394,9 @@ class OrganizerPage extends Component {
 }
 
 OrganizerPage.propTypes = {};
+OrganizerPage.contextTypes = {
+    dialog: PropTypes.object.isRequired
+};
 
 function mapStateToProps(state) {
     return {

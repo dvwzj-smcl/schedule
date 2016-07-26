@@ -75,6 +75,16 @@ Route::group(['prefix'=>'api'], function(){
     */
 
     Route::group(['prefix'=>'calendar'], function(){
+        Route::resource('/', 'Schedule\CalendarController');
+        Route::get('doctors/{doctor_id}/slot', 'Schedule\DoctorController@doctorSlot');
+        Route::resource('doctors', 'Schedule\DoctorController');
+        Route::resource('categories', 'Schedule\CategoryController');
+        Route::resource('slots', 'Schedule\SlotController');
+    });
+
+    /*
+    Route::group(['prefix'=>'calendar'], function(){
+        Route::get('events/{year?}/{month?}', 'Schedule\CalendarController@events');
         Route::get('events/{year?}/{month?}', function(Request $request,$year=null,$month=null){
             if(is_null($year)){
                 $year = date('Y');
@@ -144,4 +154,5 @@ Route::group(['prefix'=>'api'], function(){
             return response()->json(['slots'=>$slots],200, array(), JSON_PRETTY_PRINT);
         });
     });
+    */
 });
