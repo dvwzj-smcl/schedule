@@ -41,6 +41,7 @@ class Confirm extends Component {
         const actions = [
             <FlatButton
                 label="Cancel"
+                key=""
                 primary={true}
                 onTouchTap={this.close}
             />,
