@@ -64,15 +64,17 @@ class UserModal extends Component {
     submitCallback(data) {
         // todo : check error
         if(data.error) {
-            this.context.dialog.alert(data.error, 'Error');
-            return false;
+            getCallback
         }
         // return true; // will goBack browser history
 
         if (data.length <= 0) {
             console.log('redirect!');
             this.context.router.push('/users');
-            location.reload();
+            // location.reload();
+
+            this.context.dataTable.reload();
+
             // window.location.href = '/users' ;
         }
     }
@@ -94,8 +96,8 @@ class UserModal extends Component {
         const {title,get,submit,togglePass,changePass} = this.state ;
 
         return (
-            <SemiModal 
-                ref="modal" 
+            <SemiModal
+                ref="modal"
                 title={title}
                 get={get}
                 alwaysOpen // disable open/close
@@ -225,7 +227,8 @@ UserModal.propTypes = {
 };
 UserModal.contextTypes = {
     router: PropTypes.object.isRequired,
-    dialog: PropTypes.object.isRequired
+    dialog: PropTypes.object.isRequired,
+    dataTable: PropTypes.object
 };
 
 export default connect(({user})=>({user}))(UserModal);
