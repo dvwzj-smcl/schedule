@@ -48,15 +48,18 @@ class SchedulePage extends Component {
     
     loadSlots(doctor_id) {
         this.ajax('get', `calendar/doctors/${doctor_id}/slot`, null, (response)=>{
-            var me = this;
-            var slots = response.slots;
-            for(let slot of slots) {
-                slot.rendering = 'background';
-            }
+            let me = this;
+            let slots = response.slots;
             // avoid refs.calendar undefined
             var interval = setInterval(function(){
-                if(me.refs.calendar) {
-                    console.log('slots', slots);
+                if(me.refs.calendar && me.initialized()) {
+                    let colors = me.props.schedule.data.colors;
+                    for(let slot of slots) {
+                        let doctor_id = slot.sc_doctor_id;
+                        let cat_id = slot.sc_category_id;
+                        slot.rendering = 'background';
+                        slot.color = colors[doctor_id][cat_id];
+                    }
                     me.refs.calendar.addEventSource(slots);
                     clearInterval(interval);
                 }

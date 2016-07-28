@@ -227,9 +227,9 @@ class DataTable extends Component {
                             enableSelectAll={this.state.enableSelectAll}
                             style={{borderBottom : 'none'}}
                         >
-                            <TableRow style={{borderBottom : 'none'}} >
+                            <TableRow key="headerRow" style={{borderBottom : 'none'}} >
                                 {dataColumn.map( (column, index) => (
-                                    <TableHeaderColumn style={{width:column.width}}>{column.col} <br />
+                                    <TableHeaderColumn key={index} style={{width:column.width}}>{column.col} <br />
                                         <TextField
                                             type="text" name={column.col}
                                             hintText={'Search by '+column.col}
@@ -257,7 +257,7 @@ class DataTable extends Component {
                             {dataTable.tbData.map( (row, index) => (
                                 <TableRow key={index} selected={row.selected} >
                                     {dataColumn.map( (column, index) => (
-                                        <TableRowColumn style={{width:column.width}} >{row[column.col]}</TableRowColumn>
+                                        <TableRowColumn key={index} style={{width:column.width}} >{row[column.col]}</TableRowColumn>
                                     ))}
                                     {dataTable.canEdit ?
                                         <TableRowColumn style={{width:'10%'}}>{row.status}
