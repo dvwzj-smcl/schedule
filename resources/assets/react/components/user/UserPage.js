@@ -72,8 +72,6 @@ class UserPage extends Component {
     }
 
     componentWillReceiveProps(nextProps){
-        // console.log('[UserPage] (componentWillReceiveProps) this.props',this.props.user);
-        // console.log('[UserPage] (componentWillReceiveProps) nextProps',nextProps.user);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
