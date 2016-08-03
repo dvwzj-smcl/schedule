@@ -23,26 +23,22 @@ class SemiText extends Component{
 
     componentDidMount() {
         const { debounce = 200 } = this.props;
-        this.setValidate = debounceFunc(this.refs.input.setValue, debounce);
+        this.setValidate = debounceFunc(this.setValue, debounce);
     }
 
     componentWillReceiveProps() {
         const input = this.refs.input;
         input.setState({ value: input.getValue() || '' });
     }
-
-
+        
     onChange(event) {
         if (this.props.onChange)
             this.props.onChange(event);
         this.setValidate(event.currentTarget.value);
-        //console.log('789', 789);
     }
 
-    setValue(event) {
-        const input = this.refs.input;
-        input.setState({ value: event });
-        this.setValidate(event);
+    setValue(value) {
+        this.refs.input.setValue(value);
     }
 
     render() {
