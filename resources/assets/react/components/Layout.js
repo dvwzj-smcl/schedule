@@ -53,7 +53,7 @@ class Layout extends Component {
     }
 
     render() {
-        // console.log('render: layout');
+        // console.log('render: layout', this.props.user);
         return (
             <div id="layout">
                 <Confirm ref="confirm" />
@@ -71,7 +71,8 @@ class Layout extends Component {
                         <ToolbarGroup>
                             <ToolbarTitle text="Schedule"/>
                             <ToolbarSeparator />
-                            <RaisedButton label="Something" primary={true}/>
+                            <ToolbarTitle text={this.props.user.branch.name} style={{marginLeft: 32}} />
+                            {/*<RaisedButton label="Something" primary={true}/>*/}
                             <IconMenu
                                 iconButtonElement={<IconButton style={{width:56, height:56}}><NavigationMoreVert /></IconButton>}
                                 targetOrigin={{horizontal: 'right', vertical: 'top'}}
@@ -97,7 +98,7 @@ class Layout extends Component {
 }
 
 Layout.propTypes = {
-    // user: PropTypes.object.isRequired,
+    user: PropTypes.object.isRequired,
     // actions: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
     appBarTitle: PropTypes.string.isRequired,

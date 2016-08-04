@@ -19,8 +19,8 @@ class UserModuleSeeder extends Seeder
         $role_organizer = \App\Models\User\Role::create(['name'=>'organizer', 'display_name'=>'User Organizer', 'description'=>'Just a organizer role']);
         $role_sale = \App\Models\User\Role::create(['name'=>'sale', 'display_name'=>'User Sale', 'description'=>'Just a sale role']);
 
-        $doctor_count = 20;
-        $sale_count = 20;
+        $doctor_count = 10;
+        $sale_count = 10;
         $organizer_count = 2;
 
         // Generate Users
@@ -28,7 +28,7 @@ class UserModuleSeeder extends Seeder
         $user_admin = \App\Models\User\User::create(['name'=>'Admin', 'username'=>'admin', 'email'=>'admin@localhost.com', 'password'=>bcrypt('password'), 'lang'=>'th', 'branch_id'=>1, 'phone'=>'020001111', 'phone_2'=>'020001111']);
         $user_admin->attachRole($role_admin);
 
-        for($branch_id = 1; $branch_id <= 2; $branch_id++) {
+        for($branch_id = 1; $branch_id <= \App\Models\User\Branch::count(); $branch_id++) {
             for ($i = 1; $i <= $doctor_count; $i++) {
                 $id = ($doctor_count*($branch_id-1))+$i;
                 $user = \App\Models\User\User::create(['name' => "Doctor {$id}", 'username' => "doctor{$id}", 'email' => "doctor{$id}@localhost", 'password' => bcrypt('asdfasdf'), 'lang' => 'th', 'branch_id' => $branch_id, 'phone' => '020001111', 'phone_2' => '020001111']);

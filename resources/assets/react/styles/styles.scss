@@ -1,67 +1,72 @@
-/* Variables */
+/* variables */
 $vin-blue: #5bb7db;
 $vin-green: #60b044;
 $vin-red: #ff0000;
-$bgColor: #F5F5F5;
-$fgColor: #FFFFFF;
+$bgcolor: #f5f5f5;
+$fgcolor: #ffffff;
 
-$mainColor: #00bcd4;
-$mainTextColor: #FFFFFF;
+$maincolor: #00bcd4;
+$maintextcolor: #ffffff;
 
-$secColor: #363A3F;
-$secTextColor: #FFFFFF;
+$seccolor: #363a3f;
+$sectextcolor: #ffffff;
 
-$sidebarExpanded: 256px;
-$navHeight: 56px;
-$conWrapPad: 30px;
-$conPad: 24px;
-$barHeight: 56px;
+$sidebarexpanded: 256px;
+$navheight: 56px;
+$conwrappad: 30px;
+$conpad: 24px;
+$barheight: 56px;
 
 html { width: 100%; height: 100%; }
-body { margin: 0; font-family: 'Roboto', 'Segoe UI', 'Droid Sans', Tahoma, Arial, sans-serif; background: $bgColor; height: 100%; }
+body { margin: 0; font-family: 'roboto', 'segoe ui', 'droid sans', tahoma, arial, sans-serif; background: $bgcolor; height: 100%; }
 
 /*--------*/
-/* Layout */
+/* layout */
 /*--------*/
 
-/* Nav */
+/* nav */
 
 .menu-wrapper { width: 100px !important; }
-.menu-wrapper>div { background: $secColor !important; }
-.menu-wrapper .nav-item { color: $secTextColor !important; font-size: 14px !important; }
+.menu-wrapper>div { background: $seccolor !important; }
+.menu-wrapper .nav-item { color: $sectextcolor !important; font-size: 14px !important; }
 
 .top-nav-wrap { float: left; position: fixed; width: 100%; z-index: 999; }
-.top-nav-bar { background: $fgColor !important; padding-left: $sidebarExpanded+$conWrapPad+24px !important; }
-.side-nav-bar { background: $mainColor !important; color: $mainTextColor; letter-spacing: 1px; }
+.top-nav-bar { background: $fgcolor !important; padding-left: $sidebarexpanded+$conwrappad+24px !important; }
+.side-nav-bar { background: $maincolor !important; color: $maintextcolor; letter-spacing: 1px; }
 
-/* Page Heading */
+/* page heading */
 
-.page-heading { background: #F1F1F1; float: left; width: 100%; box-sizing: border-box; padding: $navHeight $conWrapPad 0 $sidebarExpanded+$conWrapPad;}
+.page-heading { background: #f1f1f1; float: left; width: 100%; box-sizing: border-box; padding: $navheight $conwrappad 0 $sidebarexpanded+$conwrappad;}
 .page-heading>h1 { font-size: 30px; font-weight: 400; margin: 20px 0 5px 0; }
 .page-heading>p { color: #666; font-size: 13px; font-weight: 300; margin: 0 0 20px 0; }
 
-/* Content */
+/* content */
 
-.content-wrap { padding: 0 $conWrapPad $conWrapPad $sidebarExpanded+$conWrapPad; background: $bgColor; float: left; width: 100%; box-sizing: border-box; }
+.content-wrap { padding: 0 $conwrappad $conwrappad $sidebarexpanded+$conwrappad; background: $bgcolor; float: left; width: 100%; box-sizing: border-box; }
 .content-wrap>div { padding: 0 !important;}
 
-.panel-bar { height: $barHeight; z-index: 99 !important; }
-.panel-bar>h1 { line-height: $barHeight !important; font-size: 20px !important; font-weight: 400; }
+.panel-bar { height: $barheight; z-index: 99 !important; }
+.panel-bar>h1 { line-height: $barheight !important; font-size: 20px !important; font-weight: 400; }
+.panel-bar.secondary { background-color: #e8e8e8 !important; box-shadow: none !important; }
+.panel-bar.secondary>h1 { color: #7a7a7a !important; }
 
-.con-pad { padding: $conPad; }
+.con-pad { padding: $conpad; }
 
-/* Button */
+/* button */
 
 .icon-btn { margin: 10px !important; min-width: 36px !important; }
 .icon-btn.first { margin-left: 0 !important; }
 .icon-btn.left-most { margin-left: -8px !important; }
-.button.rightMargin { margin-right: 12px; }
+.button.rightmargin { margin-right: 12px; }
 
-/* Form */
-//.semiForm input { padding-bottom: 12px !important; }
+/* form */
+//.semiform input { padding-bottom: 12px !important; }
 .form-wrap { width: 100%; }
+.btn-wrap { width: 100%; }
+.btn-right .btn-wrap { text-align: right; }
+.semiForm.compact>div { margin-top: -10px !important; }
 
-/* Alignment */
+/* alignment */
 #app { height: 100%; }
 .center { display: table !important; width: 100% !important; height: 100% !important; position: absolute; }
 .center-inner{ display: table-cell; vertical-align: middle; text-align: center; }
@@ -92,7 +97,7 @@ body { margin: 0; font-family: 'Roboto', 'Segoe UI', 'Droid Sans', Tahoma, Arial
     display: inline-block;
     padding: 5px 10px;
 
-    border: 1px solid #EEEEEE;
+    border: 1px solid #eeeeee;
     cursor: pointer;
 
     a {

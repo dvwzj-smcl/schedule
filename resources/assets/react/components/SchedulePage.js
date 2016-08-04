@@ -17,6 +17,8 @@ import * as scheduleActions from '../actions/scheduleActions';
 
 // Forms
 import SemiSelect from './forms/SemiSelect';
+import SemiDate from './forms/SemiDate';
+import SemiForm from './forms/SemiForm';
 import Calendar from './widgets/Calendar';
 import SemiModal from './widgets/SemiModal';
 
@@ -29,10 +31,6 @@ class SchedulePage extends Component {
 
         // variables
         this.initCalendar = false;
-        this.lookup = {
-            categories: []
-        };
-
         this.data = {
             catId: 0,
             slotId: 0
@@ -56,18 +54,20 @@ class SchedulePage extends Component {
                 if(me.refs.calendar && me.initialized()) {
                     // initialize
                     // create lookup tables
-                    let cats = me.props.schedule.data.categories;
-                    for(let i in cats) {
-                        me.lookup.categories[cats[i].id] = parseInt(i);
-                    }
+                    me.lookup = me.props.schedule.data.lookup;
+                    // let cats = me.props.schedule.data.categories;
+                    // for(let i in cats) {
+                    //     me.lookup.categories[cats[i].id] = parseInt(i);
+                    // }
                     // initialize slots
-                    let colors = me.props.schedule.data.colors;
+                    let colors = me.lookup.colors;
                     for(let i in slots) {
                         let slot = slots[i];
                         let doctor_id = slot.sc_doctor_id;
                         let cat_id = slot.sc_category_id;
                         slot.index = i; // array index
-                        if(slot.is_full) slot.rendering = 'background';
+                        // if(slot.is_full) slot.rendering = 'background';
+                        slot.rendering = 'background';
                         slot.color = colors[doctor_id][cat_id];
                     }
                     console.log('slots', slots);
@@ -117,6 +117,7 @@ class SchedulePage extends Component {
         // console.log('calEvent', calEvent);
         let slot_id = calEvent.id;
         this.refs.addModal.open({category_id, slot_id});
+        this.refs.addModal.open({category_id, slot_id});
     }
 
     dayClick(date, jsEvent, view, resourceObj) {
@@ -135,7 +136,7 @@ class SchedulePage extends Component {
                         data={data.categories[this.state.addModal].sub_categories}
                         name="subcat"
                         required
-                        floatingLabelText={'branch'}
+                        floatingLabelText={'subcategory'}
                         fullWidth={true}
                     />
                 </SemiModal>
@@ -143,8 +144,22 @@ class SchedulePage extends Component {
                 <Grid fluid className="content-wrap">
                     <Row>
                         <Col md={3}>
-                            <Panel>
+                            <Panel title="Goto" type="secondary">
                                 <div style={{padding: 12}}>
+                                    <SemiForm submitLabel="GO" buttonRight compact>
+                                        <SemiSelect
+                                            data={data.categories}
+                                            name="category"
+                                            floatingLabelText="category"
+                                            fullWidth={true}
+                                        />
+                                        <SemiDate
+                                            name="date"
+                                            required
+                                            floatingLabelText="date"
+                                            fullWidth={true}
+                                        />
+                                    </SemiForm>
                                 </div>
                             </Panel>
                         </Col>

@@ -17,7 +17,7 @@ class AuthController extends Controller
 {
     public function Login(Request $request)
     {
-//        sleep(1);
+        //sleep(1);
         $input = BF::decodeInput($request->getContent());
         $rules = array(
             'username' => 'required',
@@ -38,8 +38,6 @@ class AuthController extends Controller
 
             if (Auth::attempt([$search_column => $username, 'password' => $password], Input::has('remember'))) {
                 $userId = Auth::user()->id;
-//                Auth::loginUsingId($userId);
-
                 $domain = $_SERVER['HTTP_HOST'];
                 $today = Carbon::today()->timestamp ;
                 $tomorrow = Carbon::tomorrow()->timestamp ;
@@ -48,16 +46,16 @@ class AuthController extends Controller
                     "aud" => $domain,
                     "iat" => $today,
                     "exp" => $tomorrow,
-                    // 'name' => Auth::user()->name, // todo : fix or remove this
                     'id' => $userId
                 );
 
                 $jwt = JWT::encode($token, getenv('APP_KEY'));
-
                 $data = [
                     "token" => $jwt,
+                    // todo: user information here
                     "user" => [
-                        "permissions" => Auth::user()->getAllPermissions()
+                        "permissions" => Auth::user()->getAllPermissions(),
+                        "branch" => Auth::user()->branch
                     ]
                 ];
                 return BF::result(true, $data, 'login');

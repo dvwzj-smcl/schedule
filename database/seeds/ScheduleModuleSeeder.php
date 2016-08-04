@@ -69,19 +69,26 @@ class ScheduleModuleSeeder extends Seeder
 
         // Generate sample slots
 
-        $current = \Carbon\Carbon::create(2016, 1, 1);
+        $current = \Carbon\Carbon::create(2016, 4, 1);
         $limit = \Carbon\Carbon::create(2016, 12, 31);
         while($current < $limit) {
             foreach($doctors as $id) {
                 $start = clone $current;
                 $end = clone $current;
                 \App\Models\Calendar\Slot::create(['start' => $start->setTime(8, 0), 'end' => $end->setTime(12, 0), 'sc_doctor_id' => $id, 'sc_organizer_id' => 1, 'sc_category_id' => 1]);
+               
                 \App\Models\Calendar\Slot::create(['start' => $start->setTime(14, 0), 'end' => $end->setTime(15, 0), 'sc_doctor_id' => $id, 'sc_organizer_id' => 1, 'sc_category_id' => 2]);
                 \App\Models\Calendar\Slot::create(['start' => $start->setTime(15, 0), 'end' => $end->setTime(17, 0), 'sc_doctor_id' => $id, 'sc_organizer_id' => 1, 'sc_category_id' => 1]);
                 \App\Models\Calendar\Slot::create(['start' => $start->setTime(17, 0), 'end' => $end->setTime(20, 0), 'sc_doctor_id' => $id, 'sc_organizer_id' => 1, 'sc_category_id' => 2]);
             }
             $current->addDay();
         }
+
+        // Generate sample events
+
+//        while($current < $limit) {
+//            foreach($current < limit)
+//        }
 
 //        \App\Models\Calendar\Event::create(['sc_slot_id'=>1, 'sc_sub_category_id'=>1]);
 //        \App\Models\Calendar\Event::create(['sc_slot_id'=>1, 'sc_sub_category_id'=>1, 'sc_customer_id'=>1, 'sc_sale_id'=>2]);
@@ -101,5 +108,17 @@ class ScheduleModuleSeeder extends Seeder
         \App\Models\Calendar\Event::create(['calendar_slot_id'=>1, 'sale_id'=>1, 'customer_id'=>1]);
         \App\Models\Calendar\Event::create(['calendar_slot_id'=>1, 'sale_id'=>1, 'customer_id'=>2]);
         */
+    }
+
+    public function fillEvent(\App\Models\Calendar\Slot $slot) {
+        $subcats = \App\Models\Calendar\Category::find($slot->category->id)->sub_categories;
+        $maxId = count($subcats) - 1;
+        $isFull = false;
+        $slotTime = 100; // todo:
+        while(!$isFull) {
+            $subcat = rand(0, $maxId);
+            $
+            $category = find();
+        }
     }
 }

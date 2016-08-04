@@ -98,9 +98,12 @@ class SemiForm extends Component {
                 label={props.submitLabel || 'Submit'}
                 disabled={!this.state.canSubmit}
             />);
+
+        let buttonRight = props.buttonRight? 'btn-right' : '';
+        let styleClass = props.compact? 'compact' : '';
         return (
             <Form
-                className="semiForm"
+                className={`semiForm ${buttonRight} ${styleClass}`}
                 onValid={this.enableButton}
                 onInvalid={this.disableButton}
                 onValidSubmit={this.submitForm}
@@ -112,8 +115,10 @@ class SemiForm extends Component {
                     if(this.state.ready) return props.children;
                     else return <Loading inline />;
                 })()}
-                {submitBtn}
-                {resetBtn}
+                <div className="btn-wrap">
+                    {submitBtn}
+                    {resetBtn}
+                </div>
                 <ApiCall ref="apiCall"
                     getUrls={props.getUrls} getCallback={this.getCallback}
                     submitUrl={props.submit} submitCallback={props.submitCallback}

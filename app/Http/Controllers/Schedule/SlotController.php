@@ -138,6 +138,8 @@ class SlotController extends Controller
             $slot = Slot::find($slot_id);
             if($slot == null) throw new \Exception('Slot not found');
             // todo: check slot full
+            $events = $slot->events;
+            dd($events);
             return BF::result(true, ['slots' => $slot]);
         } catch(\Exception $e) {
             return BF::result(false, $e->getMessage());

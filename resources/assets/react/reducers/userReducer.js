@@ -16,7 +16,7 @@ export default function scheduleReducer(state = initialState.user, action = null
         case USER_UPDATE_TOKEN:
             // console.log('USER_UPDATE_TOKEN', action);
             if(action.user) {
-                const {token, user:{permissions}, login:{username,password}} = action.user;
+                const {token, user:{permissions, branch}, login:{username,password}} = action.user;
                 // console.log('token', permissions);
                 // sessionStorage.setItem('access_token', token); // todo : if set, auto login won't work
 
@@ -24,10 +24,8 @@ export default function scheduleReducer(state = initialState.user, action = null
                 sessionStorage.setItem('username', username);
                 sessionStorage.setItem('password', password);
 
-                // todo : remove this
-                // sessionStorage.setItem('isOrganizer', true);
-
-                return Object.assign({}, state, {error: null, access_token: token, permissions, authenticating: false});
+                // todo : add user information here
+                return Object.assign({}, state, {error: null, access_token: token, permissions, branch, authenticating: false});
             }else{
                 sessionStorage.removeItem('access_token');
                 return {};

@@ -39,7 +39,7 @@ class App extends Component {
         return (
             <MuiThemeProvider >
                 {(() => {
-                    if(this.props.user.access_token) return <Layout appBarTitle="Schedule" children={this.props.children} location={this.props.location} />;
+                    if(this.props.user.access_token) return <Layout appBarTitle="Schedule" children={this.props.children} location={this.props.location} user={this.props.user} />;
                     else if(this.props.user.authenticating) return this.props.children;
                     else if(this.props.user.error) return this.props.children;
                     else return <Loading />;

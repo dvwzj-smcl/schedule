@@ -17,15 +17,23 @@ class ScheduleController extends Controller
 {
     public function init()
     {
-        $colorData = DB::table('sc_doctor_categories')->get();
-        $colors = [];
-        foreach($colorData as $color) {
-            $colors[$color->sc_doctor_id][$color->sc_category_id] = $color->color;
+        $colors = DB::table('sc_doctor_categories')->get();
+        $categories = Category::with('sub_categories')->get();
+        $colorLookup = [];
+        foreach($colors as $color) {
+            $colorLookup[$color->sc_doctor_id][$color->sc_category_id] = $color->color;
+        }
+        $categoryLookup = [];
+        foreach($categories as $index => $cat) {
+            $categoryLookup[$cat->id] = $index;
         }
         $res = [
             'doctors' => Doctor::with('user')->get(),
-            'categories' => Category::with('sub_categories')->get(),
-            'colors' => $colors, // lookup table
+            'categories' => $categories,
+            'lookup' => [ // lookup tables. transform object's id to array's id
+                'colors' => $colorLookup,
+                'categories' => $categoryLookup,
+            ]
         ];
         return BF::result(true, $res, '[schedule] init');
     }
