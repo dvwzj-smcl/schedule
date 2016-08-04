@@ -16,6 +16,10 @@ class Calendar extends Component {
         this.addEventSource = this.addEventSource.bind(this);
     }
 
+    shouldComponentUpdate(nextProps, nextState) {
+        return false;
+    }
+
     addEventSource(slots) {
         $('#calendar').fullCalendar('addEventSource', slots);
     }
@@ -45,7 +49,7 @@ class Calendar extends Component {
     }
 
     render() {
-        console.log('render: calendar');
+        // console.log('render: calendar');
         let state = this.state;
         return (
             <div id="calendar"></div>

@@ -68,6 +68,7 @@ class CreateScheduleModuleTables extends Migration
             $table->dateTime('start');
             $table->dateTime('end');
             $table->timestamps();
+            $table->boolean('is_full')->default(false);
             $table->integer('sc_organizer_id')->unsigned();
             $table->foreign('sc_organizer_id')->references('id')->on('sc_organizers')->onUpdate('cascade')->onDelete('restrict');
             $table->integer('sc_doctor_id')->unsigned();

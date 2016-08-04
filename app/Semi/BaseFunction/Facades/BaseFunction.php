@@ -1,4 +1,4 @@
-<?php namespace App\BaseFunction\Facades;
+<?php namespace App\Semi\BaseFunction\Facades;
 
 use Illuminate\Support\Facades\Facade;
 

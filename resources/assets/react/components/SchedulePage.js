@@ -11,29 +11,34 @@ import {ContentInbox, ActionGrade, ContentSend, ContentDrafts, ActionInfo, Actio
 import {ActionHome, ActionEvent, ActionEventSeat, ContentSave} from 'material-ui/svg-icons';
 // import Paper from 'material-ui/Paper';
 // import Divider from 'material-ui/Divider';
-// import Dialog from 'material-ui/Dialog';
 // import FlatButton from 'material-ui/FlatButton';
 
-import {ajax} from '../api/ApiCall';
 import * as scheduleActions from '../actions/scheduleActions';
 
 // Forms
 import SemiSelect from './forms/SemiSelect';
-// import MultiSelect from './forms/MultiSelect';
 import Calendar from './widgets/Calendar';
 import SemiModal from './widgets/SemiModal';
 
 class SchedulePage extends Component {
     constructor(props, context) {
         super(props, context);
-        this.state = {};
+        this.state = {
+            addModal: 0
+        };
 
         // variables
         this.initCalendar = false;
-        this.data = {};
+        this.lookup = {
+            categories: []
+        };
+
+        this.data = {
+            catId: 0,
+            slotId: 0
+        };
 
         this.initialized = this.initialized.bind(this);
-        this.ajax = this.ajax.bind(this);
         this.loadSlots = this.loadSlots.bind(this);
         this.onSelectSubcategory = this.onSelectSubcategory.bind(this);
         this.onClose = this.onClose.bind(this);
@@ -41,25 +46,31 @@ class SchedulePage extends Component {
         this.eventClick = this.eventClick.bind(this);
         this.dayClick = this.dayClick.bind(this);
     }
-
-    ajax(method, url, data, success, error) {
-        ajax(method, url, data, success, error, this.props.user.access_token);
-    }
     
     loadSlots(doctor_id) {
-        this.ajax('get', `calendar/doctors/${doctor_id}/slot`, null, (response)=>{
+        this.context.ajax.get(`schedules/doctors/${doctor_id}/slot`, null, (response)=>{
             let me = this;
-            let slots = response.slots;
+            let slots = response.data.slots;
             // avoid refs.calendar undefined
             var interval = setInterval(function(){
                 if(me.refs.calendar && me.initialized()) {
+                    // initialize
+                    // create lookup tables
+                    let cats = me.props.schedule.data.categories;
+                    for(let i in cats) {
+                        me.lookup.categories[cats[i].id] = parseInt(i);
+                    }
+                    // initialize slots
                     let colors = me.props.schedule.data.colors;
-                    for(let slot of slots) {
+                    for(let i in slots) {
+                        let slot = slots[i];
                         let doctor_id = slot.sc_doctor_id;
                         let cat_id = slot.sc_category_id;
-                        slot.rendering = 'background';
+                        slot.index = i; // array index
+                        if(slot.is_full) slot.rendering = 'background';
                         slot.color = colors[doctor_id][cat_id];
                     }
+                    console.log('slots', slots);
                     me.refs.calendar.addEventSource(slots);
                     clearInterval(interval);
                 }
@@ -75,10 +86,6 @@ class SchedulePage extends Component {
     }
 
     componentDidUpdate() {
-        // if(this.initialized() && !this.initCalendar) {
-        //     this.initCalendar = true;
-        //     this.loadSlots(1);
-        // }
     }
 
     componentDidMount() {
@@ -88,19 +95,28 @@ class SchedulePage extends Component {
         this.loadSlots(1);
     }
 
+    // --- Modal Functions
+
     onSelectSubcategory(data) {
-        console.log('data from modal', data);
-        this.refs.modal.close();
-        return data;
+        console.log('data from addModal', data);
+        this.refs.addModal.ajax('post', `schedules/slots/${data.slot_id}/add_event`, data, response => {
+            console.log('response', response);
+        }, error => {});
+        this.refs.addModal.close();
     }
 
     onClose() {
-        console.log('close modal');
+        // console.log('close addModal');
     }
 
     // --- Calendar Functions
+
     eventClick(calEvent) {
-        this.refs.modal.open();
+        let category_id = this.lookup.categories[calEvent.sc_category_id];
+        this.setState({addModal: category_id});
+        // console.log('calEvent', calEvent);
+        let slot_id = calEvent.id;
+        this.refs.addModal.open({category_id, slot_id});
     }
 
     dayClick(date, jsEvent, view, resourceObj) {
@@ -110,14 +126,14 @@ class SchedulePage extends Component {
     render() {
         let props = this.props;
         let data = props.schedule.data;
-        console.log('render: sc page', this.props.schedule);
+        // console.log('render: sc page', this.props.schedule);
         if(!this.initialized()) return <Loading />;
         return (
             <div>
-                <SemiModal submitForm={this.onSelectSubcategory} onClose={this.onClose} ref="modal">
+                <SemiModal submitForm={this.onSelectSubcategory} onClose={this.onClose} ref="addModal">
                     <SemiSelect
+                        data={data.categories[this.state.addModal].sub_categories}
                         name="subcat"
-                        data={data.categories}
                         required
                         floatingLabelText={'branch'}
                         fullWidth={true}
@@ -150,8 +166,11 @@ class SchedulePage extends Component {
 }
 
 SchedulePage.propTypes = {};
+SchedulePage.contextTypes = {
+    ajax: PropTypes.object
+};
 
-const mapStateToProps = ({schedule, user}) => ({schedule, user});
+const mapStateToProps = ({schedule}) => ({schedule});
 const mapDispatchToProps = (dispatch) => ({actions: {
     init: bindActionCreators(scheduleActions.initSchedule, dispatch)
 }});

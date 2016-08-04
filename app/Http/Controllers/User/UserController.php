@@ -26,7 +26,7 @@ class UserController extends Controller
             'branch_id'
         ] ;
         $data = [];
-        $sql = User::select($cols);
+        $sql = User::currentBranch()->select($cols);
 
         // -- Order
         if (Input::has('order')){
@@ -166,6 +166,7 @@ class UserController extends Controller
 
     public function edit($id)
     {
+
         if(empty($id)){
             return BF::result(false, 'ไม่พบข้อมูลนี้ค่ะ');
         }

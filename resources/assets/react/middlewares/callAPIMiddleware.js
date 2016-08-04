@@ -26,9 +26,10 @@ export default function callAPIMiddleware({ dispatch, getState }) {
         if (!callAPI) {
             return;
         } else if (typeof callAPI === 'string') {
-            callAPI = () => fetch(api.baseUrl('/schedules/init'),{
+            let url = callAPI;
+            callAPI = () => fetch(api.baseUrl(url),{
                 method: 'get',
-                headers: { Authorization: getState().user.access_token }
+                headers: { 'Access-Token': getState().user.access_token }
             });
 
         } else if (typeof callAPI !== 'function') {

@@ -14,6 +14,10 @@ class SemiSelect extends Component {
         this.value = (props.multiple && !props.value) ? [] : props.value;
     }
 
+    setData(data) {
+        this.setState(data);
+    }
+
     componentWillReceiveProps(nextProps){
         this.value = (nextProps.multiple && !nextProps.value) ? [] : nextProps.value;
     }

@@ -63,7 +63,6 @@ export function login(username, password){
                 })
             }
         ).then(response=>response.json()).then(json=>{
-            dispatch(userRequestSuccess());
             // dispatch(ajaxCallEnd());
             if(json.status == "error") {
                 return(dispatch(userRequestFailed()));

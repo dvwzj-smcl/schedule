@@ -10,7 +10,7 @@ class SemiForm extends Component {
         super(props);
         this.state = {
             canSubmit: false,
-            ready: props.get? false : true
+            ready: props.getUrls? false : true
             // ready: false
         };
 
@@ -21,11 +21,8 @@ class SemiForm extends Component {
         this.notifyFormError = this.notifyFormError.bind(this);
         this.resetForm = this.resetForm.bind(this);
         this.submit = this.submit.bind(this);
+        this.ajax = this.ajax.bind(this);
     }
-
-    // shouldComponentUpdate(nextProps, nextState) {
-    //     return this.state.canSubmit !== nextState.canSubmit;
-    // }
 
     enableButton() {
         this.setState({
@@ -49,16 +46,25 @@ class SemiForm extends Component {
         });
     }
 
-    /** default for sumbit form
-     * override by onValidSubmitC
-     * ajax: POST
+    /**
+     * Formsy's onValidSubmit
+     *
      */
     submitForm(data) {
         if(this.props.submitForm) {
             data = this.props.submitForm(data);
         }
-        // console.log('semiform: default-submit', data, this.props.submitForm);
-        this.refs.apiCall.getWrappedInstance().callPost(data);
+        // this.refs.apiCall.getWrappedInstance().post(data); // old
+        if(this.props.submitUrl) {
+            let {submitUrl:{url, method}, submitCallback} = this.props;
+            this.ajax(method, url, data, submitCallback, submitCallback);
+        }
+    }
+
+    // Replacing <ApiCall>
+    ajax(method, url, data, success, error) {
+        // todo: add Loading... to submit button
+        this.context.ajax.call(method, url, data, success, error);
     }
 
     notifyFormError(/*data*/) {}
@@ -83,7 +89,7 @@ class SemiForm extends Component {
             />
         ) : null;
 
-        let submitBtn = props.noSubmit || props.noButton ? null : (
+        let submitBtn = props.noSubmitButton || props.noButton ? null : (
             <RaisedButton
                 formNoValidate
                 secondary={true}
@@ -109,29 +115,34 @@ class SemiForm extends Component {
                 {submitBtn}
                 {resetBtn}
                 <ApiCall ref="apiCall"
-                    get={props.get} getCallback={this.getCallback}
-                    submit={props.submit} submitCallback={props.submitCallback}
+                    getUrls={props.getUrls} getCallback={this.getCallback}
+                    submitUrl={props.submit} submitCallback={props.submitCallback}
                 />
                 <button style={{display:'none'}} ref="submitBtn" type="submit">Submit</button>
             </Form>);
     }
 }
 
-
 SemiForm.propTypes = {
     hasReset: PropTypes.bool,
     submitLabel: PropTypes.string,
     enableButton: PropTypes.func,
     disableButton: PropTypes.func,
+    getUrls: PropTypes.array,
+    getCallback: PropTypes.func,
+    submitUrl: PropTypes.object,
     submitForm: PropTypes.func,
-    submit: PropTypes.object,
+    submitCallback: PropTypes.func,
     resetForm: PropTypes.func,
     notifyFormError: PropTypes.func,
-    children: React.PropTypes.oneOfType([
-        React.PropTypes.object,
-        React.PropTypes.array
+    children: PropTypes.oneOfType([
+        PropTypes.object,
+        PropTypes.array
     ]),
-    noSubmit: PropTypes.bool
+    noSubmitButton: PropTypes.bool
+};
+SemiForm.contextTypes = {
+    ajax: PropTypes.object
 };
 
 export default SemiForm;

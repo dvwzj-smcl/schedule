@@ -18,7 +18,7 @@ const UserIsAuthenticated = UserAuthWrapper({
     authSelector: state => state.user, // how to get the user state
     authenticatingSelector: state => state.user.authenticating, // for async session loading.
     LoadingComponent: LoginPage, // how to get the user state
-    predicate: auth => auth.authenticating!==true,
+    predicate: auth => auth.authenticating!==true && !auth.error,
     redirectAction: routerActions.replace, // the redux action to dispatch for redirect
     wrapperDisplayName: 'UserIsAuthenticated' // a nice name for this auth check
 });

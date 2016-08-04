@@ -11,58 +11,87 @@ class ScheduleModuleSeeder extends Seeder
      */
     public function run()
     {
-        \App\Models\User\Doctor::create(['color'=>'#ffffff', 'user_id'=>2]);
-        \App\Models\User\Doctor::create(['color'=>'#ffffff', 'user_id'=>3]);
-        \App\Models\User\Organizer::create(['user_id'=>4]);
-        \App\Models\User\Organizer::create(['user_id'=>5]);
-        \App\Models\User\Sale::create(['user_id'=>6]);
-        \App\Models\User\Sale::create(['user_id'=>7]);
+        $doctors = [];
+        $sales = [];
+        $organizers = [];
+
+        $users = \App\Models\User\User::with('roles')->get();
+        foreach($users as $user) {
+            if($user->hasRole('doctor')) {
+                $doctor = \App\Models\User\Doctor::create(['color'=>'#ffffff', 'user_id'=>$user->id]);
+                $doctors[] = $doctor->id;
+            } else if($user->hasRole('sale')) {
+                $sale = \App\Models\User\Sale::create(['user_id'=>$user->id]);
+                $sales[] = $sale->id;
+            } else if($user->hasRole('organizer')) {
+                $organizer = \App\Models\User\Organizer::create(['user_id'=>$user->id]);
+                $organizers[] = $organizer->id;
+            }
+        }
+
         \App\Models\User\Customer::create(['name'=>'Customer A', 'phone'=>'0987654321', 'contact'=>'htp://www.facebook.com/customera']);
         \App\Models\User\Customer::create(['name'=>'Customer B', 'phone'=>'0987654322', 'contact'=>'htp://www.facebook.com/customerb']);
 
         \App\Models\Calendar\Category::create(['name'=>'ผ่าตัด']);
-        \App\Models\Calendar\Category::create(['name'=>'Consult']);
+        \App\Models\Calendar\Category::create(['name'=>'Consult & Followup']);
+
         \App\Models\Calendar\SubCategory::create(['name'=>'ผ่าตัดหน้าอก', 'sc_category_id'=>1]);
         \App\Models\Calendar\SubCategory::create(['name'=>'ผ่าตัดจมูก', 'sc_category_id'=>1]);
-        \App\Models\Calendar\SubCategory::create(['name'=>'อะไรสักอย่าง', 'sc_category_id'=>2]);
+        \App\Models\Calendar\SubCategory::create(['name'=>'ผ่าตัดปาก', 'sc_category_id'=>1]);
+        \App\Models\Calendar\SubCategory::create(['name'=>'ดูดไขมัน', 'sc_category_id'=>1]);
 
-        \App\Models\Calendar\DoctorCategory::create(['sc_category_id'=>1,'sc_doctor_id'=>1,'color'=>'#9A9CFF']);
-        \App\Models\Calendar\DoctorCategory::create(['sc_category_id'=>2,'sc_doctor_id'=>1,'color'=>'#92E1C0']);
-        \App\Models\Calendar\DoctorCategory::create(['sc_category_id'=>1,'sc_doctor_id'=>2,'color'=>'#9A9CFF']);
-        \App\Models\Calendar\DoctorCategory::create(['sc_category_id'=>2,'sc_doctor_id'=>2,'color'=>'#92E1C0']);
-        \App\Models\Calendar\DoctorSubCategory::create(['duration'=>20, 'sc_sub_category_id'=>1,'sc_doctor_id'=>1]);
-        \App\Models\Calendar\DoctorSubCategory::create(['duration'=>30, 'sc_sub_category_id'=>2,'sc_doctor_id'=>1]);
-        \App\Models\Calendar\DoctorSubCategory::create(['duration'=>30, 'sc_sub_category_id'=>3,'sc_doctor_id'=>1]);
-        \App\Models\Calendar\DoctorSubCategory::create(['duration'=>25, 'sc_sub_category_id'=>1,'sc_doctor_id'=>2]);
-        \App\Models\Calendar\DoctorSubCategory::create(['duration'=>25, 'sc_sub_category_id'=>2,'sc_doctor_id'=>2]);
-        \App\Models\Calendar\DoctorSubCategory::create(['duration'=>30, 'sc_sub_category_id'=>3,'sc_doctor_id'=>2]);
+        \App\Models\Calendar\SubCategory::create(['name'=>'ปรึกษาตา', 'sc_category_id'=>2]);
+        \App\Models\Calendar\SubCategory::create(['name'=>'ปรึกษาจมูก', 'sc_category_id'=>2]);
+        \App\Models\Calendar\SubCategory::create(['name'=>'ปรึกษาปาก', 'sc_category_id'=>2]);
+        \App\Models\Calendar\SubCategory::create(['name'=>'follow-up ตา', 'sc_category_id'=>2]);
+        \App\Models\Calendar\SubCategory::create(['name'=>'follow-up จมูก', 'sc_category_id'=>2]);
+        \App\Models\Calendar\SubCategory::create(['name'=>'follow-up ปาก', 'sc_category_id'=>2]);
 
-        \App\Models\Calendar\Slot::create(['start'=>'2016-07-12 08:00:00', 'end'=>'2016-07-12 12:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>1, 'sc_category_id'=>1]);
-        \App\Models\Calendar\Slot::create(['start'=>'2016-07-12 13:00:00', 'end'=>'2016-07-12 17:00:00', 'sc_doctor_id'=>2, 'sc_organizer_id'=>1, 'sc_category_id'=>1]);
-        \App\Models\Calendar\Slot::create(['start'=>'2016-07-13 13:00:00', 'end'=>'2016-07-13 17:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>2, 'sc_category_id'=>2]);
-        \App\Models\Calendar\Slot::create(['start'=>'2016-09-13 13:00:00', 'end'=>'2016-09-13 17:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>1, 'sc_category_id'=>1]);
 
-        \App\Models\Calendar\Slot::create(['start'=>'2016-07-25 08:00:00', 'end'=>'2016-07-25 12:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>1, 'sc_category_id'=>1]);
-        \App\Models\Calendar\Slot::create(['start'=>'2016-07-25 14:00:00', 'end'=>'2016-07-25 15:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>1, 'sc_category_id'=>2]);
-        \App\Models\Calendar\Slot::create(['start'=>'2016-07-25 15:00:00', 'end'=>'2016-07-25 17:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>1, 'sc_category_id'=>1]);
-        \App\Models\Calendar\Slot::create(['start'=>'2016-07-26 08:00:00', 'end'=>'2016-07-26 12:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>1, 'sc_category_id'=>1]);
-        \App\Models\Calendar\Slot::create(['start'=>'2016-07-26 14:00:00', 'end'=>'2016-07-26 15:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>1, 'sc_category_id'=>2]);
-        \App\Models\Calendar\Slot::create(['start'=>'2016-07-26 15:00:00', 'end'=>'2016-07-26 17:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>1, 'sc_category_id'=>1]);
-        \App\Models\Calendar\Slot::create(['start'=>'2016-07-27 10:00:00', 'end'=>'2016-07-27 12:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>1, 'sc_category_id'=>1]);
-        \App\Models\Calendar\Slot::create(['start'=>'2016-07-27 14:00:00', 'end'=>'2016-07-27 16:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>1, 'sc_category_id'=>2]);
-        \App\Models\Calendar\Slot::create(['start'=>'2016-07-28 08:00:00', 'end'=>'2016-07-28 12:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>1, 'sc_category_id'=>1]);
-        \App\Models\Calendar\Slot::create(['start'=>'2016-07-28 14:00:00', 'end'=>'2016-07-28 15:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>1, 'sc_category_id'=>2]);
-        \App\Models\Calendar\Slot::create(['start'=>'2016-07-28 15:00:00', 'end'=>'2016-07-28 17:00:00', 'sc_doctor_id'=>1, 'sc_organizer_id'=>1, 'sc_category_id'=>1]);
+        foreach($doctors as $id) {
 
-        \App\Models\Calendar\Event::create(['sc_slot_id'=>1, 'sc_sub_category_id'=>1]);
-        \App\Models\Calendar\Event::create(['sc_slot_id'=>1, 'sc_sub_category_id'=>1, 'sc_customer_id'=>1, 'sc_sale_id'=>2]);
-        \App\Models\Calendar\Event::create(['sc_slot_id'=>1, 'sc_sub_category_id'=>2]);
-        \App\Models\Calendar\Event::create(['sc_slot_id'=>2, 'sc_sub_category_id'=>2, 'sc_customer_id'=>2, 'sc_sale_id'=>1]);
-        \App\Models\Calendar\Event::create(['sc_slot_id'=>2, 'sc_sub_category_id'=>2]);
-        \App\Models\Calendar\Event::create(['sc_slot_id'=>2, 'sc_sub_category_id'=>1]);
+            // Set Colors (#9A9CFF, #42D692, #4986E7, #CCA6AC)
+            \App\Models\Calendar\DoctorCategory::create(['sc_category_id'=>1,'sc_doctor_id'=>$id,'color'=>'#9A9CFF']);
+            \App\Models\Calendar\DoctorCategory::create(['sc_category_id'=>2,'sc_doctor_id'=>$id,'color'=>'#42D692']);
+
+            // Set Durations
+            $i = 1;
+            \App\Models\Calendar\DoctorSubCategory::create(['duration'=>30, 'sc_sub_category_id'=>$i++,'sc_doctor_id'=>$id]);
+            \App\Models\Calendar\DoctorSubCategory::create(['duration'=>35, 'sc_sub_category_id'=>$i++,'sc_doctor_id'=>$id]);
+
+            \App\Models\Calendar\DoctorSubCategory::create(['duration'=>15, 'sc_sub_category_id'=>$i++,'sc_doctor_id'=>$id]);
+            \App\Models\Calendar\DoctorSubCategory::create(['duration'=>15, 'sc_sub_category_id'=>$i++,'sc_doctor_id'=>$id]);
+            \App\Models\Calendar\DoctorSubCategory::create(['duration'=>15, 'sc_sub_category_id'=>$i++,'sc_doctor_id'=>$id]);
+            \App\Models\Calendar\DoctorSubCategory::create(['duration'=>10, 'sc_sub_category_id'=>$i++,'sc_doctor_id'=>$id]);
+            \App\Models\Calendar\DoctorSubCategory::create(['duration'=>10, 'sc_sub_category_id'=>$i++,'sc_doctor_id'=>$id]);
+            \App\Models\Calendar\DoctorSubCategory::create(['duration'=>10, 'sc_sub_category_id'=>$i,'sc_doctor_id'=>$id]);
+        }
+
+        // Generate sample slots
+
+        $current = \Carbon\Carbon::create(2016, 1, 1);
+        $limit = \Carbon\Carbon::create(2016, 12, 31);
+        while($current < $limit) {
+            foreach($doctors as $id) {
+                $start = clone $current;
+                $end = clone $current;
+                \App\Models\Calendar\Slot::create(['start' => $start->setTime(8, 0), 'end' => $end->setTime(12, 0), 'sc_doctor_id' => $id, 'sc_organizer_id' => 1, 'sc_category_id' => 1]);
+                \App\Models\Calendar\Slot::create(['start' => $start->setTime(14, 0), 'end' => $end->setTime(15, 0), 'sc_doctor_id' => $id, 'sc_organizer_id' => 1, 'sc_category_id' => 2]);
+                \App\Models\Calendar\Slot::create(['start' => $start->setTime(15, 0), 'end' => $end->setTime(17, 0), 'sc_doctor_id' => $id, 'sc_organizer_id' => 1, 'sc_category_id' => 1]);
+                \App\Models\Calendar\Slot::create(['start' => $start->setTime(17, 0), 'end' => $end->setTime(20, 0), 'sc_doctor_id' => $id, 'sc_organizer_id' => 1, 'sc_category_id' => 2]);
+            }
+            $current->addDay();
+        }
+
+//        \App\Models\Calendar\Event::create(['sc_slot_id'=>1, 'sc_sub_category_id'=>1]);
+//        \App\Models\Calendar\Event::create(['sc_slot_id'=>1, 'sc_sub_category_id'=>1, 'sc_customer_id'=>1, 'sc_sale_id'=>2]);
+//        \App\Models\Calendar\Event::create(['sc_slot_id'=>1, 'sc_sub_category_id'=>2]);
+//        \App\Models\Calendar\Event::create(['sc_slot_id'=>2, 'sc_sub_category_id'=>2, 'sc_customer_id'=>2, 'sc_sale_id'=>1]);
+//        \App\Models\Calendar\Event::create(['sc_slot_id'=>2, 'sc_sub_category_id'=>2]);
+//        \App\Models\Calendar\Event::create(['sc_slot_id'=>2, 'sc_sub_category_id'=>1]);
 
         /*
-        \App\Models\Calendar\Slot::create(['start'=>'2016-07-12 08:00:00', 'end'=>'2016-07-12 12:00:00', 'doctor_id'=>1, 'organizer_id'=>1]);
+        \App\Models\Calendar\Slot::create(['start'=>'2016-08-12 08:00:00', 'end'=>'2016-08-12 12:00:00', 'doctor_id'=>1, 'organizer_id'=>1]);
 
 
 

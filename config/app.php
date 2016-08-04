@@ -165,7 +165,7 @@ return [
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
         Orangehill\Iseed\IseedServiceProvider::class,
         Zizaco\Entrust\EntrustServiceProvider::class,
-        App\BaseFunction\BaseFunctionServiceProvider::class
+        App\Semi\BaseFunction\BaseFunctionServiceProvider::class
 
     ],
 

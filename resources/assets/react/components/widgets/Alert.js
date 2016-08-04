@@ -7,9 +7,9 @@ class Alert extends Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
-            open: false,
-            title: 'Alert',
-            description: 'Something happened!'
+            open: props.open || false,
+            title: props.title? props.title : 'Alert',
+            description: props.description? props.description : 'Something happened!'
         };
         this.close = this.close.bind(this);
         this.open = this.open.bind(this);

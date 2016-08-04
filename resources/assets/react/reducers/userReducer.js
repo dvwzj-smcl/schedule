@@ -27,7 +27,7 @@ export default function scheduleReducer(state = initialState.user, action = null
                 // todo : remove this
                 // sessionStorage.setItem('isOrganizer', true);
 
-                return Object.assign({}, state, {access_token: token, permissions, authenticating: false});
+                return Object.assign({}, state, {error: null, access_token: token, permissions, authenticating: false});
             }else{
                 sessionStorage.removeItem('access_token');
                 return {};
@@ -54,21 +54,15 @@ export default function scheduleReducer(state = initialState.user, action = null
         //     }
         case USER_IS_NOT_AUTHENTICATED:
             return Object.assign({}, state, {error: action.error});
+        case USER_REQUEST_FAILED:
+            return Object.assign({}, state, {error: 'Error!! Username or Password Incorrect. \nPlease try again.'});
         case USER_SIGN_IN:
         case USER_SIGN_OUT:
             sessionStorage.removeItem('username');
             sessionStorage.removeItem('password');
             // sessionStorage.removeItem('access_token');
-
-            // todo : remove these
-            // sessionStorage.removeItem('isAdmin');
-            // sessionStorage.removeItem('isDoctor');
-            // sessionStorage.removeItem('isOrganizer');
-            // sessionStorage.removeItem('isSale');
-
             return {};
         case USER_REQUEST_SUCCESS:
-        case USER_REQUEST_FAILED:
         case USER_IS_AUTHENTICATED:
         case USER_ACCESS_DENIED:
             return Object.assign({}, state);

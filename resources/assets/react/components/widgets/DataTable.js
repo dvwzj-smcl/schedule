@@ -31,7 +31,7 @@ class DataTable extends Component {
             height: '300px',
             canSubmit:false,
             pageNum:0,
-            perPage:2,
+            perPage:10,
             offset:0,
             columns: [],
             order:[

@@ -20,18 +20,18 @@ class UserModal extends Component {
             values: {},
             changePass: true,
             ready: false,
-            get: [
+            getUrls: [
                 {url:'branches/list', name: 'data.branches'},
                 {url:'roles/list', name: 'data.roles'}
             ],
-            submit: userId? {url: `users/${userId}`, method: 'put'} : {url: 'users'},
+            submitUrl: userId? {url: `users/${userId}`, method: 'put'} : {url: 'users'},
             title: userId? 'Edit User' : 'Create User',
             togglePass: null
         };
 
         // todo: Additional Create/Edit settings here...
         if(userId) { // edit
-            this.state.get.push({url:`users/${userId}/edit`, name: 'values'});
+            this.state.getUrls.push({url:`users/${userId}/edit`, name: 'values'});
         }
 
         this.getCallback = this.getCallback.bind(this);
@@ -57,54 +57,45 @@ class UserModal extends Component {
     }
 
     getCallback(data) {
-        // console.log('*data', data);
         this.setState(data);
     }
 
     submitCallback(data) {
-        // todo : check error
+        console.log('data', data);
         if(data.error) {
-            getCallback
+            // todo : show error
         }
-        // return true; // will goBack browser history
 
-        if (data.length <= 0) {
-            console.log('redirect!');
-            this.context.router.push('/users');
-            // location.reload();
-
-            this.context.dataTable.reload();
-
-            // window.location.href = '/users' ;
-        }
+        // this.context.router.push('/users');
+        this.context.dataTable.reload();
+        return true; // will goBack browser history
     }
 
     submitForm(data) {
         // todo: Filter or Change data before POST to server
-        console.log('***data', data);
+        console.log('UserModal data: ', data);
         return data;
     }
 
     handleOpenPassword(){
-        let changepass = (this.state.changePass) ? false :  true ;
-        this.setState({changePass:changepass});
+        this.setState({changePass:this.state.changePass || true});
     }
 
 
     render() {
         let values = this.state.values;
-        const {title,get,submit,togglePass,changePass} = this.state ;
+        const {title,getUrls,submitUrl,togglePass,changePass} = this.state ;
 
         return (
             <SemiModal
                 ref="modal"
                 title={title}
-                get={get}
-                alwaysOpen // disable open/close
+                alwaysOpen // disable open/close for route modal
+                getUrls={getUrls}
                 getCallback={this.getCallback}
-                submit={submit} // url. REMOVE if no need to send data
+                submitUrl={submitUrl} // url. REMOVE if no need to send data
                 submitForm={this.submitForm} // filter data before sending to server -or- just process here if no need to send data
-                submitCallback={this.submitCallback} // callback from server. REMOVE if no need to send data
+                submitCallback={this.submitCallback} // callback from server, success or error. REMOVE if no need to send data
             >
                 <Row>
                     <Col xs md={6}>

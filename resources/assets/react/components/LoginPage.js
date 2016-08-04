@@ -9,6 +9,7 @@ import { login, isAuthenticated, getError } from '../actions/userActions';
 import Divider from 'material-ui/Divider';
 import SemiText from './forms/SemiText';
 import SemiForm from './forms/SemiForm';
+import Alert from './widgets/Alert';
 
 class LoginPage extends Component {
     constructor(props, context) {
@@ -31,8 +32,10 @@ class LoginPage extends Component {
     }
     
     render() {
+        // console.log('render: login');
         return (
             <Grid className="parent">
+                <Alert open={this.props.user.error !== null} title="Login Failed" description={this.props.user.error} />
                 <Row className="child">
                     <Col xs mdOffset={4} md={4}>
                         <Paper>
@@ -49,7 +52,7 @@ class LoginPage extends Component {
                                     required
                                     hintText="What is your username?"
                                     floatingLabelText="Username"
-                                    defaultValue="organizera"
+                                    defaultValue="organizer1"
                                     underlineShow={false}
                                     />
                                 <Divider />
@@ -60,7 +63,7 @@ class LoginPage extends Component {
                                     required
                                     hintText="What is your password?"
                                     floatingLabelText="Password"
-                                    defaultValue="password"
+                                    defaultValue="asdfasdf"
                                     underlineShow={false}
                                     />
                                 <Divider />

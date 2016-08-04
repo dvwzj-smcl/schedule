@@ -1,4 +1,4 @@
-<?php namespace App\BaseFunction;
+<?php namespace App\Semi\BaseFunction;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -31,8 +31,8 @@ class BaseFunctionServiceProvider extends ServiceProvider {
         $this->app->booting(function()
         {
             $loader = \Illuminate\Foundation\AliasLoader::getInstance();
-            $loader->alias('BaseFunction', 'App\BaseFunction\Facades\BaseFunction');
-            $loader->alias('BF', 'App\BaseFunction\Facades\BaseFunction');
+            $loader->alias('BaseFunction', 'App\Semi\BaseFunction\Facades\BaseFunction');
+            $loader->alias('BF', 'App\Semi\BaseFunction\Facades\BaseFunction');
         });
     }
 

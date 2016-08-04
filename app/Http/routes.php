@@ -39,8 +39,8 @@ Route::group(['prefix' => 'api', 'middleware' => []], function () {
 //    Route::resource('role', 'User\RoleController');
 //
 //});
-Route::group(['prefix' => 'api', 'middleware' => []], function () {
-    // todo : เติม s ทุกอันด้วยครับ
+Route::group(['prefix' => 'api', 'middleware' => ['jwt.auth']], function () {
+    // todo : branch
     Route::controller('auth', 'User\AuthController');
     Route::resource('users', 'User\UserController');
 
@@ -51,8 +51,17 @@ Route::group(['prefix' => 'api', 'middleware' => []], function () {
     Route::resource('roles', 'User\RoleController');
 
     Route::resource('permissions', 'User\PermissionController');
-    Route::controller('schedules', 'Schedule\ScheduleController');
-   
+
+    // schedules
+    Route::group(['prefix'=>'schedules'], function() {
+        Route::get('init', 'Schedule\ScheduleController@init');
+        Route::get('doctors/{doctor_id}/slot', 'Schedule\ScheduleController@getSlots');
+        Route::post('slots/{slot_id}/add_event', 'Schedule\SlotController@addEvent');
+    });
+    // slot ( create/update/delete/addevent )
+    // doctor ( getSlot )
+    // request ( accept/denied/delete/update )
+
 
 });
 /**

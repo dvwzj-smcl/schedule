@@ -85,6 +85,7 @@ class DoctorController extends Controller
         //
     }
 
+    // todo : delete all
     public function doctorSlot($doctor_id){
         $slots = \App\Models\User\Doctor::with('slots.category')->find($doctor_id)->slots;
         $slots = array_map(function($slot){

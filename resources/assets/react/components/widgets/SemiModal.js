@@ -16,6 +16,7 @@ class SemiModal extends Component {
         this.disableButton = this.disableButton.bind(this);
         this.clickSubmit = this.clickSubmit.bind(this);
         this.submitCallback = this.submitCallback.bind(this);
+        this.submitForm = this.submitForm.bind(this);
         this.state = {
             canSubmit: false,
             open: props.alwaysOpen ? true : props.open || false
@@ -32,12 +33,29 @@ class SemiModal extends Component {
 
     submitCallback(data) {
         if(this.props.submitCallback) {
+            // Close the dialog only when the callback returns true
             if(this.props.submitCallback(data)) this.close();
+        } else {
+            this.close();
         }
     };
 
-    open() {
-        this.setState({ open: true });
+    submitForm(data) {
+        // merge with external data (from this.open)
+        if(this.props.submitForm) {
+            this.props.submitForm(Object.assign({}, data, this.state.externalData));
+        }
+    };
+
+    // Recommended! please use this (by ref) instead of plain context.ajax()
+    ajax(method, url, data, success, error) {
+        // todo: add Loading... to submit button
+        this.refs.form.ajax(method, url, data, success, error);
+    }
+
+    // open with optional external data
+    open(externalData) {
+        this.setState({ open: true, externalData});
     };
 
     close() {
@@ -47,8 +65,6 @@ class SemiModal extends Component {
             if(this.props.onClose) this.props.onClose();
             this.setState({ open: false });
         }
-        // this.context.dialog.alert({description: 'Test Description', title: 'Test Title'});
-        // this.context.dialog.confirm({description: 'Test Description', title: 'Test Title', callback: () => {console.log('callback!')}});
     };
 
     clickSubmit() {
@@ -84,13 +100,13 @@ class SemiModal extends Component {
                     autoScrollBodyContent={true} >
                     <SemiForm
                         ref="form"
-                        noSubmit
-                        submitForm={props.submitForm}
+                        noButton
                         onValid={this.enableButton}
                         onInvalid={this.disableButton}
-                        get={props.get}
+                        getUrls={props.getUrls}
                         getCallback={props.getCallback}
-                        submit={props.submit}
+                        submitUrl={props.submitUrl}
+                        submitForm={this.submitForm}
                         submitCallback={this.submitCallback}
                     >
                         {props.children}

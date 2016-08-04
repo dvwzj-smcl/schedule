@@ -11,35 +11,41 @@ class UserModuleSeeder extends Seeder
      */
     public function run()
     {
-        \App\Models\User\Branch::create([
-            'name' => 'สาขาสยามสแควร์',
-            'email' => 'info@masterpiececlinic.com',
-            'phone' => '026580531',
-            'fax' => '026580503',
-            'address' => '199/6,201 ถ.พระราม1 แขวงปทุมวัน เขตปทุมวัน กรุงเทพ 10330',
-            'desc' => 'สาขาแรก',
-        ]);
+        \App\Models\User\Branch::create(['name' => 'สาขาสยามสแควร์','email' => 'info@masterpiececlinic.com','phone' => '026580531', 'fax' => '026580503','address' => '199/6,201 ถ.พระราม1 แขวงปทุมวัน เขตปทุมวัน กรุงเทพ 10330','desc' => 'สาขาแรก']);
+        \App\Models\User\Branch::create(['name' => 'สาขาหาดใหญ่','email' => 'info@masterpiececlinic.com','phone' => '026580531', 'fax' => '026580503','address' => '199/6,201 ถ.พระราม1 แขวงปทุมวัน เขตปทุมวัน กรุงเทพ 10330','desc' => 'สาขาสอง']);
 
         $role_admin = \App\Models\User\Role::create(['name'=>'admin', 'display_name'=>'User Administrator', 'description'=>'User is allowed to manage and edit other users']);
         $role_doctor = \App\Models\User\Role::create(['name'=>'doctor', 'display_name'=>'User Doctor', 'description'=>'Just a doctor role']);
         $role_organizer = \App\Models\User\Role::create(['name'=>'organizer', 'display_name'=>'User Organizer', 'description'=>'Just a organizer role']);
         $role_sale = \App\Models\User\Role::create(['name'=>'sale', 'display_name'=>'User Sale', 'description'=>'Just a sale role']);
 
-        $user_admin = \App\Models\User\User::create(['name'=>'Admin', 'username'=>'admin', 'email'=>'admin@localhost', 'password'=>bcrypt('password'), 'lang'=>'th', 'branch_id'=>1, 'phone'=>'020001111', 'phone_2'=>'020001111']);
-        $user_doctor_a = \App\Models\User\User::create(['name'=>'Doctor A', 'username'=>'doctora', 'email'=>'doctora@localhost', 'password'=>bcrypt('password'), 'lang'=>'th', 'branch_id'=>1, 'phone'=>'020001111', 'phone_2'=>'020001111']);
-        $user_doctor_b = \App\Models\User\User::create(['name'=>'Doctor B', 'username'=>'doctorb', 'email'=>'doctorb@localhost', 'password'=>bcrypt('password'), 'lang'=>'th', 'branch_id'=>1, 'phone'=>'020001111', 'phone_2'=>'020001111']);
-        $user_organizer_a = \App\Models\User\User::create(['name'=>'Organizer A', 'username'=>'organizera', 'email'=>'organizera@localhost', 'password'=>bcrypt('password'), 'lang'=>'th', 'branch_id'=>1, 'phone'=>'020001111', 'phone_2'=>'020001111']);
-        $user_organizer_b = \App\Models\User\User::create(['name'=>'Organizer B', 'username'=>'organizerb', 'email'=>'organizerb@localhost', 'password'=>bcrypt('password'), 'lang'=>'th', 'branch_id'=>1, 'phone'=>'020001111', 'phone_2'=>'020001111']);
-        $user_sale_a = \App\Models\User\User::create(['name'=>'Sale A', 'username'=>'salea', 'email'=>'salea@localhost', 'password'=>bcrypt('password'), 'lang'=>'th', 'branch_id'=>1, 'phone'=>'020001111', 'phone_2'=>'020001111']);
-        $user_sale_b = \App\Models\User\User::create(['name'=>'Sale B', 'username'=>'saleb', 'email'=>'saleb@localhost', 'password'=>bcrypt('password'), 'lang'=>'th', 'branch_id'=>1, 'phone'=>'020001111', 'phone_2'=>'020001111']);
+        $doctor_count = 20;
+        $sale_count = 20;
+        $organizer_count = 2;
 
+        // Generate Users
+
+        $user_admin = \App\Models\User\User::create(['name'=>'Admin', 'username'=>'admin', 'email'=>'admin@localhost.com', 'password'=>bcrypt('password'), 'lang'=>'th', 'branch_id'=>1, 'phone'=>'020001111', 'phone_2'=>'020001111']);
         $user_admin->attachRole($role_admin);
-        $user_doctor_a->attachRole($role_doctor);
-        $user_doctor_b->attachRole($role_doctor);
-        $user_organizer_a->attachRole($role_organizer);
-        $user_organizer_b->attachRole($role_organizer);
-        $user_sale_a->attachRole($role_sale);
-        $user_sale_b->attachRole($role_sale);
+
+        for($branch_id = 1; $branch_id <= 2; $branch_id++) {
+            for ($i = 1; $i <= $doctor_count; $i++) {
+                $id = ($doctor_count*($branch_id-1))+$i;
+                $user = \App\Models\User\User::create(['name' => "Doctor {$id}", 'username' => "doctor{$id}", 'email' => "doctor{$id}@localhost", 'password' => bcrypt('asdfasdf'), 'lang' => 'th', 'branch_id' => $branch_id, 'phone' => '020001111', 'phone_2' => '020001111']);
+                $user->attachRole($role_doctor);
+            }
+            for ($i = 1; $i <= $sale_count; $i++) {
+                $id = ($sale_count*($branch_id-1))+$i;
+                $user = \App\Models\User\User::create(['name' => "Sale {$id}", 'username' => "sale{$id}", 'email' => "sale{$id}@localhost", 'password' => bcrypt('asdfasdf'), 'lang' => 'th', 'branch_id' => $branch_id, 'phone' => '020001111', 'phone_2' => '020001111']);
+                $user->attachRole($role_sale);
+            }
+            for ($i = 1; $i <= $organizer_count; $i++) {
+                $id = ($organizer_count*($branch_id-1))+$i;
+                $user = \App\Models\User\User::create(['name' => "Organizer {$id}", 'username' => "organizer{$id}", 'email' => "organizer{$id}@localhost", 'password' => bcrypt('asdfasdf'), 'lang' => 'th', 'branch_id' => $branch_id, 'phone' => '020001111', 'phone_2' => '020001111']);
+                $user->attachRole($role_organizer);
+            }
+        }
+
 
         /**
          * Permissions
