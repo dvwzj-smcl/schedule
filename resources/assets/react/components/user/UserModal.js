@@ -12,90 +12,85 @@ import SemiSelect from '../forms/SemiSelect';
 class UserModal extends Component {
     constructor(props, context) {
         super(props, context);
-        
-        let userId = props.params.id;
         this.state = {
             open: true,
             data: {},
             values: {},
-            changePass: true,
-            ready: false,
-            getUrls: [
-                {url:'branches/list', name: 'data.branches'},
-                {url:'roles/list', name: 'data.roles'}
-            ],
-            submitUrl: userId? {url: `users/${userId}`, method: 'put'} : {url: 'users'},
-            title: userId? 'Edit User' : 'Create User',
-            togglePass: null
+            changePass: false,
+            title: props.params.id? 'Edit User' : 'Create User'
         };
-
-        // todo: Additional Create/Edit settings here...
-        if(userId) { // edit
-            this.state.getUrls.push({url:`users/${userId}/edit`, name: 'values'});
-        }
-
-        this.getCallback = this.getCallback.bind(this);
-        this.submitCallback = this.submitCallback.bind(this);
-        this.submitForm = this.submitForm.bind(this);
         this.handleOpenPassword = this.handleOpenPassword.bind(this);
+        this.onLoad = this.onLoad.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
     }
 
-    componentWillMount(){
-        if (typeof this.props.params.id!=="undefined") {
-            this.setState({changePass:false});
-            let togglePass = (<Row>
-                <Col xs md={6}>
-                    <Toggle
-                        name="changePass"
-                        label="change password"
-                        onToggle={this.handleOpenPassword}
-                    />
-                </Col>
-            </Row>);
-            this.setState({togglePass});
-        }
-    }
-
-    getCallback(data) {
-        this.setState(data);
-    }
-
-    submitCallback(data) {
-        console.log('data', data);
-        if(data.error) {
-            // todo : show error
+    onLoad(ajax) {
+        let userId = this.props.params.id;
+        let urls = [
+            {url:'branches/list', name: 'data.branches'},
+            {url:'roles/list', name: 'data.roles'}
+        ];
+        if(userId) { // edit
+            urls.push({url:`users/${userId}/edit`, name: 'values'});
         }
 
-        // this.context.router.push('/users');
-        this.context.dataTable.reload();
-        return true; // will goBack browser history
+        // must return a promise
+        return ajax.getAll(urls).then( data => {
+            this.setState(data);
+            return data;
+        });
     }
 
-    submitForm(data) {
-        // todo: Filter or Change data before POST to server
-        console.log('UserModal data: ', data);
-        return data;
+    onSubmit(data, ajax) {
+        let userId = this.props.params.id;
+        let url = userId ? `users/${userId}` : 'users';
+        let method = userId ? 'put' : 'post';
+
+        // todo
+        // must return a promise
+        return ajax.call(method, url, data);
     }
+
+
+    // submitCallback(data) {
+    //
+    //     console.log('data', data);
+    //     if(data.error) {
+    //         // todo : show error
+    //     }
+    //
+    //     // this.context.router.push('/users');
+    //     this.context.dataTable.reload();
+    //     return true; // will goBack browser history
+    // }
 
     handleOpenPassword(){
-        this.setState({changePass:this.state.changePass || true});
+        this.setState({changePass: !this.state.changePass});
     }
-
 
     render() {
         let values = this.state.values;
-        const {title,getUrls,submitUrl,togglePass,changePass} = this.state ;
+        let editId = this.props.params.id;
+        const {title,changePass} = this.state;
+
+        let togglePass = (<Row style={{marginTop: 16}}>
+            <Col xs md={6}>
+                <Toggle
+                    name="changePass"
+                    label="change password"
+                    toggled={changePass}
+                    onToggle={this.handleOpenPassword}
+                />
+            </Col>
+        </Row>);
 
         return (
             <SemiModal
                 ref="modal"
                 title={title}
                 alwaysOpen // disable open/close for route modal
-                getUrls={getUrls}
-                getCallback={this.getCallback}
-                submitUrl={submitUrl} // url. REMOVE if no need to send data
-                submitForm={this.submitForm} // filter data before sending to server -or- just process here if no need to send data
-                submitCallback={this.submitCallback} // callback from server, success or error. REMOVE if no need to send data
+                onLoad={this.onLoad}
+                onSubmit={this.onSubmit}
             >
                 <Row>
                     <Col xs md={6}>
@@ -121,9 +116,9 @@ class UserModal extends Component {
                     </Col>
                 </Row>
 
-                {togglePass}
+                {editId ? togglePass : null}
 
-                {changePass ?
+                {changePass || !editId ?
                     <Row>
                         <Col xs md={6}>
                             <SemiText
@@ -145,9 +140,7 @@ class UserModal extends Component {
                                 fullWidth={true}
                             />
                         </Col>
-                    </Row>
-                    :
-                    null}
+                    </Row> : null}
                 <Row>
                     <Col xs md={6}>
                         <SemiText

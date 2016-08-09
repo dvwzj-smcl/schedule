@@ -36,4 +36,8 @@ class BaseFunctionManager {
         return \Auth::user()->branch_id;
     }
 
+    public static function getUserId() {
+        return \Auth::user()->id;
+    }
+
 }

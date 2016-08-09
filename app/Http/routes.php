@@ -55,7 +55,9 @@ Route::group(['prefix' => 'api', 'middleware' => ['jwt.auth']], function () {
     // schedules
     Route::group(['prefix'=>'schedules'], function() {
         Route::get('init', 'Schedule\ScheduleController@init');
-        Route::get('doctors/{doctor_id}/slot', 'Schedule\ScheduleController@getSlots');
+        Route::get('doctors/{doctor_id}/slots', 'Schedule\ScheduleController@getDoctorSlots');
+        Route::get('doctors/{doctor_id}/events', 'Schedule\ScheduleController@getDoctorEvents');
+        // todo: get category slot
         Route::post('slots/{slot_id}/add_event', 'Schedule\SlotController@addEvent');
     });
     // slot ( create/update/delete/addevent )

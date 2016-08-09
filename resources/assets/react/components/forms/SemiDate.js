@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import FormsyDate from 'formsy-material-ui/lib/FormsyDate';
 import ErrorMessage from '../forms/ErrorMessage';
 
-class SemiSelect extends Component {
+class SemiDate extends Component {
     constructor() {
         super();
     }
@@ -17,11 +17,10 @@ class SemiSelect extends Component {
     }
 }
 
-SemiSelect.propTypes = {
-    name:PropTypes.string
+SemiDate.propTypes = {
 };
 
-export default SemiSelect;
+export default SemiDate;
 
 
 

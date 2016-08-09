@@ -15,8 +15,8 @@ class SemiModal extends Component {
         this.enableButton = this.enableButton.bind(this);
         this.disableButton = this.disableButton.bind(this);
         this.clickSubmit = this.clickSubmit.bind(this);
-        this.submitCallback = this.submitCallback.bind(this);
-        this.submitForm = this.submitForm.bind(this);
+        this.onLoad = this.onLoad.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
         this.state = {
             canSubmit: false,
             open: props.alwaysOpen ? true : props.open || false
@@ -31,6 +31,7 @@ class SemiModal extends Component {
         this.setState({ canSubmit: false });
     }
 
+    // todo: delete this
     submitCallback(data) {
         if(this.props.submitCallback) {
             // Close the dialog only when the callback returns true
@@ -40,20 +41,23 @@ class SemiModal extends Component {
         }
     };
 
-    submitForm(data) {
-        // merge with external data (from this.open)
-        if(this.props.submitForm) {
-            this.props.submitForm(Object.assign({}, data, this.state.externalData));
-        }
-    };
-
-    // Recommended! please use this (by ref) instead of plain context.ajax()
-    ajax(method, url, data, success, error) {
-        // todo: add Loading... to submit button
-        this.refs.form.ajax(method, url, data, success, error);
+    onLoad(ajax) {
+        if(this.props.onLoad) return this.props.onLoad(ajax);
     }
 
-    // open with optional external data
+    onSubmit(data, ajax) {
+        if(typeof ajax === 'function') return; // unknown bug fix, try removing this and console.log(ajax) to see the bug
+
+        if(this.props.onSubmit) return this.props.onSubmit(Object.assign({}, data, this.state.externalData), ajax).then( response => {
+            this.close();
+            return response;
+        }).catch( error => {
+            // todo: error handling
+            throw error; // to .catch SemiForm
+        });
+    }
+
+    // for ref.open. May have external data.
     open(externalData) {
         this.setState({ open: true, externalData});
     };
@@ -103,11 +107,9 @@ class SemiModal extends Component {
                         noButton
                         onValid={this.enableButton}
                         onInvalid={this.disableButton}
-                        getUrls={props.getUrls}
-                        getCallback={props.getCallback}
-                        submitUrl={props.submitUrl}
-                        submitForm={this.submitForm}
-                        submitCallback={this.submitCallback}
+
+                        onLoad={this.props.onLoad? this.onLoad : null}
+                        onSubmit={this.props.onSubmit? this.onSubmit : null}
                     >
                         {props.children}
                     </SemiForm>

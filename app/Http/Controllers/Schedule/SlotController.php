@@ -45,7 +45,7 @@ class SlotController extends Controller
         $user = JWT::decode($access_token, env('APP_KEY'), ['HS256']);
         $organizer = \App\Models\User\Organizer::where('user_id', $user->id)->first();
         $data = [
-            'sc_organizer_id' => $organizer->id,
+            'created_by' => $organizer->id,
             'sc_doctor_id' => $request->get('doctor_id'),
             'sc_category_id' => $request->get('category_id'),
             'start' => $request->get('start'),

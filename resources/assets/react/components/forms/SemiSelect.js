@@ -24,11 +24,13 @@ class SemiSelect extends Component {
 
     render(){
         let {data, ...rest} = this.props;
-        let items = data? (
-            data.map((column, index) => (
-                <MenuItem value={column.id} key={index} primaryText={column.name} />
-            ))
-        ) : null;
+        let items = data? [] : null;
+        if(typeof data === 'object') { // object or array only
+            for(let i in data) {
+                let id = data[i].id ? parseInt(data[i].id) : parseInt(i);
+                items.push(<MenuItem value={id} key={id} primaryText={data[i].name}/>);
+            }
+        }
         return (
             <FormsySelect ref="select" {...rest} value={this.value}
                 validationErrors={{isArray: ErrorMessage.minLength}}

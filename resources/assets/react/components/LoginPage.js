@@ -52,7 +52,7 @@ class LoginPage extends Component {
                                     required
                                     hintText="What is your username?"
                                     floatingLabelText="Username"
-                                    defaultValue="organizer1"
+                                    defaultValue="sale1"
                                     underlineShow={false}
                                     />
                                 <Divider />

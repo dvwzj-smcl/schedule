@@ -18,22 +18,25 @@ import * as scheduleActions from '../actions/scheduleActions';
 // Forms
 import SemiSelect from './forms/SemiSelect';
 import SemiDate from './forms/SemiDate';
+import SemiText from './forms/SemiText';
 import SemiForm from './forms/SemiForm';
 import Calendar from './widgets/Calendar';
 import SemiModal from './widgets/SemiModal';
+import $ from 'jquery';
 
 class SchedulePage extends Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
-            addModal: 0
+            eventModal: {customer:{}},
+            doctor: 1 // doctor_id or false
         };
 
         // variables
         this.initCalendar = false;
-        this.data = {
-            catId: 0,
-            slotId: 0
+        this.colors = {
+            other: '#B1B1B1',
+            self: '#7AE7BF'
         };
 
         this.initialized = this.initialized.bind(this);
@@ -44,23 +47,18 @@ class SchedulePage extends Component {
         this.eventClick = this.eventClick.bind(this);
         this.dayClick = this.dayClick.bind(this);
     }
-    
+
     loadSlots(doctor_id) {
-        this.context.ajax.get(`schedules/doctors/${doctor_id}/slot`, null, (response)=>{
+        this.context.ajax.call('get', `schedules/doctors/${doctor_id}/events`, null).then( response => {
             let me = this;
-            let slots = response.data.slots;
+            let {slots,events} = response.data;
             // avoid refs.calendar undefined
             var interval = setInterval(function(){
                 if(me.refs.calendar && me.initialized()) {
-                    // initialize
-                    // create lookup tables
-                    me.lookup = me.props.schedule.data.lookup;
-                    // let cats = me.props.schedule.data.categories;
-                    // for(let i in cats) {
-                    //     me.lookup.categories[cats[i].id] = parseInt(i);
-                    // }
-                    // initialize slots
-                    let colors = me.lookup.colors;
+                    clearInterval(interval);
+                    me.doctors = me.props.schedule.data.doctors;
+                    me.user = me.props.user;
+                    let doctors = me.doctors;
                     for(let i in slots) {
                         let slot = slots[i];
                         let doctor_id = slot.sc_doctor_id;
@@ -68,14 +66,18 @@ class SchedulePage extends Component {
                         slot.index = i; // array index
                         // if(slot.is_full) slot.rendering = 'background';
                         slot.rendering = 'background';
-                        slot.color = colors[doctor_id][cat_id];
+                        slot.color = doctors[doctor_id].categories[cat_id].color;
                     }
-                    console.log('slots', slots);
+                    for(let i in events) {
+                        let event = events[i];
+                        event.self = (event.sale_id == me.user.id) || false;
+                        event.color = event.self ? me.colors.self : me.colors.other;
+                    }
                     me.refs.calendar.addEventSource(slots);
-                    clearInterval(interval);
+                    me.refs.calendar.addEventSource(events);
                 }
             }, 500);
-        }, error=>{});
+        }).catch( error => {} );
     }
 
     initialized() {
@@ -97,49 +99,136 @@ class SchedulePage extends Component {
 
     // --- Modal Functions
 
-    onSelectSubcategory(data) {
-        console.log('data from addModal', data);
-        this.refs.addModal.ajax('post', `schedules/slots/${data.slot_id}/add_event`, data, response => {
+    onSelectSubcategory(data, ajax) {
+        console.log('data from addCatId', data);
+        return ajax.call('post', `schedules/slots/${data.slot_id}/add_event`, data).then( response => {
             console.log('response', response);
-        }, error => {});
-        this.refs.addModal.close();
+            this.refs.eventModal.close();
+        });
     }
 
     onClose() {
-        // console.log('close addModal');
+        // console.log('close addCatId');
     }
 
     // --- Calendar Functions
 
-    eventClick(calEvent) {
-        let category_id = this.lookup.categories[calEvent.sc_category_id];
-        this.setState({addModal: category_id});
-        // console.log('calEvent', calEvent);
-        let slot_id = calEvent.id;
-        this.refs.addModal.open({category_id, slot_id});
-        this.refs.addModal.open({category_id, slot_id});
+    eventClick(calEvent) { // for removing their own events only
+        if(!calEvent.self) return;
+        let {id, category_id, customer, sub_category_id, start} = calEvent;
+
+        this.setState({eventModal:{
+            customer, sub_category_id, start: new Date(start),
+            subcats: this.doctors[this.state.doctor].categories[category_id].sub_categories} // set modal dropdown
+        });
+        this.refs.eventModal.open({category_id, id});
     }
 
-    dayClick(date, jsEvent, view, resourceObj) {
-        console.log('dayClick', date);
+    eventRender(event, element) { // trick: passing event data to background event
+        $(element).data(event);
+    }
+
+    dayClick(date, jsEvent) {
+        if (jsEvent.target.classList.contains('fc-bgevent')) {
+            let slot = $(jsEvent.target).data();
+            let {id, sc_category_id} = slot;
+            this.setState({eventModal:{
+                customer:{}, start: new Date(date),
+                subcats: this.doctors[this.state.doctor].categories[sc_category_id].sub_categories} // set modal dropdown
+            });
+            this.refs.eventModal.open({sc_category_id, id});
+        }
     }
 
     render() {
-        let props = this.props;
-        let data = props.schedule.data;
         // console.log('render: sc page', this.props.schedule);
         if(!this.initialized()) return <Loading />;
-        return (
-            <div>
-                <SemiModal submitForm={this.onSelectSubcategory} onClose={this.onClose} ref="addModal">
+
+        let props = this.props;
+        console.log('props.schedule.data', props.schedule.data);
+        let data = props.schedule.data;
+        let {doctors} = data;
+        let state = this.state;
+
+        let eventModal =(
+            <SemiModal onSubmit={this.onSelectSubcategory} onClose={this.onClose} ref="eventModal">
+            <Row>
+                <Col xs md={6}>
                     <SemiSelect
-                        data={data.categories[this.state.addModal].sub_categories}
+                        data={state.eventModal.subcats}
+                        value={state.eventModal.sub_category_id}
                         name="subcat"
                         required
-                        floatingLabelText={'subcategory'}
+                        floatingLabelText="Subcategory*"
                         fullWidth={true}
                     />
-                </SemiModal>
+                </Col>
+                <Col xs md={6}>
+                    <SemiDate
+                        name="date"
+                        defaultDate={state.eventModal.start}
+                        disabled
+                        floatingLabelText="Date"
+                        fullWidth={true}
+                    />
+                </Col>
+            </Row>
+            <Row>
+                <Col xs md={6}>
+                    <SemiText
+                        name="first_name"
+                        value={state.eventModal.customer.first_name}
+                        required
+                        floatingLabelText="First Name*"
+                        fullWidth={true}
+                    />
+                </Col>
+                <Col xs md={6}>
+                    <SemiText
+                        name="last_name"
+                        value={state.eventModal.customer.last_name}
+                        required
+                        floatingLabelText="Last Name*"
+                        fullWidth={true}
+                    />
+                </Col>
+            </Row>
+            <Row>
+                <Col xs md={6}>
+                    <SemiText
+                        name="hn"
+                        validations={{matchRegexp: /^\d{6,7}$/}}
+                        validationError="invalid HN"
+                        value={state.eventModal.customer.hn}
+                        hintText="optional. (eg. 5512345)"
+                        floatingLabelText="HN"
+                        fullWidth={true}
+                    />
+                </Col>
+                <Col xs md={6}>
+                    <SemiText
+                        name="phone"
+                        value={state.eventModal.customer.phone}
+                        required
+                        hintText="phone or mobile number"
+                        floatingLabelText="Phone*"
+                        fullWidth={true}
+                    />
+                </Col>
+            </Row>
+            <SemiText
+                name="contact"
+                value={state.eventModal.customer.contact}
+                required
+                hintText="Facebook, Line or other social media"
+                floatingLabelText="Contact*"
+                fullWidth={true}
+            />
+        </SemiModal>);
+
+        return (
+            <div>
+                { eventModal }
                 <PageHeading title="Schedule" description="description" />
                 <Grid fluid className="content-wrap">
                     <Row>
@@ -150,13 +239,13 @@ class SchedulePage extends Component {
                                         <SemiSelect
                                             data={data.categories}
                                             name="category"
-                                            floatingLabelText="category"
+                                            floatingLabelText="Category"
                                             fullWidth={true}
                                         />
                                         <SemiDate
                                             name="date"
                                             required
-                                            floatingLabelText="date"
+                                            floatingLabelText="Date"
                                             fullWidth={true}
                                         />
                                     </SemiForm>
@@ -168,7 +257,9 @@ class SchedulePage extends Component {
                                 <div className="con-pad">
                                     <Calendar droppable={false} editable={false} ref="calendar"
                                               eventClick={this.eventClick}
+                                              eventRender={this.eventRender}
                                               dayClick={this.dayClick}
+                                              selectable={false}
                                     />
                                 </div>
                             </Panel>
@@ -185,7 +276,7 @@ SchedulePage.contextTypes = {
     ajax: PropTypes.object
 };
 
-const mapStateToProps = ({schedule}) => ({schedule});
+const mapStateToProps = ({user, schedule}) => ({user, schedule});
 const mapDispatchToProps = (dispatch) => ({actions: {
     init: bindActionCreators(scheduleActions.initSchedule, dispatch)
 }});

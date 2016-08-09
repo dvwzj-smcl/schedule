@@ -2,7 +2,6 @@ import React, { PropTypes, Component } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import { Form } from 'formsy-react';
 import ReactDOM from 'react-dom';
-import ApiCall from '../../api/ApiCall';
 import Loading from '../widgets/Loading';
 
 class SemiForm extends Component {
@@ -10,18 +9,16 @@ class SemiForm extends Component {
         super(props);
         this.state = {
             canSubmit: false,
-            ready: props.getUrls? false : true
-            // ready: false
+            ready: props.onLoad ? false : true // for loading spinner
         };
-
         this.enableButton = this.enableButton.bind(this);
         this.disableButton = this.disableButton.bind(this);
-        this.submitForm = this.submitForm.bind(this);
-        this.getCallback = this.getCallback.bind(this);
         this.notifyFormError = this.notifyFormError.bind(this);
         this.resetForm = this.resetForm.bind(this);
         this.submit = this.submit.bind(this);
         this.ajax = this.ajax.bind(this);
+        this.onLoad = this.onLoad.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
     }
 
     enableButton() {
@@ -30,46 +27,45 @@ class SemiForm extends Component {
         });
     }
 
-    getCallback(data) {
-        if(this.props.getCallback) {
-            this.setState({
-                ready: true
-            });
-            // todo: error handling
-            this.props.getCallback(data);
-        }
-    }
-
     disableButton() {
         this.setState({
             canSubmit: false
         });
     }
 
-    /**
-     * Formsy's onValidSubmit
-     *
-     */
-    submitForm(data) {
-        if(this.props.submitForm) {
-            data = this.props.submitForm(data);
-        }
-        // this.refs.apiCall.getWrappedInstance().post(data); // old
-        if(this.props.submitUrl) {
-            let {submitUrl:{url, method}, submitCallback} = this.props;
-            this.ajax(method, url, data, submitCallback, submitCallback);
+    componentDidMount() {
+        if(this.props.onLoad) {
+            this.props.onLoad(this.context.ajax).then( (/*data*/) => {
+                this.setState({ready: true})
+            });
         }
     }
 
-    // Replacing <ApiCall>
-    ajax(method, url, data, success, error) {
+    ajax(method, url, data) {
         // todo: add Loading... to submit button
-        this.context.ajax.call(method, url, data, success, error);
+        return this.context.ajax.call(method, url, data);
+    }
+    
+    onLoad(urls) { // called only once when mount
+        if(Array.isArray(urls)) {
+            return this.context.ajax.getAll(urls);
+        }
+        return this.context.ajax.call('get', urls);
+    }
+
+    onSubmit(data) {
+        if(this.props.onSubmit) {
+            this.props.onSubmit(data, this.context.ajax).then( response => {
+                // todo: submit loading here...
+            }).catch( error => {
+                this.context.dialog.alert(error, 'Error!');
+            });
+        }
     }
 
     notifyFormError(/*data*/) {}
 
-    // can submit by calling this, instead of submit button press
+    // for triggering submit button using ref
     submit() {
         ReactDOM.findDOMNode(this.refs.submitBtn).click();
     }
@@ -106,7 +102,7 @@ class SemiForm extends Component {
                 className={`semiForm ${buttonRight} ${styleClass}`}
                 onValid={this.enableButton}
                 onInvalid={this.disableButton}
-                onValidSubmit={this.submitForm}
+                onValidSubmit={this.onSubmit}
                 onInvalidSubmit={this.notifyFormError}
                 ref="form"
                 {...props} 
@@ -119,10 +115,6 @@ class SemiForm extends Component {
                     {submitBtn}
                     {resetBtn}
                 </div>
-                <ApiCall ref="apiCall"
-                    getUrls={props.getUrls} getCallback={this.getCallback}
-                    submitUrl={props.submit} submitCallback={props.submitCallback}
-                />
                 <button style={{display:'none'}} ref="submitBtn" type="submit">Submit</button>
             </Form>);
     }
@@ -147,7 +139,8 @@ SemiForm.propTypes = {
     noSubmitButton: PropTypes.bool
 };
 SemiForm.contextTypes = {
-    ajax: PropTypes.object
+    ajax: PropTypes.object,
+    dialog: PropTypes.object.isRequired
 };
 
 export default SemiForm;
