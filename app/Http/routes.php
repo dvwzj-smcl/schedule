@@ -89,6 +89,7 @@ Route::group(['prefix'=>'api'], function(){
         Route::resource('doctors', 'Schedule\DoctorController');
         Route::resource('categories', 'Schedule\CategoryController');
         Route::resource('slots', 'Schedule\SlotController');
+        Route::resource('requests', 'Schedule\RequestController');
     });
 
     /*

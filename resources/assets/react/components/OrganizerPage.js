@@ -63,7 +63,7 @@ class OrganizerPage extends Component {
         this.discardSave = this.discardSave.bind(this);
         this.discardRemoveSelectedEvent = this.discardRemoveSelectedEvent.bind(this);
         this.confirmRemoveSelectedEvent = this.confirmRemoveSelectedEvent.bind(this);
-        this.save = this.save.bind(this);
+        //this.save = this.save.bind(this);
     }
 
     componentDidMount() {
@@ -338,6 +338,7 @@ class OrganizerPage extends Component {
         }, error=>{});
 
     }
+    /*
     save(){
         //console.log('save!');
         let events = $('#calendar').fullCalendar('clientEvents').map((event)=>{
@@ -353,6 +354,7 @@ class OrganizerPage extends Component {
             console.log(response);
         }, error=>{});
     }
+    */
 
     render() {
         return (

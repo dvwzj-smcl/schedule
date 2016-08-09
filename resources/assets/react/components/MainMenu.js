@@ -27,6 +27,12 @@ const menus = [
         permissions : ['organize-schedules']
     },
     {
+        text: "Request",
+        icon: <ActionPermContactCalendar />,
+        to: "/request",
+        permissions : ['organize-schedules']
+    },
+    {
         text: "Users",
         icon: <SocialPerson />,
         to: "/users"
