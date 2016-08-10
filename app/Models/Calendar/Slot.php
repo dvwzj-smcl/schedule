@@ -8,21 +8,38 @@ use Carbon\Carbon;
 class Slot extends Model
 {
     protected $table = 'sc_slots';
-    protected $fillable = ['start', 'end', 'sc_doctor_id', 'sc_organizer_id', 'sc_category_id'];
+    protected $fillable = ['start', 'end', 'sc_doctor_id', 'created_by', 'sc_category_id'];
+
+    protected $dates = ['start', 'end'];
 
     public function doctor(){
         return $this->belongsTo('App\Models\User\Doctor', 'sc_doctor_id');
     }
     public function organizer(){
-        return $this->belongsTo('App\Models\User\Organizer', 'sc_organizer_id');
+        return $this->belongsTo('App\Models\User\User', 'created_by');
     }
     public function category(){
-        return $this->hasOne('App\Models\Calendar\Category', 'id', 'sc_category_id');
+        return $this->belongsTo('App\Models\Calendar\Category', 'sc_category_id');
+    }
+    public function doctor_category(){
+        return $this->belongsTo('App\Models\Calendar\DoctorCategory', 'sc_doctor_category_id');
     }
     public function events(){
-        return $this->hasMany('App\Models\Calendar\Event', 'id', 'sc_slot_id');
+        return $this->hasMany('App\Models\Calendar\Event', 'sc_slot_id');
     }
 
+    public function scopeNext($query, $startDate){
+        $limit = clone $startDate;
+        return $query->where('start', '>', $startDate)->where('start', '<', $limit->addMonth());
+    }
+    public function scopePrevious($query, $startDate){
+        $limit = clone $startDate;
+        return $query->where('start', '<', $startDate)->where('start', '>', $limit->addMonth(-1));
+    }
+    public function scopeByDate($query, $startDate){
+        $limit = clone $startDate;
+        return $query->where('start', '>', $startDate->addMonth(-1))->where('start', '<', $limit->addMonth(5));
+    }
     //public function doctor_category(){
         //dd($this);
         //dd($this->sc_doctor_id);

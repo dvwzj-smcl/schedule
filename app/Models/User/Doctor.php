@@ -8,18 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 class Doctor extends Model
 {
     protected $table = 'sc_doctors';
-    protected $fillable = ['color', 'user_id'];
+    protected $fillable = ['color', 'user_id', 'data'];
+    protected $casts = [
+        'data' => 'array',
+    ];
 
     protected static function boot() {
         parent::boot();
-        static::addglobalscope('branch', function(Builder $builder) {
-            if(\BF::getbranchid()) {
-                $builder->join('users', function ($join) {
-                    $join->on('users.id', '=', 'sc_doctors.user_id')
-                        ->where('users.branch_id', '=', \BF::getbranchid());
-                });
-            }
-        });
+//        static::addglobalscope('branch', function(Builder $builder) {
+//            $builder->join('users', function ($join) {
+//                $join->on('users.id', '=', 'sc_doctors.user_id')
+//                    ->where('users.branch_id', '=', \BF::getbranchid());
+//            });
+//        });
     }
 
     public function user(){

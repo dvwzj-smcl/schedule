@@ -43,12 +43,12 @@ class User extends Authenticatable
     public function doctor(){
         return $this->hasOne('App\Models\User\Doctor');
     }
-    public function organizer(){
-        return $this->hasOne('App\Models\User\Organizer');
-    }
-    public function sale(){
-        return $this->hasOne('App\Models\User\Sale');
-    }
+//    public function organizer(){
+//        return $this->hasOne('App\Models\User\Organizer');
+//    }
+//    public function sale(){
+//        return $this->hasOne('App\Models\User\Sale');
+//    }
     public function roles(){
         return $this->belongsToMany('App\Models\User\Role');
     }
@@ -70,6 +70,14 @@ class User extends Authenticatable
             }
         }
         return $perms;
+    }
+
+    public function scopeSales($query) {
+        $query->join('role_user', function ($join) {
+            $join->on('users.id', '=', 'role_user.user_id');
+        })->join('roles', function($join) {
+            $join->on('roles.id', '=', 'role_user.role_id')->where('roles.name', '=', 'sale');
+        });
     }
 
 }

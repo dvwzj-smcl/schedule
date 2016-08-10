@@ -31,7 +31,7 @@ const setter = (obj, propString, value) => {
  * AJAX with access_token
  *
  */
-export function ajax (method, url, data, success, error, access_token) {
+export function ajax (method, url, data, access_token) {
     url = api.baseUrl(url);
     if (typeof method === "undefined") {
         method = 'post';
@@ -46,20 +46,22 @@ export function ajax (method, url, data, success, error, access_token) {
         method = 'post';
         data._method = 'DELETE';
     }
-    data = JSON.stringify(data);
+    if(data) data = JSON.stringify(data);
 
-    $.ajax({method, url, data, dataType: 'json',
-        headers: {
-            'Access-Token': access_token,
-            'Content-Type': 'application/json'
-        }
-    }).done(response=>{
-        if (response.status == "error"){
-            // todo : show error
-        }
-        if(success) success(response);
-    }).fail(message=>{
-        if(error) error(message);
+    return new Promise((resolve, reject) => {
+        $.ajax({method, url, data, dataType: 'json',
+            headers: {
+                'Access-Token': access_token,
+                'Content-Type': 'application/json'
+            }
+        }).done(response=>{
+            if(response.status == "error"){
+                reject(response.data.error);
+            }
+            resolve(response);
+        }).fail(message=>{
+            reject(message);
+        });
     });
 }
 
@@ -67,31 +69,32 @@ export function ajax (method, url, data, success, error, access_token) {
  * AJAX GET multiple URLs
  *
  */
-export function getAll(urls, successCallback, errorCallback, access_token) {
-    let promises = [];
-    for (let get of urls) {
-        let promise = new Promise((resolve, reject) => {
-            ajax('get', get.url, null, response => {
-                resolve(response.data);
-                // note: should be array instead of object
-                // resolve(Object.assign({}, response.data));
-            }, (error) => {
-                reject(error);
-            }, access_token);
-
-        });
-        promises.push(promise);
-    }
-    Promise.all(promises).then( responses => { // all success
-        let data = {};
-        for(let i in responses) {
-            setter(data, urls[i].name, responses[i]);
+export function getAll(urls, access_token) {
+    return new Promise((_resolve, _reject) => {
+        let promises = [];
+        for (let get of urls) {
+            let promise = new Promise((resolve, reject) => {
+                ajax('get', get.url, null, access_token).then( response => {
+                    resolve(response.data);
+                    // note: should be array instead of object
+                    // resolve(Object.assign({}, response.data));
+                }).catch( error => {
+                    reject(error);
+                });
+            });
+            promises.push(promise);
         }
-        // callback
-        // console.log('Promise data: ',data);
-        successCallback(data);
-    }, error => { // not all success
-        errorCallback(error);
+        Promise.all(promises).then(responses => { // all success
+            let data = {};
+            for (let i in responses) {
+                setter(data, urls[i].name, responses[i]);
+            }
+            // callback
+            // console.log('Promise data: ',data);
+            _resolve(data);
+        }, error => { // not all success
+            _reject(error);
+        });
     });
 }
 
@@ -118,7 +121,11 @@ class ApiCall extends Component {
 
     get(urls) {
         // callback only success
-        getAll(urls, this.props.getCallback, this.getErrorCallback, this.props.user.access_token);
+        getAll(urls, this.props.user.access_token).then( response => {
+            this.props.getCallback(response);
+        }).catch( error => {
+            this.getErrorCallback(error);
+        });
     }
 
     post({url, method, data, submitCallback}) {

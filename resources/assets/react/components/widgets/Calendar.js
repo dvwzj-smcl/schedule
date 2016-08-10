@@ -34,7 +34,7 @@ class Calendar extends Component {
             minTime: '06:00',
             maxTime: '21:00',
             allDaySlot: false,
-            slotDuration: '00:30:00',
+            slotDuration: '00:10:00',
             editable: true,
             selectable: true,
             droppable: true,
@@ -46,6 +46,11 @@ class Calendar extends Component {
         }, props);
 
         $('#calendar').fullCalendar(settings);
+
+        // trying to detect data in background event
+        // $("#calendar").on("click",".fc-bgevent",function(event){
+        //     console.log('---', $(this).data());
+        // });
     }
 
     render() {

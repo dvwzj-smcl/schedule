@@ -1,6 +1,6 @@
 import moment from 'moment';
-var startDate = moment().startOf('month');
-var endDate = moment(startDate).endOf('month');
+// var startDate = moment().startOf('month');
+// var endDate = moment(startDate).endOf('month');
 export default {
     user: {
         error: null,

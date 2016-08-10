@@ -8,13 +8,11 @@ import initialState from './initialState';
 export default function userReducer(state = initialState.schedule, action = null) {
     switch (action.type) {
         case SCHEDULE_INIT_FAILED:
-            let {error} = action;
             // todo : correct this
-            return Object.assign({}, state, {error, init: false});
+            return Object.assign({}, state, {error: action.error, init: false});
         case SCHEDULE_INIT_SUCCESS:
-            let {data} = action;
             // console.log('* data', action);
-            return Object.assign({}, state, {data, init: true});
+            return Object.assign({}, state, {data: action.data, init: true});
         default:
             return state;
     }

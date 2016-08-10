@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Event extends Model
 {
     protected $table = 'sc_events';
-    protected $fillable = ['sc_slot_id', 'sc_sub_category_id', 'sc_sale_id', 'sc_customer_id'];
+    protected $fillable = ['start', 'end', 'sc_slot_id', 'sc_sub_category_id', 'sale_id', 'sc_customer_id', 'status'];
+
+//    protected $dates = ['start'];
 
     public function slot(){
         return $this->belongsTo('App\Models\Calendar\Slot', 'sc_slot_id');
@@ -18,8 +20,8 @@ class Event extends Model
     public function customer(){
         return $this->belongsTo('App\Models\User\Customer', 'sc_customer_id');
     }
-    public function sub_category(){
-        return $this->belongsTo('App\Models\Calendar\SubCategory', 'sc_sub_category_id');
+    public function doctor_sub_category(){
+        return $this->belongsTo('App\Models\Calendar\DoctorSubCategory', 'sc_doctor_sub_category_id');
     }
     public function color(){
         return $this->slot->doctor->categories()->where('sc_category_id', $this->sub_category->sc_category_id)->first()->color;
