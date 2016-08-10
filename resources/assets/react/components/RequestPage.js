@@ -150,6 +150,7 @@ class RequestPage extends Component {
                                         <SemiValidation.components.SelectField name="test" validations={['optional']} options={[{id:1, name:'test 1'}, {id:2, name:'test 2'}]} />
                                         <SemiValidation.components.SelectField multiple name="test2" validations={['required']} options={[{id:3, name:'test 3'}, {id:4, name:'test 4'}]} />
                                         <SemiValidation.components.MultipleSelectField name="test3" validations={['optional']} options={[{id:5, name:'test 5'}, {id:6, name:'test 6'}]} />
+                                        <SemiValidation.components.AutoComplete hintText="Doctor" name="doctor_id" dataSource={[{value:1,text:'test 1'},{value:2,text:'test 2'}]} dataSourceSearch="name" dataSourceResult="doctors" dataSourceMap={{value:"id", text:"user.name"}} validations={['required']} />
                                         <SemiValidation.components.RaisedButton label="Submit" type="submit" />
                                     </SemiValidation.components.Form>
                                 </div>

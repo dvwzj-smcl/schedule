@@ -95,4 +95,10 @@ class DoctorController extends Controller
         }, $slots->toArray());
         return response()->json(['slots'=>$slots],200, array(), JSON_PRETTY_PRINT);
     }
+    public function search(Request $request)
+    {
+        return response()->json(['doctors'=>\App\Models\User\Doctor::with('user')->whereHas('user',function($query) use ($request){
+            $query->where('name', 'like', '%'.$request->get('name').'%');
+        })->get()],200, array(), JSON_PRETTY_PRINT);
+    }
 }

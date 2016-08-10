@@ -13,10 +13,12 @@ class Doctor extends Model
     protected static function boot() {
         parent::boot();
         static::addglobalscope('branch', function(Builder $builder) {
-            $builder->join('users', function ($join) {
-                $join->on('users.id', '=', 'sc_doctors.user_id')
-                    ->where('users.branch_id', '=', \BF::getbranchid());
-            });
+            if(\BF::getbranchid()) {
+                $builder->join('users', function ($join) {
+                    $join->on('users.id', '=', 'sc_doctors.user_id')
+                        ->where('users.branch_id', '=', \BF::getbranchid());
+                });
+            }
         });
     }
 

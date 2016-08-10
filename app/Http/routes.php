@@ -86,6 +86,7 @@ Route::group(['prefix'=>'api'], function(){
     Route::group(['prefix'=>'calendar'], function(){
         Route::resource('/', 'Schedule\CalendarController');
         Route::get('doctors/{doctor_id}/slot', 'Schedule\DoctorController@doctorSlot');
+        Route::get('doctors/search', 'Schedule\DoctorController@search');
         Route::resource('doctors', 'Schedule\DoctorController');
         Route::resource('categories', 'Schedule\CategoryController');
         Route::resource('slots', 'Schedule\SlotController');

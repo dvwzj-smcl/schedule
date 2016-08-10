@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import $ from 'jquery';
 import Validation from 'react-validation';
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
@@ -8,6 +9,7 @@ import MenuItem from 'material-ui/MenuItem';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import Checkbox from 'material-ui/Checkbox';
 import {ListItem} from 'material-ui/List';
+import AutoComplete from 'material-ui/AutoComplete';
 
 function handleError(props){
     let rules = Validation.rules;
@@ -176,8 +178,7 @@ export class ValidationTextField extends Validation.components.Input {
                     {...rest}
                     errorText={handleError(this.props)}
                     className={this.props.className || null}
-                    checked={this.props.checked}
-                    defaultValue={this.props.value}
+                    defaultValue={this.props.defaultValue}
                     onChange={this.handleChange.bind(this)}
                     onBlur={this.handleBlur.bind(this)} />
             </div>
@@ -248,13 +249,106 @@ export class ValidationMultipleSelectField extends ValidationSelectField {
         )
     }
 }
+export class ValidationAutoComplete extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            sources: props.dataSource ? (typeof props.dataSource == "object" ? props.dataSource : []) : []
+        };
+        this.props._register(this);
+        this.handleNewRequest = this.handleNewRequest.bind(this);
+        this.handleUpdateInput = this.handleUpdateInput.bind(this);
+    }
+    ajax(method, url, data, success, error){
+        //data = JSON.stringify(data);
+        $.ajax({
+            method,
+            url,
+            data,
+            dataType: 'json',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).done(response=>{
+            if(success) success(response);
+        }).fail(message=>{
+            if(error) error(message);
+        });
+    }
+    handleNewRequest(chosenRequest, index){
+        const {value} = chosenRequest;
+        this.props._update(this, event, true, true, value);
+        this.props.onChange && this.props.onChange(event, index, value);
+    }
+    handleUpdateInput(value,e){
+        if(typeof this.props.dataSource == "string") {
+            if(value) {
+                let search = this.props.dataSourceSearch ? this.props.dataSourceSearch : 'search';
+                let data = {};
+                data[search] = value;
+                this.ajax('get', this.props.dataSource, data, (res)=>{
+                    let r = this.props.dataSourceResult;
+                    let sources = (res[r]?res[r]:[]).map((item)=>{
+                        let v = this.props.dataSourceMap.value ? this.props.dataSourceMap.value.split('.').reduce((a, b) => a[b], item) : (item.value ? item.value : item);
+                        let t = this.props.dataSourceMap.text ? this.props.dataSourceMap.text.split('.').reduce((a, b) => a[b], item) : (item.text ? item.text : item);
+
+                        return {
+                            value: v,
+                            text: t
+                        }
+                    });
+                    this.setState({sources});
+                });
+            }else{
+                this.setState({sources: typeof this.props.dataSource == "object" ? this.props.dataSource : []});
+            }
+        }else if(typeof this.props.dataSource == "object"){
+            if(value) {
+                this.setState({sources: this.props.dataSource});
+            }else{
+                this.setState({sources: []});
+            }
+        }
+        if(!value) {
+            this.props._update(this, event, true, true, null);
+            this.props.onChange && this.props.onChange(event, index, null);
+        }
+    }
+    render() {
+        let {
+            _register,
+            _update,
+            _validate,
+            validations,
+            states,
+            errors,
+            errorClassName,
+            containerClassName,
+            dataSource,
+            ...rest} = this.props;
+        return (
+            <AutoComplete
+                ref='node'
+                {...rest}
+                errorText={handleError(this.props)}
+                dataSource={this.state.sources}
+                className={this.props.className || null}
+                defaultValue={this.props.defaultValue}
+                onNewRequest={this.handleNewRequest}
+                filter={AutoComplete.caseInsensitiveFilter}
+                dataSourceConfig={{value: 'text', text: 'text'}}
+                onUpdateInput={this.handleUpdateInput} />
+        )
+    }
+}
 
 const components = Object.assign({}, Validation.components, {
     Form: ValidationForm,
     TextField: ValidationTextField,
     RaisedButton: ValidationRaisedButton,
     SelectField: ValidationSelectField,
-    MultipleSelectField: ValidationMultipleSelectField
+    MultipleSelectField: ValidationMultipleSelectField,
+    AutoComplete: ValidationAutoComplete
 });
 
 const SemiValidation = Object.assign({}, Validation, {components});
