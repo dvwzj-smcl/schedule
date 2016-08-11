@@ -40,6 +40,7 @@
     "material-ui": "0.15.1",
     "object-assign": "4.1.0",
     "react": "15.0.2",
+    "react-color": "2.2.2",
     "react-dom": "15.0.2",
     "react-flexbox-grid": "0.9.6",
     "react-gemini-scrollbar": "2.1.3",

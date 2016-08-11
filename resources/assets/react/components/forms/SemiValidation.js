@@ -1,6 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import $ from 'jquery';
 import Validation from 'react-validation';
+import validator from 'validator';
+import { SwatchesPicker } from 'react-color';
+import IconButton from 'material-ui/IconButton/IconButton';
+import PaletteIcon from 'material-ui/svg-icons/image/palette';
+import KeyboardIcon from 'material-ui/svg-icons/hardware/keyboard';
+import Dialog from 'material-ui/Dialog';
+import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -10,6 +17,61 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import Checkbox from 'material-ui/Checkbox';
 import {ListItem} from 'material-ui/List';
 import AutoComplete from 'material-ui/AutoComplete';
+
+Object.assign(Validation.rules, {
+    required: {
+        rule: (value, component, form) => {
+            return value && value.toString().trim();
+        },
+        hint: value => {
+            return "Required Field";
+        }
+    },
+    optional: {
+        rule: value => {
+            return true;
+        },
+        hint: value => {
+            return "";
+        }
+    },
+    color: {
+        rule: (value, component, form) => {
+            let optional = component.props.validations.indexOf("optional")>-1;
+            //let check = /^#(?:[0-9a-f]{3}){1,2}$/i.test(value);
+            let check = validator.isHexColor(value);
+            return optional ? (value ? check : true) : check;
+        },
+        hint: value => {
+            return "Invalid Color Code";
+        }
+    },
+    email: {
+        rule: (value, component, form) => {
+            let optional = component.props.validations.indexOf("optional")>-1;
+            let check = validator.isEmail(value);
+            return optional ? (value ? check : true) : check;
+        },
+        hint: value => {
+            return `${value} isnt an Email.`;
+        }
+    },
+    password: {
+        rule: (value, component, form) => {
+            let password = form.state.states.password;
+            let passwordConfirm = form.state.states.passwordConfirm;
+            let isBothUsed = password && passwordConfirm && password.isUsed && passwordConfirm.isUsed;
+            let isBothChanged = isBothUsed && password.isChanged && passwordConfirm.isChanged;
+            if (!isBothUsed || !isBothChanged) {
+                return true;
+            }
+            return password.value === passwordConfirm.value;
+        },
+        hint: value => {
+            return "Passwords should be equal";
+        }
+    }
+});
 
 function handleError(props){
     let rules = Validation.rules;
@@ -42,6 +104,7 @@ class MultiSelect extends SelectField {
             selectFieldRoot,
             disabled,
             floatingLabelText,
+            floatingLabelFixed,
             floatingLabelStyle,
             hintStyle,
             hintText,
@@ -71,6 +134,7 @@ class MultiSelect extends SelectField {
             <TextField
                 style={style}
                 floatingLabelText={floatingLabelText}
+                floatingLabelFixed={floatingLabelFixed}
                 floatingLabelStyle={floatingLabelStyle}
                 hintStyle={hintStyle}
                 hintText={(!hintText && !floatingLabelText) ? ' ' : hintText}
@@ -84,7 +148,7 @@ class MultiSelect extends SelectField {
                 underlineFocusStyle={underlineFocusStyle}
                 >
                 <div style={{width: "100%"}}>
-                    <div style={{position:"absolute", bottom: 12, left:0, width: "100%", overflow:"hidden" }}>{labels.join(", ")}</div>
+                    <div style={{position:"absolute", bottom: floatingLabelFixed ? 26 : 12, left:0, width: "100%", overflow:"hidden" }}>{labels.join(", ")}</div>
                     <DropDownMenu
                         disabled={disabled}
                         style={{width:"100%"}}
@@ -125,6 +189,12 @@ export class ValidationForm extends Validation.components.Form {
             let obj = {};
             obj[key] = this.state.states[key].value;
             return obj;
+        }).filter((obj)=>{
+            let key = Object.keys(obj)[0];
+            if(typeof obj[key]=="number") return true;
+            if(typeof obj[key]=="string" && obj[key].trim()) return true;
+            if(typeof obj[key]=="object" && obj[key].length) return true;
+            return false;
         }).reduce((a,b)=>Object.assign({},a,b));
     }
     _update(component, event, isChanged, isUsed, value) {
@@ -225,16 +295,19 @@ export class ValidationSelectField extends Validation.components.Select {
             errorClassName,
             containerClassName,
             options,
+            hintText,
             ...rest} = this.props;
+        let input = this.props.states[this.props.name];
+        hintText = (input&&input.value.length ? '' : hintText);
         let value = this.props.states.hasOwnProperty(this.props.name) ? this.props.states[this.props.name].value : (this.props.value ? this.props.value : (this.props.multiple ? [] : ""));
         return (
             <div className={this.props.containerClassName || null}>
                 {this.props.multiple ?
-                    <MultiSelect ref='node' {...rest} value={value} onChange={this.handleChange.bind(this)}  >
+                    <MultiSelect ref='node' {...rest} hintText={hintText} value={value} onChange={this.handleChange.bind(this)}  >
                         {options.map((option, index)=><ListItem key={index} value={option.id} primaryText={option.name} />)}
                     </MultiSelect>
                     :
-                    <SelectField ref='node' {...rest} value={value} onChange={this.handleChange.bind(this)}>
+                    <SelectField ref='node' {...rest} hintText={hintText} value={value} onChange={this.handleChange.bind(this)}>
                         {options.map((option, index)=><MenuItem key={index} value={option.id} primaryText={option.name}/>)}
                     </SelectField>
                 }
@@ -327,18 +400,100 @@ export class ValidationAutoComplete extends Component {
             dataSource,
             ...rest} = this.props;
         return (
-            <AutoComplete
-                ref='node'
-                {...rest}
-                errorText={handleError(this.props)}
-                dataSource={this.state.sources}
-                className={this.props.className || null}
-                defaultValue={this.props.defaultValue}
-                onNewRequest={this.handleNewRequest}
-                filter={AutoComplete.caseInsensitiveFilter}
-                dataSourceConfig={{value: 'text', text: 'text'}}
-                onUpdateInput={this.handleUpdateInput} />
+            <div className={this.props.containerClassName || null}>
+                <AutoComplete
+                    ref='node'
+                    {...rest}
+                    errorText={handleError(this.props)}
+                    dataSource={this.state.sources}
+                    className={this.props.className || null}
+                    defaultValue={this.props.defaultValue}
+                    onNewRequest={this.handleNewRequest}
+                    filter={AutoComplete.caseInsensitiveFilter}
+                    dataSourceConfig={{value: 'text', text: 'text'}}
+                    onUpdateInput={this.handleUpdateInput} />
+                <IconButton disabled>
+                    <KeyboardIcon/>
+                </IconButton>
+            </div>
         )
+    }
+}
+export class ValidationColorPicker extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            openModal: false
+        };
+        this.props._register(this);
+        this.handleChangeInput = this.handleChangeInput.bind(this);
+        this.handleColorChange = this.handleColorChange.bind(this);
+        this.handleOpen = this.handleOpen.bind(this);
+        this.handleClose = this.handleClose.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+    }
+    handleChangeInput(event,value){
+        let error = handleError(this.props);
+        this.props._update(this, event, true, true, value);
+        this.props.onChange && this.props.onChange(event, value);
+        let color = error ? null : {hex:value};
+        this.setState({color});
+    }
+    handleColorChange(color){
+        this.setState({color});
+    }
+    handleOpen(){
+        this.setState({
+            openModal: true
+        });
+    };
+    handleClose(){
+        this.setState({openModal: false});
+    };
+    handleSubmit(){
+        this.setState({
+            openModal: false
+        });
+        this.props._update(this, event, true, true, this.state.color.hex);
+        this.props.onChange && this.props.onChange(event, index, this.state.color.hex);
+        this.refs.node.input.value = this.state.color.hex;
+    };
+    render(){
+        let {hintText, validations, ...rest} = this.props;
+        let input = this.props.states[this.props.name];
+        hintText = (input&&input.value ? '' : (hintText || "Color"));
+        validations.push("color");
+        const actions = [
+            <FlatButton
+                label="Cancel"
+                primary={true}
+                onTouchTap={this.handleClose}
+                />,
+            <FlatButton
+                label="Submit"
+                primary={true}
+                keyboardFocused={true}
+                disabled={this.state.color ? false : true}
+                onTouchTap={this.handleSubmit}
+                />,
+        ];
+        return (
+            <div className={this.props.containerClassName || null}>
+                <TextField {...rest} validations={validations} ref='node' hintText={hintText} onChange={this.handleChangeInput} errorText={handleError(this.props)} />
+                <IconButton onTouchTap={this.handleOpen}>
+                    <PaletteIcon/>
+                </IconButton>
+                <Dialog title="Color Picker"
+                        actions={actions}
+                        modal={false}
+                        open={this.state.openModal}
+                        onRequestClose={this.handleClose}>
+                    <TextField id="colorPicker" style={{width: 320}} disabled value={this.state.color ? this.state.color.hex: ''} />
+                    <Paper style={{width: 320, height: 30, marginBottom: 30, backgroundColor: this.state.color ? this.state.color.hex: '#fff'}} zDepth={2}></Paper>
+                    <SwatchesPicker onChange={this.handleColorChange} />
+                </Dialog>
+            </div>
+        );
     }
 }
 
@@ -348,7 +503,8 @@ const components = Object.assign({}, Validation.components, {
     RaisedButton: ValidationRaisedButton,
     SelectField: ValidationSelectField,
     MultipleSelectField: ValidationMultipleSelectField,
-    AutoComplete: ValidationAutoComplete
+    AutoComplete: ValidationAutoComplete,
+    ColorPicker: ValidationColorPicker
 });
 
 const SemiValidation = Object.assign({}, Validation, {components});

@@ -34,62 +34,7 @@ import TextField from 'material-ui/TextField';
 
 //import ErrorMessage from './forms/ErrorMessage';
 
-import Validation from 'react-validation';
 import SemiValidation from './forms/SemiValidation';
-import validator from 'validator';
-
-Object.assign(Validation.rules, {
-    // Key name maps the rule
-    required: {
-        // Function to validate value
-        rule: (value, component, form) => {
-            return value.toString().trim();
-        },
-        // Function to return hint
-        // You may use current value to inject it in some way to the hint
-        hint: value => {
-            return "";
-        }
-    },
-    optional: {
-        rule: () => {
-            return true;
-        },
-    },
-    email: {
-        // Example usage with external 'validator'
-        rule: (value, component, form) => {
-            let optional = component.props.validations.indexOf("optional")>-1;
-            return optional ? (value ? validator.isEmail(value) : true) : validator.isEmail(value);
-        },
-        hint: value => {
-            return `${value} isnt an Email.`;
-        }
-    },
-    // This example shows a way to handle common task - compare two fields for equality
-    password: {
-        // rule function can accept 2 extra arguments:
-        // component - current checked component
-        // form - form component which has 'states' inside native 'state' object
-        rule: (value, component, form) => {
-            // form.state.states[name] - name of corresponding field
-            let password = form.state.states.password;
-            let passwordConfirm = form.state.states.passwordConfirm;
-            // isUsed, isChanged - public properties
-            let isBothUsed = password && passwordConfirm && password.isUsed && passwordConfirm.isUsed;
-            let isBothChanged = isBothUsed && password.isChanged && passwordConfirm.isChanged;
-
-            if (!isBothUsed || !isBothChanged) {
-                return true;
-            }
-
-            return password.value === passwordConfirm.value;
-        },
-        hint: value => {
-            return <span className='form-error is-visible'>Passwords should be equal.</span>
-        }
-    }
-});
 
 class RequestPage extends Component {
     constructor(props, context) {
@@ -145,12 +90,13 @@ class RequestPage extends Component {
                             <Panel title="Request">
                                 <div className="con-pad">
                                     <SemiValidation.components.Form ref="form" onSubmit={this.onSubmit}>
-                                        <SemiValidation.components.TextField hintText="Email" name="email" validations={['optional', 'email']} />
-                                        <SemiValidation.components.TextField hintText="Username" name="username" validations={['required']} />
-                                        <SemiValidation.components.SelectField name="test" validations={['optional']} options={[{id:1, name:'test 1'}, {id:2, name:'test 2'}]} />
-                                        <SemiValidation.components.SelectField multiple name="test2" validations={['required']} options={[{id:3, name:'test 3'}, {id:4, name:'test 4'}]} />
-                                        <SemiValidation.components.MultipleSelectField name="test3" validations={['optional']} options={[{id:5, name:'test 5'}, {id:6, name:'test 6'}]} />
-                                        <SemiValidation.components.AutoComplete hintText="Doctor" name="doctor_id" dataSource={[{value:1,text:'test 1'},{value:2,text:'test 2'}]} dataSourceSearch="name" dataSourceResult="doctors" dataSourceMap={{value:"id", text:"user.name"}} validations={['required']} />
+                                        <SemiValidation.components.TextField hintText="Email" name="email" floatingLabelText="Email (Optional)" floatingLabelFixed={true} validations={['optional', 'email']} />
+                                        <SemiValidation.components.TextField hintText="Username" name="username" floatingLabelText="Username (Required)" floatingLabelFixed={true} validations={['required']} />
+                                        <SemiValidation.components.SelectField hintText="Test 1" name="test" floatingLabelText="Single Selection (Required)" floatingLabelFixed={true} validations={['optional']} options={[{id:1, name:'test 1'}, {id:2, name:'test 2'}]} />
+                                        <SemiValidation.components.SelectField hintText="Test 2" multiple name="test2" floatingLabelText="Multiple Selection (Required)" floatingLabelFixed={true} validations={['required']} options={[{id:3, name:'test 3'}, {id:4, name:'test 4'}]} />
+                                        <SemiValidation.components.MultipleSelectField hintText="Test 3" name="test3" floatingLabelText="Multiple Selection (Optional)" floatingLabelFixed={true} validations={['optional']} options={[{id:5, name:'test 5'}, {id:6, name:'test 6'}]} />
+                                        <SemiValidation.components.AutoComplete hintText="Doctor" name="doctor_id" floatingLabelText="Auto Complete (Required)" floatingLabelFixed={true} dataSource={[{value:1,text:'test 1'},{value:2,text:'test 2'}]} dataSourceSearch="name" dataSourceResult="doctors" dataSourceMap={{value:"id", text:"user.name"}} validations={['required']} />
+                                        <SemiValidation.components.ColorPicker name="color" floatingLabelText="Color Picker (Optional)" floatingLabelFixed={true} validations={['optional']} />
                                         <SemiValidation.components.RaisedButton label="Submit" type="submit" />
                                     </SemiValidation.components.Form>
                                 </div>
