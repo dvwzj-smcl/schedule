@@ -23,8 +23,8 @@ class Confirm extends Component {
         // this.props.alertFunction() ;
     }
 
-    open([description, title, callback]){
-        this.setState({ open: true, description, title, callback });
+    open([description, title, callback, data]){
+        this.setState({ open: true, description, title, callback});
     }
 
     onConfirm() {

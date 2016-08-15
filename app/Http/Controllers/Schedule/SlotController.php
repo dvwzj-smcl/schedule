@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers\Schedule;
 
+use App\Models\Calendar\Event;
 use App\Models\Calendar\Slot;
+use App\Models\Calendar\SubCategory;
+use App\Models\User\Customer;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Firebase\JWT\JWT;
 use BF;
+use Input;
 use Mockery\CountValidator\Exception;
 
 class SlotController extends Controller
@@ -131,21 +136,5 @@ class SlotController extends Controller
         }catch(\Exception $e){
             return BF::result(false, $e->getMessage());
         }
-    }
-    
-    public function addEvent($slot_id) {
-        try {
-            $slot = Slot::find($slot_id);
-            if($slot == null) throw new \Exception('Slot not found');
-            // todo: check slot full
-            $events = $slot->events;
-            dd($events);
-            return BF::result(true, ['slots' => $slot]);
-        } catch(\Exception $e) {
-            return BF::result(false, $e->getMessage());
-        }
-
-        // not full
-        // full
     }
 }

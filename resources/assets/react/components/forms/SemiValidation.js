@@ -53,7 +53,7 @@ Object.assign(Validation.rules, {
             return optional ? (value ? check : true) : check;
         },
         hint: value => {
-            return `${value} isnt an Email.`;
+            return `${value} isn't an Email.`;
         }
     },
     password: {

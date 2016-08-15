@@ -93,7 +93,7 @@ class UserPage extends Component {
 
     render() {
 
-        // console.log('this.state',this.state);
+        console.log('this.state',this.state);
         // console.log('[UserPage] user :',user);
         return (
             <div>

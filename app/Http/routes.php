@@ -56,9 +56,13 @@ Route::group(['prefix' => 'api', 'middleware' => ['jwt.auth']], function () {
     Route::group(['prefix'=>'schedules'], function() {
         Route::get('init', 'Schedule\ScheduleController@init');
         Route::get('doctors/{doctor_id}/slots', 'Schedule\ScheduleController@getDoctorSlots');
-        Route::get('doctors/{doctor_id}/events', 'Schedule\ScheduleController@getDoctorEvents');
+        Route::get('doctors/{doctor_id}/events/{timestamp?}', 'Schedule\ScheduleController@getDoctorEvents');
         // todo: get category slot
-        Route::post('slots/{slot_id}/add_event', 'Schedule\SlotController@addEvent');
+        Route::resource('events', 'Schedule\EventController');
+        
+        Route::get('events/{id}/cancel', 'Schedule\EventController@cancel');
+//        Route::post('events/{slot_id}/add_event', 'Schedule\SlotController@addEvent');
+//        Route::post('slots/{slot_id}/add_event', 'Schedule\SlotController@addEvent');
     });
     // slot ( create/update/delete/addevent )
     // doctor ( getSlot )
@@ -92,7 +96,7 @@ Route::group(['prefix'=>'api'], function(){
         Route::resource('doctors', 'Schedule\DoctorController');
         Route::resource('categories', 'Schedule\CategoryController');
         Route::resource('slots', 'Schedule\SlotController');
-        Route::resource('requests', 'Schedule\RequestController');
+//        Route::resource('requests', 'Schedule\RequestController');
     });
 
     /*

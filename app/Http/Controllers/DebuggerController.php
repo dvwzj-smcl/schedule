@@ -15,19 +15,25 @@ class DebuggerController extends Controller
 {
     public function index()
     {
-//        $slots = Slot::with('category', 'events')->previous(Carbon::now())->get();
-//        dd($slots->toArray());
+        $branch_id = 1;
+        $sales = \App\Models\User\User::whereBranchId($branch_id)->sales()->get()->pluck('user_id');
+        dd($sales[rand(1, count($sales) - 1)]);
+
+        $sales = User::sales()->get();
+        dd($sales->toArray());
         $data = json_decode(\App\Models\User\Doctor::find(1)->data, true);
         dd($data);
         $subs = array_values($data->categories); // reindex
         dd($subs);
         $slot = Slot::find(1);
         dd(Event::find(1)->doctor_sub_category->name->toArray());
-        $sc_doctor_category_id = \App\Models\Calendar\DoctorCategory::where('sc_doctor_id', $slot->sc_doctor_id)->where('sc_category_id', $slot->category->sc_category_id)->first();
-//        $subcategories = \App\Models\Calendar\DoctorSubCategory::where('sc_doctor_category_id', $sc_doctor_category_id)->get();
-//        dd($slot->category->id);
         dd(User::sales()->get()->pluck('user_id'));
         
         dd(User::find(1)->getAllPermissions());
+
+        // --- date time
+        $date = Carbon::parse('2016-08-09T03:40:00.000Z', 'UTC')->setTimezone('Asia/Bangkok');
+        dd($date);
+        dd(Carbon::now());
     }
 }

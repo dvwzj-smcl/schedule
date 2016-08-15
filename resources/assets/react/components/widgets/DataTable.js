@@ -9,7 +9,6 @@ import {Table, TableBody, TableFooter, TableHeader, TableHeaderColumn, TableRow,
     from 'material-ui/Table';
 
 import ReactPaginate from 'react-paginate';
-import AlertBox from '../widgets/AlertBox';
 
 import api from '../../api';
 import $ from 'jquery';
@@ -40,7 +39,6 @@ class DataTable extends Component {
                     dir:'DESC'
                 }
             ],
-            openAlertBox: false,
             alertText: '',
             listTable: {
                 tbData: [],
@@ -56,9 +54,6 @@ class DataTable extends Component {
 
         this.getData = this.getData.bind(this);
         this.deleteData = this.deleteData.bind(this);
-
-        this.handleOpen = this.handleOpen.bind(this);
-        this.handleClose = this.handleClose.bind(this);
     }
 
     handlePageClick(data){
@@ -193,13 +188,6 @@ class DataTable extends Component {
 
     }
 
-    handleOpen(){
-        this.setState({openAlertBox: true});
-    }
-
-    handleClose(){
-        this.setState({openAlertBox: false});
-    }
 
     render() {
         const {dataColumn} = this.props ;
@@ -208,11 +196,6 @@ class DataTable extends Component {
         // console.log('dataTable:',dataTable);
         return (
             <div >
-                <AlertBox
-                    openAlertBox={this.state.openAlertBox}
-                    alertText={this.state.alertText}
-                    alertFunction={this.handleClose}
-                />
                 <form  ref="form">
                     <Table
                         fixedHeader={this.state.fixedHeader}

@@ -37,6 +37,7 @@ class ScheduleController extends Controller
                 }
             }
             $doctor->categories = $data->categories;
+            $doctor['name'] = $doctor->user->name;
             unset($doctor['data']);
         }
         $response = [
@@ -68,19 +69,27 @@ class ScheduleController extends Controller
         return BF::result(true, ['slots' => $slots], '[schedule] get slot');
     }
     
-    public function getDoctorEvents($doctor_id){
+    public function getDoctorEvents($doctor_id, $timestamp){
         // parse date
-        if(empty(Input::get('date'))) $date = Carbon::now();
-        else $date = Carbon::parse(Input::get('date'));
+        if(empty($timestamp)) $date = Carbon::now();
+        else $date = Carbon::createFromTimestamp($timestamp);
+//        dd($date->setTime(0,0));
 
-        $mode = Input::get('mode');
-        $query = Slot::with('category')->where('sc_doctor_id', $doctor_id);
-        if(empty($mode)) {
-            $query->byDate($date);
-        } else {
-            if($mode == 'previous') $query->previous($date);
-            else $query->next($date);
-        }
+        // old concept: next & previous
+        // currently use just date
+        // -----
+//        $mode = Input::get('mode');
+//        $query = Slot::with('category')->where('sc_doctor_id', $doctor_id);
+//        if(empty($mode)) {
+//            $query->byDate($date);
+//        } else {
+//            if($mode == 'previous') $query->previous($date);
+//            else $query->next($date);
+//        }
+
+
+        $query = Slot::with('category')->byDate($date)->where('sc_doctor_id', $doctor_id);
+
         $slots = $query->get();
         $events = [];
         $self_id = BF::getUserId();
@@ -95,6 +104,7 @@ class ScheduleController extends Controller
                     $customer = $event->customer->toArray();
                 }
                 $events[] = [
+                    'event_id' => $event->id,
                     'start' => $event->start,
                     'end' => $event->end,
                     'sale_id' => $event->sale_id,

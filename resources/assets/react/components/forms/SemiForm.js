@@ -3,6 +3,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import { Form } from 'formsy-react';
 import ReactDOM from 'react-dom';
 import Loading from '../widgets/Loading';
+import FormGenerator from './FormGenerator';
 
 class SemiForm extends Component {
     constructor(props) {
@@ -22,12 +23,16 @@ class SemiForm extends Component {
     }
 
     enableButton() {
+        if(this.state.canSubmit === true) return;
+        console.log('enable!');
         this.setState({
             canSubmit: true
         });
     }
 
     disableButton() {
+        if(this.state.canSubmit === false) return;
+        console.log('disable!');
         this.setState({
             canSubmit: false
         });
@@ -55,11 +60,14 @@ class SemiForm extends Component {
 
     onSubmit(data) {
         if(this.props.onSubmit) {
-            this.props.onSubmit(data, this.context.ajax).then( response => {
-                // todo: submit loading here...
-            }).catch( error => {
-                this.context.dialog.alert(error, 'Error!');
-            });
+            let promise = this.props.onSubmit(data, this.context.ajax);
+            if(promise) {
+                return promise.then( response => {
+                    // todo: submit loading here...
+                }).catch( error => {
+                    this.context.dialog.alert(error, 'Error!');
+                });
+            }
         }
     }
 
@@ -75,8 +83,9 @@ class SemiForm extends Component {
     }
 
     render() {
-        // console.log('render: form');
+        // console.log('render: form', this.state.ready);
         let props = this.props;
+        let {children, formTemplate, noSubmitButton, submitLabel, ...rest} = props;
         let resetBtn = props.hasReset && !props.noButton ? (
             <RaisedButton
                 label="Reset"
@@ -85,18 +94,22 @@ class SemiForm extends Component {
             />
         ) : null;
 
-        let submitBtn = props.noSubmitButton || props.noButton ? null : (
+        let submitBtn = noSubmitButton || props.noButton ? null : (
             <RaisedButton
                 formNoValidate
                 secondary={true}
                 style={{marginTop: 24}}
                 type="submit"
-                label={props.submitLabel || 'Submit'}
+                label={submitLabel || 'Submit'}
                 disabled={!this.state.canSubmit}
             />);
 
         let buttonRight = props.buttonRight? 'btn-right' : '';
         let styleClass = props.compact? 'compact' : '';
+
+        let formItems = (this.state.ready) ?
+            (formTemplate) ? <FormGenerator formTemplate={formTemplate} /> : children : <Loading inline />;
+
         return (
             <Form
                 className={`semiForm ${buttonRight} ${styleClass}`}
@@ -105,12 +118,9 @@ class SemiForm extends Component {
                 onValidSubmit={this.onSubmit}
                 onInvalidSubmit={this.notifyFormError}
                 ref="form"
-                {...props} 
+                {...rest}
             >
-                {(()=>{
-                    if(this.state.ready) return props.children;
-                    else return <Loading inline />;
-                })()}
+                {formItems}
                 <div className="btn-wrap">
                     {submitBtn}
                     {resetBtn}
@@ -122,6 +132,7 @@ class SemiForm extends Component {
 
 SemiForm.propTypes = {
     hasReset: PropTypes.bool,
+    formTemplate: PropTypes.object,
     submitLabel: PropTypes.string,
     enableButton: PropTypes.func,
     disableButton: PropTypes.func,

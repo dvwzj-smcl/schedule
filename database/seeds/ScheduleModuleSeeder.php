@@ -66,29 +66,6 @@ class ScheduleModuleSeeder extends Seeder
             \App\Models\User\Customer::create(['first_name' => "Customer {$id}", 'last_name' => "Customer {$id}", 'hn'=>"{$hn}", 'phone'=>"020000000", 'contact'=>"htp://www.facebook.com/customer{$id}"]);
         }
 
-
-//        foreach($doctors as $id) {
-//
-//            // Set Colors (#9A9CFF, #42D692, #4986E7, #CCA6AC)
-//            $dcId1 = \App\Models\Calendar\DoctorCategory::create(['sc_category_id'=>1,'sc_doctor_id'=>$id,'color'=>'#9A9CFF'])->id;
-//            $dcId2 = \App\Models\Calendar\DoctorCategory::create(['sc_category_id'=>2,'sc_doctor_id'=>$id,'color'=>'#42D692'])->id;
-//
-//            // Set Durations
-//            $i = 1;
-//            \App\Models\Calendar\DoctorSubCategory::create(['duration'=>30, 'sc_sub_category_id'=>$i++, 'sc_doctor_category_id'=>$dcId1]);
-//            \App\Models\Calendar\DoctorSubCategory::create(['duration'=>60, 'sc_sub_category_id'=>$i++, 'sc_doctor_category_id'=>$dcId1]);
-//            \App\Models\Calendar\DoctorSubCategory::create(['duration'=>80, 'sc_sub_category_id'=>$i++, 'sc_doctor_category_id'=>$dcId1]);
-//            \App\Models\Calendar\DoctorSubCategory::create(['duration'=>120, 'sc_sub_category_id'=>$i++, 'sc_doctor_category_id'=>$dcId1]);
-//
-//            \App\Models\Calendar\DoctorSubCategory::create(['duration'=>20, 'sc_sub_category_id'=>$i++, 'sc_doctor_category_id'=>$dcId2]);
-//            \App\Models\Calendar\DoctorSubCategory::create(['duration'=>20, 'sc_sub_category_id'=>$i++, 'sc_doctor_category_id'=>$dcId2]);
-//            \App\Models\Calendar\DoctorSubCategory::create(['duration'=>20, 'sc_sub_category_id'=>$i++, 'sc_doctor_category_id'=>$dcId2]);
-//            \App\Models\Calendar\DoctorSubCategory::create(['duration'=>10, 'sc_sub_category_id'=>$i++, 'sc_doctor_category_id'=>$dcId2]);
-//            \App\Models\Calendar\DoctorSubCategory::create(['duration'=>10, 'sc_sub_category_id'=>$i++, 'sc_doctor_category_id'=>$dcId2]);
-//            \App\Models\Calendar\DoctorSubCategory::create(['duration'=>10, 'sc_sub_category_id'=>$i, 'sc_doctor_category_id'=>$dcId2]);
-//
-//        }
-
         // Generate sample slots
 
         $current = \Carbon\Carbon::create(2016, 4, 1);
@@ -119,7 +96,7 @@ class ScheduleModuleSeeder extends Seeder
             $end->addMinute($sub['duration']);
             if($end > $limit) break;
             if (rand(0, 100) > 20) {
-                \App\Models\Calendar\Event::create(['start'=>$time, 'end'=>$end, 'sc_slot_id'=>$slot->id, 'sc_sub_category_id'=>$sub['sub_category_id'], 'sale_id'=>rand(1, static::getRandomSaleId($slot)), 'sc_customer_id'=>rand(1, \App\Models\User\Customer::count()), 'status'=>1]);
+                \App\Models\Calendar\Event::create(['start'=>$time, 'end'=>$end, 'sc_slot_id'=>$slot->id, 'sc_sub_category_id'=>$sub['sub_category_id'], 'sale_id'=>static::getRandomSaleId($slot), 'sc_customer_id'=>rand(1, \App\Models\User\Customer::count()), 'status'=>'approved']);
             }
             $time->addMinute($sub['duration']);
         }
@@ -128,6 +105,6 @@ class ScheduleModuleSeeder extends Seeder
     public function getRandomSaleId(\App\Models\Calendar\Slot $slot) {
         $branch_id = $slot->doctor->user->branch_id;
         $sales = \App\Models\User\User::whereBranchId($branch_id)->sales()->get()->pluck('user_id');
-        return $sales[rand(1, count($sales) - 1)];
+        return $sales[rand(0, count($sales) - 1)];
     }
 }

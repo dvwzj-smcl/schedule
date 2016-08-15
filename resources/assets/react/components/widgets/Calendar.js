@@ -13,16 +13,40 @@ class Calendar extends Component {
     constructor(props, context) {
         super();
         this.state = {};
-        this.addEventSource = this.addEventSource.bind(this);
     }
 
     shouldComponentUpdate(nextProps, nextState) {
         return false;
     }
 
-    addEventSource(slots) {
-        $('#calendar').fullCalendar('addEventSource', slots);
+    // --- exposed functions
+
+    addEventSource(source) {
+        $('#calendar').fullCalendar('addEventSource', source);
     }
+
+    setEventSource(source) {
+        let calendar = $('#calendar');
+        calendar.fullCalendar('removeEvents');
+        calendar.fullCalendar('addEventSource', source);
+        calendar.fullCalendar('addEventSource', source);
+    }
+    
+    getViewStart = () => {
+        return this.viewStartDate;
+    };
+
+    // --- callback functions
+    
+    viewRender = (view, element) => { // called when next/prev
+        this.viewStartDate = this.toDate(view.start);
+        // console.log('view, element', view, element);
+    };
+
+    // helper
+    toDate = (date) => {
+        return new Date(date.format('YYYY-MM-DD H:mm:ss'));
+    };
     
     componentDidMount() {
         let props = this.props;
@@ -42,7 +66,8 @@ class Calendar extends Component {
             slotEventOverlap: false,
             forceEventDuration: true,
             events: [],
-            defaultTimedEventDuration: '02:00:00'
+            defaultTimedEventDuration: '02:00:00',
+            viewRender: this.viewRender
         }, props);
 
         $('#calendar').fullCalendar(settings);

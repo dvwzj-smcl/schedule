@@ -10,29 +10,24 @@ import SemiForm from '../forms/SemiForm';
 class SemiModal extends Component {
     constructor(props, context) {
         super(props, context);
-        this.open = this.open.bind(this);
-        this.close = this.close.bind(this);
-        this.enableButton = this.enableButton.bind(this);
-        this.disableButton = this.disableButton.bind(this);
-        this.clickSubmit = this.clickSubmit.bind(this);
-        this.onLoad = this.onLoad.bind(this);
-        this.onSubmit = this.onSubmit.bind(this);
         this.state = {
             canSubmit: false,
             open: props.alwaysOpen ? true : props.open || false
         };
     }
 
-    enableButton() {
+    enableButton = () => {
+        if(this.state.canSubmit === true) return;
         this.setState({ canSubmit: true });
-    }
+    };
 
-    disableButton() {
+    disableButton = () => {
+        if(this.state.canSubmit === false) return;
         this.setState({ canSubmit: false });
-    }
+    };
 
     // todo: delete this
-    submitCallback(data) {
+    submitCallback = (data) => {
         if(this.props.submitCallback) {
             // Close the dialog only when the callback returns true
             if(this.props.submitCallback(data)) this.close();
@@ -41,28 +36,36 @@ class SemiModal extends Component {
         }
     };
 
-    onLoad(ajax) {
+    onLoad = (ajax) => {
         if(this.props.onLoad) return this.props.onLoad(ajax);
-    }
+    };
 
-    onSubmit(data, ajax) {
+    onSubmit = (data, ajax) => {
         if(typeof ajax === 'function') return; // unknown bug fix, try removing this and console.log(ajax) to see the bug
 
-        if(this.props.onSubmit) return this.props.onSubmit(Object.assign({}, data, this.state.externalData), ajax).then( response => {
-            this.close();
-            return response;
-        }).catch( error => {
-            // todo: error handling
-            throw error; // to .catch SemiForm
-        });
-    }
+        if(this.props.onSubmit) {
+            let promise = this.props.onSubmit(Object.assign({}, data, this.state.externalData), ajax);
+            if(promise) {
+                return promise.then( response => {
+                    this.close();
+                    return response;
+                }).catch( error => {
+                    // todo: error handling
+                    throw error; // to .catch SemiForm
+                });
+            } else {
+                this.close();
+            }
+
+        }
+    };
 
     // for ref.open. May have external data.
-    open(externalData) {
+    open = (externalData) => {
         this.setState({ open: true, externalData});
     };
 
-    close() {
+    close = () => {
         if(this.props.alwaysOpen) {
             this.context.router.goBack();
         } else {
@@ -71,9 +74,9 @@ class SemiModal extends Component {
         }
     };
 
-    clickSubmit() {
+    clickSubmit = () => {
         this.refs.form.submit();
-    }
+    };
 
     render() {
         // console.log('render: modal');
@@ -93,6 +96,7 @@ class SemiModal extends Component {
                 type="submit"
             />
         ];
+        let children = props.formTemplate ? null : props.children;
         return (
             <div>
                 <Dialog
@@ -107,11 +111,11 @@ class SemiModal extends Component {
                         noButton
                         onValid={this.enableButton}
                         onInvalid={this.disableButton}
-
                         onLoad={this.props.onLoad? this.onLoad : null}
                         onSubmit={this.props.onSubmit? this.onSubmit : null}
+                        formTemplate={props.formTemplate}
                     >
-                        {props.children}
+                        {children}
                     </SemiForm>
                 </Dialog>
             </div>
