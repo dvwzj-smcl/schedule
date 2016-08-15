@@ -49,6 +49,11 @@ class SchedulePage extends Component {
         let nextParams = nextProps.params;
         if(params.date != nextParams.date || params.doctor_id != nextParams.doctor_id) {
             this.refreshCalendar(nextParams.doctor_id, nextParams.date);
+
+            // todo: goto when click GO only
+            this.init().then(calendar => {
+                calendar.gotoDate(nextParams.date);
+            });
             // this.loadSlotsWithEvents();
         }
         // this.setViewState(nextProps.params);
@@ -265,10 +270,7 @@ class SchedulePage extends Component {
             let date = this.context.helper.toDateString(startDate);
             this.context.router.push(`/schedules/${this.props.params.doctor_id}/${date}`);
         } else {
-            this.init().then(calendar => {
-                // calendar.gotoDate(this.props.params.date);
-                this.canChangeUrl = true;
-            });
+            this.canChangeUrl = true;
         }
     };
 
