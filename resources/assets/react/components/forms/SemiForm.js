@@ -24,7 +24,7 @@ class SemiForm extends Component {
 
     enableButton() {
         if(this.state.canSubmit === true) return;
-        console.log('enable!');
+        // console.log('enable!');
         this.setState({
             canSubmit: true
         });
@@ -32,7 +32,7 @@ class SemiForm extends Component {
 
     disableButton() {
         if(this.state.canSubmit === false) return;
-        console.log('disable!');
+        // console.log('disable!');
         this.setState({
             canSubmit: false
         });

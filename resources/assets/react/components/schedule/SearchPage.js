@@ -32,12 +32,6 @@ class SearchPage extends Component {
         super(props, context);
     }
 
-    componentWillReceiveProps(nextProps) {
-    }
-
-    componentDidUpdate() {
-    }
-
     componentDidMount() {
         if(!this.initialized()) {
             this.props.actions.init();
@@ -48,16 +42,31 @@ class SearchPage extends Component {
         return this.props.schedule && this.props.schedule.init;
     };
 
-    // helper
-    toDate = (date) => {
-        return new Date(date.format('YYYY-MM-DD H:mm:ss'));
+    toDateString = (date) => {
+        return date.getFullYear()+'-'+(date.getUTCMonth()+1)+'-'+date.getDate();
+    };
+
+    onSubmit = (data) => {
+        let date = this.toDateString(data.date);
+        this.context.router.push(`/schedules/${data.doctor_id}/${date}`);
     };
 
     render() {
         if(!this.initialized()) return <Loading />;
         let props = this.props;
-        let data = props.schedule.data;
-        console.log('props', props);
+        let {doctors} = props.schedule.data;
+
+        let formTemplate = {
+            data: {doctor_id: doctors},
+            values: {
+                doctor_id: 1,
+                date: new Date()
+            },
+            components: [
+                [{type: 'select', name: 'doctor_id', label: 'Doctor*', required: true}],
+                [{type: 'date', name: 'date', label: 'Date', required: true}]
+            ]
+        };
 
         return (
             <div>
@@ -67,19 +76,7 @@ class SearchPage extends Component {
                         <Col md={3}>
                             <Panel title="Goto" type="secondary">
                                 <div style={{padding: 12}}>
-                                    <SemiForm submitLabel="GO" buttonRight compact>
-                                        <SemiSelect
-                                            data={data.doctors}
-                                            name="category"
-                                            floatingLabelText="Doctor"
-                                            fullWidth={true}
-                                        />
-                                        <SemiDate
-                                            name="date"
-                                            required
-                                            floatingLabelText="Date"
-                                            fullWidth={true}
-                                        />
+                                    <SemiForm submitLabel="GO" buttonRight compact formTemplate={formTemplate} onSubmit={this.onSubmit}>
                                     </SemiForm>
                                 </div>
                             </Panel>
@@ -96,6 +93,7 @@ class SearchPage extends Component {
 
 SearchPage.propTypes = {};
 SearchPage.contextTypes = {
+    router: PropTypes.object.isRequired,
     ajax: PropTypes.object,
     dialog: PropTypes.object
 };

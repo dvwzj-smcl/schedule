@@ -30,17 +30,15 @@ import $ from 'jquery';
 class SchedulePage extends Component {
     constructor(props, context) {
         super(props, context);
+        let params = this.props.params;
         this.state = {
             eventModal: {
                 data: {},
                 customer:{}
             },
-            doctor: 1, // doctor_id or false
             view: {
-                // doctor: this.params.doctor_id,
-                // date: this.params.timestamp
-                doctor: 1,
-                date: new Date()
+                doctor: params.doctor_id ? params.doctor_id : 1,
+                date: params.date ? new Date(params.date) : new Date()
             }
         };
         console.log('this.state.view.date', this.state.view.date);
@@ -61,7 +59,7 @@ class SchedulePage extends Component {
         if(!this.initialized()) {
             this.props.actions.init();
         }
-        this.loadSlotsWithEvents(this.state.doctor);
+        this.loadSlotsWithEvents(this.state.view.doctor, this.state.view.date);
     }
 
     initialized = () => {
@@ -117,7 +115,7 @@ class SchedulePage extends Component {
         let {event_id, category_id, customer, sub_category_id, start} = this.calEvent;
         if(key == 'edit') {
             let data = {
-                sub_category_id: this.doctors[this.state.doctor].categories[category_id].sub_categories, isEdit: true
+                sub_category_id: this.doctors[this.state.view.doctor].categories[category_id].sub_categories, isEdit: true
             };
             let values = {
                 ...customer, sub_category_id, start: new Date(start), event_id
@@ -128,7 +126,7 @@ class SchedulePage extends Component {
             this.context.dialog.confirm('Are you sure?', 'Cancel Appointment', (confirm) => {
                 if(confirm) {
                     this.context.ajax.call('get', `schedules/events/${event_id}/cancel`, null).then( response => {
-                        this.loadSlotsWithEvents(this.state.doctor, this.refs.calendar.getViewStart());
+                        this.loadSlotsWithEvents(this.state.view.doctor, this.refs.calendar.getViewStart());
                     }).catch( error => {
                         this.context.dialog.alert(error, 'Error');
                     });
@@ -167,7 +165,7 @@ class SchedulePage extends Component {
         return ajax.call(method, url, req).then( response => {
             console.log('response', response);
             this.refs.eventModal.close();
-            this.loadSlotsWithEvents(this.state.doctor, data.date);
+            this.loadSlotsWithEvents(this.state.view.doctor, data.date);
         });
     };
 
@@ -186,7 +184,7 @@ class SchedulePage extends Component {
             let slot = $(jsEvent.target).data();
             let {id, sc_category_id} = slot;
             let data = {
-                sub_category_id: this.doctors[this.state.doctor].categories[sc_category_id].sub_categories
+                sub_category_id: this.doctors[this.state.view.doctor].categories[sc_category_id].sub_categories
             };
             let values = {
                 customer: {}, start: this.toDate(date)
@@ -200,14 +198,14 @@ class SchedulePage extends Component {
         $(element).data(event);
     };
 
-    // helper
-    toDate = (date) => {
-        return new Date(date.format('YYYY-MM-DD H:mm:ss'));
+    // from Moment to Date
+    toDate = (moment) => {
+        return new Date(moment.format('YYYY-MM-DD H:mm:ss'));
     };
 
     render() {
-        console.log('render: sc page', this.props.schedule);
         if(!this.initialized()) return <Loading />;
+        console.log('render: sc page');
 
         let props = this.props;
         let data = props.schedule.data;
@@ -265,47 +263,18 @@ class SchedulePage extends Component {
             </ContextMenu>
         );
         return (
-            <div>
+            <Panel title="Schedule">
                 {eventModal}
                 {eventPopover}
-                <PageHeading title="Schedule" description="description" />
-                <Grid fluid className="content-wrap">
-                    <Row>
-                        <Col md={3}>
-                            <Panel title="Goto" type="secondary">
-                                <div style={{padding: 12}}>
-                                    <SemiForm submitLabel="GO" buttonRight compact>
-                                        <SemiSelect
-                                            data={data.doctors}
-                                            name="category"
-                                            floatingLabelText="Doctor"
-                                            fullWidth={true}
-                                        />
-                                        <SemiDate
-                                            name="date"
-                                            required
-                                            floatingLabelText="Date"
-                                            fullWidth={true}
-                                        />
-                                    </SemiForm>
-                                </div>
-                            </Panel>
-                        </Col>
-                        <Col md={9}>
-                            <Panel title="Schedule">
-                                <div className="con-pad">
-                                    <Calendar droppable={false} editable={false} ref="calendar"
-                                              eventClick={this.eventClick}
-                                              eventRender={this.eventRender}
-                                              dayClick={this.dayClick}
-                                              selectable={false}
-                                    />
-                                </div>
-                            </Panel>
-                        </Col>
-                    </Row>
-                </Grid>
-            </div>
+                <div className="con-pad">
+                    <Calendar droppable={false} editable={false} ref="calendar"
+                              eventClick={this.eventClick}
+                              eventRender={this.eventRender}
+                              dayClick={this.dayClick}
+                              selectable={false}
+                    />
+                </div>
+            </Panel>
         );
     }
 }

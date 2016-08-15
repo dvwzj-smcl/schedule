@@ -42,6 +42,7 @@ export default function configureRoute(store){
             <Route path="request" component={UserIsAuthenticated(RequestPage)} />
             <Route path="schedules" component={UserIsAuthenticated(SearchPage)}>
                 <Route path=":doctor_id" component={UserIsAuthenticated(SchedulePage)} />
+                <Route path=":doctor_id/:date" component={UserIsAuthenticated(SchedulePage)} />
             </Route>
             <Route path="*" component={UserIsAuthenticated(NotFoundPage)} />
         </Route>
