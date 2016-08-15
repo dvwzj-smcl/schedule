@@ -30,27 +30,41 @@ import $ from 'jquery';
 class SchedulePage extends Component {
     constructor(props, context) {
         super(props, context);
-        let params = this.props.params;
         this.state = {
             eventModal: {
-                data: {},
+                data:{},
                 customer:{}
-            },
-            view: {
-                doctor: params.doctor_id ? params.doctor_id : 1,
-                date: params.date ? new Date(params.date) : new Date()
             }
         };
-        console.log('this.state.view.date', this.state.view.date);
         // variables
-        this.colors = {
+        this.eventColors = {
             other: '#B1B1B1',
             self: '#7AE7BF'
         };
+        this.loaded = {};
     }
 
     componentWillReceiveProps(nextProps) {
+        let params = this.props.params;
+        let nextParams = nextProps.params;
+        if(params.date != nextParams.date || params.doctor_id != nextParams.doctor_id) {
+            this.refreshCalendar(nextParams.doctor_id, nextParams.date);
+            // this.loadSlotsWithEvents();
+        }
+        // this.setViewState(nextProps.params);
     }
+    
+    componentWillMount() {
+        // this.setViewState(this.props.params);
+    }
+
+    // todo: remove this and above
+    // setViewState = params => {
+    //     this.setState({view: {
+    //         doctor: params.doctor_id ? params.doctor_id : 1,
+    //         date: params.date ? new Date(params.date) : new Date()
+    //     }})
+    // };
 
     componentDidUpdate() {
     }
@@ -59,21 +73,84 @@ class SchedulePage extends Component {
         if(!this.initialized()) {
             this.props.actions.init();
         }
-        this.loadSlotsWithEvents(this.state.view.doctor, this.state.view.date);
+        this.init().then( calendar => {
+            // Brighter Background Color
+            let doctors = this.props.schedule.data.doctors;
+            let colors = {};
+            for(let doctor_id in doctors) {
+                let doctor = doctors[doctor_id];
+                for(let category_id in doctor.categories) {
+                    let category = doctor.categories[category_id];
+                    if(!colors[doctor_id]) colors[doctor_id] = {};
+                    colors[doctor_id][category_id] = {
+                        color: category.color,
+                        bgColor: this.increaseBrightness(category.color, 50)
+                    }
+                }
+            }
+            this.colors = colors;
+            this.refreshCalendar();
+            this.loading = false;
+        });
     }
+
+    // avoid refs.calendar && this.props.schedule.data undefined
+    init = () => {
+        return new Promise( resolve => {
+            let me = this;
+            if(me.refs.calendar && me.initialized()) {
+                this.doctors = this.props.schedule.data.doctors;
+                resolve(me.refs.calendar);
+            } else {
+                let interval = setInterval(function(){
+                    if(me.refs.calendar && me.initialized()) {
+                        clearInterval(interval);
+                        resolve(me.refs.calendar);
+                    }
+                }, 500);
+            }
+        });
+    };
 
     initialized = () => {
         return this.props.schedule && this.props.schedule.init;
     };
 
-    loadSlotsWithEvents = (doctor_id, date = new Date()) => {
-        let timestamp = parseInt(date.getTime()/1000); // to unix timestamp
-        this.context.ajax.call('get', `schedules/doctors/${doctor_id}/events/${timestamp}`, null).then( response => {
-            this.manageCalendar( calendar => {
+    refreshCalendar = (doctor_id, date) => {
+
+        if(!doctor_id) doctor_id = this.props.params.doctor_id;
+        if(!date) date = this.props.params.date;
+
+        // console.log('load****');
+
+        // should we load data?
+        if(this.loading) return;
+        if(this.data) {
+            let slots = this.data.slots;
+            let currentDate = new Date(date);
+            currentDate.setHours(0,0,0,0);
+            currentDate = currentDate.getTime();
+            for(let i in slots) {
+                let slot = slots[i];
+                let slotDate = new Date(slot.start);
+                slotDate.setHours(0,0,0,0);
+                slotDate = slotDate.getTime();
+                if(slotDate == currentDate) {
+                    console.log('*slot', new Date(slotDate), new Date(currentDate));
+                    return;
+                }
+            }
+        }
+
+        // prepare and fetch data
+        date = new Date(date);
+        let dateParam = this.context.helper.toDateString(date);
+        console.log('date', date);
+        this.loading = true;
+        this.context.ajax.call('get', `schedules/doctors/${doctor_id}/events/${dateParam}`, null).then( response => {
+            this.init().then( calendar => {
                 let {slots,events} = response.data;
-                this.doctors = this.props.schedule.data.doctors;
                 this.user = this.props.user;
-                let doctors = this.doctors;
                 for(let i in slots) {
                     let slot = slots[i];
                     let doctor_id = slot.sc_doctor_id;
@@ -81,33 +158,21 @@ class SchedulePage extends Component {
                     slot.index = i; // array index
                     // if(slot.is_full) slot.rendering = 'background';
                     slot.rendering = 'background';
-                    slot.color = doctors[doctor_id].categories[cat_id].color;
+                    slot.color = this.colors[doctor_id][cat_id].bgColor;
                 }
                 for(let i in events) {
                     let event = events[i];
                     event.self = (event.sale_id == this.user.id) || false;
                     // todo: hide events
-                    event.color = event.self ? this.colors.self : this.colors.other;
+                    event.color = event.self ? this.eventColors.self : this.eventColors.other;
                 }
                 calendar.setEventSource(slots);
                 calendar.addEventSource(events);
+
+                this.data = {slots, events};
+                this.loading = false;
             });
         }).catch( error => {} );
-    };
-
-    // avoid refs.calendar undefined
-    manageCalendar = (callback) => {
-        let me = this;
-        if(me.refs.calendar && me.initialized()) {
-            callback(me.refs.calendar);
-        } else {
-            let interval = setInterval(function(){
-                if(me.refs.calendar && me.initialized()) {
-                    clearInterval(interval);
-                    callback(me.refs.calendar);
-                }
-            }, 500);
-        }
     };
 
     onContextMenuSelect = (key) => {
@@ -115,7 +180,7 @@ class SchedulePage extends Component {
         let {event_id, category_id, customer, sub_category_id, start} = this.calEvent;
         if(key == 'edit') {
             let data = {
-                sub_category_id: this.doctors[this.state.view.doctor].categories[category_id].sub_categories, isEdit: true
+                sub_category_id: this.doctors[this.props.params.doctor_id].categories[category_id].sub_categories, isEdit: true
             };
             let values = {
                 ...customer, sub_category_id, start: new Date(start), event_id
@@ -126,7 +191,7 @@ class SchedulePage extends Component {
             this.context.dialog.confirm('Are you sure?', 'Cancel Appointment', (confirm) => {
                 if(confirm) {
                     this.context.ajax.call('get', `schedules/events/${event_id}/cancel`, null).then( response => {
-                        this.loadSlotsWithEvents(this.state.view.doctor, this.refs.calendar.getViewStart());
+                        this.refreshCalendar();
                     }).catch( error => {
                         this.context.dialog.alert(error, 'Error');
                     });
@@ -159,13 +224,12 @@ class SchedulePage extends Component {
                 contact: data.contact
             }
         };
-        console.log('req', req);
         let method = this.state.eventModal.data.isEdit ? 'put' : 'post';
         let url = this.state.eventModal.data.isEdit ? `schedules/events/${values.event_id}` : `schedules/events`;
         return ajax.call(method, url, req).then( response => {
             console.log('response', response);
             this.refs.eventModal.close();
-            this.loadSlotsWithEvents(this.state.view.doctor, data.date);
+            this.refreshCalendar();
         });
     };
 
@@ -179,18 +243,32 @@ class SchedulePage extends Component {
     };
 
     dayClick = (date, jsEvent) => {
-        console.log('date', this.toDate(date));
+        console.log('date', this.context.helper.toDate(date));
         if (jsEvent.target.classList.contains('fc-bgevent')) {
             let slot = $(jsEvent.target).data();
             let {id, sc_category_id} = slot;
+            console.log('this.doctors[this.props.params.doctor_id]', this.doctors);
             let data = {
-                sub_category_id: this.doctors[this.state.view.doctor].categories[sc_category_id].sub_categories
+                sub_category_id: this.doctors[this.props.params.doctor_id].categories[sc_category_id].sub_categories
             };
             let values = {
-                customer: {}, start: this.toDate(date)
+                customer: {}, start: this.context.helper.toDate(date)
             };
             this.setState({eventModal:{data, values}});
             this.refs.eventModal.open({sc_category_id, id});
+        }
+    };
+
+    onCalendarViewChange = (startDate) => {
+        if(this.canChangeUrl) { // prevent change url on load
+            // console.log('startDate', startDate);
+            let date = this.context.helper.toDateString(startDate);
+            this.context.router.push(`/schedules/${this.props.params.doctor_id}/${date}`);
+        } else {
+            this.init().then(calendar => {
+                // calendar.gotoDate(this.props.params.date);
+                this.canChangeUrl = true;
+            });
         }
     };
 
@@ -198,14 +276,28 @@ class SchedulePage extends Component {
         $(element).data(event);
     };
 
-    // from Moment to Date
-    toDate = (moment) => {
-        return new Date(moment.format('YYYY-MM-DD H:mm:ss'));
+    increaseBrightness = (hex, percent) => {
+        // strip the leading # if it's there
+        hex = hex.replace(/^\s*#|\s*$/g, '');
+
+        // convert 3 char codes --> 6, e.g. `E0F` --> `EE00FF`
+        if(hex.length == 3){
+            hex = hex.replace(/(.)/g, '$1$1');
+        }
+
+        var r = parseInt(hex.substr(0, 2), 16),
+            g = parseInt(hex.substr(2, 2), 16),
+            b = parseInt(hex.substr(4, 2), 16);
+
+        return '#' +
+            ((0|(1<<8) + r + (256 - r) * percent / 100).toString(16)).substr(1) +
+            ((0|(1<<8) + g + (256 - g) * percent / 100).toString(16)).substr(1) +
+            ((0|(1<<8) + b + (256 - b) * percent / 100).toString(16)).substr(1);
     };
 
     render() {
+        // console.log('render: sc page', this.state);
         if(!this.initialized()) return <Loading />;
-        console.log('render: sc page');
 
         let props = this.props;
         let data = props.schedule.data;
@@ -227,11 +319,11 @@ class SchedulePage extends Component {
                     {type: 'text', name: 'last_name', label: 'Last Name*', required: true}
                 ],
                 [
-                    {type: 'text', name: 'hn', label: 'HN', required: true, validations: ['hn'], hint:'optional. (eg. 5512345)'},
-                    {type: 'text', name: 'phone', label: 'Phone**', required: true, hint:'phone or mobile number'}
+                    {type: 'text', name: 'hn', label: 'HN', validations: ['hn'], hint:'optional. (eg. 5512345)'},
+                    {type: 'text', name: 'phone', label: 'Phone*', required: true, hint:'phone or mobile number'}
                 ],
                 [
-                    {type: 'text', name: 'contact', label: 'Phone*', required: true, hint:'Facebook, Line or other social media'}
+                    {type: 'text', name: 'contact', label: 'Contact*', required: true, hint:'Facebook, Line or other social media'}
                 ]
                 // [
                 //     {defaultValue: 'ftest', type: 'text', name: 'first_name', label: 'First Name*', required: true},
@@ -272,6 +364,8 @@ class SchedulePage extends Component {
                               eventRender={this.eventRender}
                               dayClick={this.dayClick}
                               selectable={false}
+                              defaultDate={props.params.date} // gotoDate on first load
+                              onViewChange={this.onCalendarViewChange}
                     />
                 </div>
             </Panel>
@@ -281,6 +375,8 @@ class SchedulePage extends Component {
 
 SchedulePage.propTypes = {};
 SchedulePage.contextTypes = {
+    router: PropTypes.object,
+    helper: PropTypes.object,
     ajax: PropTypes.object,
     dialog: PropTypes.object
 };

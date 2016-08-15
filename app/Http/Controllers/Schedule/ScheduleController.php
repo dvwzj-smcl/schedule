@@ -69,10 +69,12 @@ class ScheduleController extends Controller
         return BF::result(true, ['slots' => $slots], '[schedule] get slot');
     }
     
-    public function getDoctorEvents($doctor_id, $timestamp){
+    public function getDoctorEvents($doctor_id, $dateParam){
         // parse date
-        if(empty($timestamp)) $date = Carbon::now();
-        else $date = Carbon::createFromTimestamp($timestamp);
+        if(empty($dateParam)) $date = Carbon::now();
+//        else $date = Carbon::createFromTimestamp($dateParam);
+        else $date = Carbon::parse($dateParam);
+        $date2 = clone $date;
 //        dd($date->setTime(0,0));
 
         // old concept: next & previous
@@ -118,7 +120,7 @@ class ScheduleController extends Controller
             unset($slot['category']);
             unset($slot['events']);
         }
-        return BF::result(true, ['slots' => $slots, 'events' => $events], '[schedule] get slot');
+        return BF::result(true, ['slots' => $slots, 'events' => $events, 'time' => $date2], '[schedule] get slot');
     }
 
     // for internal use only

@@ -31,15 +31,24 @@ class Calendar extends Component {
         calendar.fullCalendar('addEventSource', source);
         calendar.fullCalendar('addEventSource', source);
     }
+
+    onViewChange = () => {
+
+    };
     
-    getViewStart = () => {
+    getViewStartDate = () => {
         return this.viewStartDate;
+    };
+
+    gotoDate = (date) => {
+        $('#calendar').fullCalendar('gotoDate', date);
     };
 
     // --- callback functions
     
     viewRender = (view, element) => { // called when next/prev
         this.viewStartDate = this.toDate(view.start);
+        if(this.props.onViewChange) this.props.onViewChange(this.viewStartDate);
         // console.log('view, element', view, element);
     };
 

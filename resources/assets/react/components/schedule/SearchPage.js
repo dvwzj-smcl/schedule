@@ -17,19 +17,16 @@ import {ActionHome, ActionEvent, ActionEventSeat, ContentSave} from 'material-ui
 import * as scheduleActions from '../../actions/scheduleActions';
 
 // Forms
-import SemiSelect from '../forms/SemiSelect';
-import SemiDate from '../forms/SemiDate';
-import FormGenerator from '../forms/FormGenerator';
-import SemiText from '../forms/SemiText';
 import SemiForm from '../forms/SemiForm';
-import Calendar from '../widgets/Calendar';
-import SemiModal from '../widgets/SemiModal';
-import ContextMenu from '../widgets/ContextMenu';
-import $ from 'jquery';
 
 class SearchPage extends Component {
     constructor(props, context) {
         super(props, context);
+        this.setValuesState(props.params);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this.setValuesState(nextProps.params);
     }
 
     componentDidMount() {
@@ -38,45 +35,51 @@ class SearchPage extends Component {
         }
     }
 
+    setValuesState = (params) => {
+        let {doctor_id, date} = params;
+        this.state = {
+            values: {
+                doctor_id: doctor_id ? parseInt(doctor_id) : 1,
+                date: date ? new Date(date) : new Date()
+                // date2: date ? new Date(date).toString() : new Date().toString(),
+            }
+        }
+    };
+
     initialized = () => {
         return this.props.schedule && this.props.schedule.init;
     };
 
-    toDateString = (date) => {
-        return date.getFullYear()+'-'+(date.getUTCMonth()+1)+'-'+date.getDate();
-    };
-
     onSubmit = (data) => {
-        let date = this.toDateString(data.date);
+        let date = this.context.helper.toDateString(data.date);
         this.context.router.push(`/schedules/${data.doctor_id}/${date}`);
     };
 
     render() {
+        // console.log('render: search*', this.state.values);
         if(!this.initialized()) return <Loading />;
         let props = this.props;
         let {doctors} = props.schedule.data;
 
         let formTemplate = {
             data: {doctor_id: doctors},
-            values: {
-                doctor_id: 1,
-                date: new Date()
-            },
+            values: this.state.values,
             components: [
                 [{type: 'select', name: 'doctor_id', label: 'Doctor*', required: true}],
                 [{type: 'date', name: 'date', label: 'Date', required: true}]
+                // [{type: 'text', name: 'date2', label: 'Date', required: true}]
             ]
         };
 
         return (
             <div>
-                <PageHeading title="Schedule" description="description" />
+                <PageHeading title="Schedule" description={formTemplate.values.date.toString()} />
                 <Grid fluid className="content-wrap">
                     <Row>
                         <Col md={3}>
                             <Panel title="Goto" type="secondary">
                                 <div style={{padding: 12}}>
-                                    <SemiForm submitLabel="GO" buttonRight compact formTemplate={formTemplate} onSubmit={this.onSubmit}>
+                                    <SemiForm submitLabel="GO" buttonRight compact onSubmit={this.onSubmit} formTemplate={formTemplate}>
                                     </SemiForm>
                                 </div>
                             </Panel>
@@ -95,6 +98,7 @@ SearchPage.propTypes = {};
 SearchPage.contextTypes = {
     router: PropTypes.object.isRequired,
     ajax: PropTypes.object,
+    helper: PropTypes.object,
     dialog: PropTypes.object
 };
 

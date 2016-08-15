@@ -16,7 +16,7 @@ class ScheduleModuleSeeder extends Seeder
         $organizers = [];
 
         \App\Models\Calendar\Category::create(['name'=>'ผ่าตัด', 'color'=>'#9A9CFF']);
-        \App\Models\Calendar\Category::create(['name'=>'Consult & Followup', 'color'=>'#42D692']);
+        \App\Models\Calendar\Category::create(['name'=>'Consult & Followup', 'color'=>'#FFAD46']);
 
         \App\Models\Calendar\SubCategory::create(['name'=>'ผ่าตัดหน้าอก', 'sc_category_id'=>1, 'duration'=>30]);
         \App\Models\Calendar\SubCategory::create(['name'=>'ผ่าตัดจมูก', 'sc_category_id'=>1, 'duration'=>60]);

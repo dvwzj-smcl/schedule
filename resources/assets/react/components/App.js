@@ -14,32 +14,28 @@ injectTapEventPlugin();
 class App extends Component {
 
     getChildContext() {
-        return { ajax: {
-            call: (method, url, data) => {
-                return ajax(method, url, data, this.props.user.access_token);
+        return {
+            ajax: {
+                call: (method, url, data) => {
+                    return ajax(method, url, data, this.props.user.access_token);
+                },
+                getAll: (urls) => {
+                    return getAll(urls, this.props.user.access_token);
+                }
             },
-            getAll: (urls) => {
-                return getAll(urls, this.props.user.access_token);
+            helper: {
+                toDateString: (date) => {
+                    let month = date.getMonth()+1;
+                    if(month < 10) month = '0'+month;
+                    let day = date.getDate();
+                    if(day < 10) day = '0'+day;
+                    return date.getFullYear()+'-'+month+'-'+day;
+                },
+                toDate: (moment) => { // from Moment to Date
+                    return new Date(moment.format('YYYY-MM-DD H:mm:ss'));
+                }
             }
-            // get: (url, data, success, error) => {
-            //     ajax('get', url, data, success, error, this.props.user.access_token)
-            // },
-            // post: (url, data, success, error) => {
-            //     ajax('post', url, data, success, error, this.props.user.access_token)
-            // },
-            // put: (url, data, success, error) => {
-            //     ajax('put', url, data, success, error, this.props.user.access_token)
-            // },
-            // patch: (url, data, success, error) => {
-            //     ajax('patch', url, data, success, error, this.props.user.access_token)
-            // },
-            // delete: (url, data, success, error) => {
-            //     ajax('delete', url, data, success, error, this.props.user.access_token)
-            // },
-            // call: (method, url, data, success, error) => {
-            //     ajax(method, url, data, success, error, this.props.user.access_token)
-            // }
-        }}
+        }
     }
 
     render() {
@@ -64,7 +60,8 @@ App.propTypes = {
     user: PropTypes.object
 };
 App.childContextTypes = {
-    ajax: PropTypes.object
+    ajax: PropTypes.object,
+    helper: PropTypes.object
 };
 
 const mapStateToProps = ({user}) => ({user});

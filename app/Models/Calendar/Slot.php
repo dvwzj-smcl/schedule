@@ -37,7 +37,7 @@ class Slot extends Model
         return $query->where('start', '<', $startDate)->where('start', '>', $limit->addMonth(-1));
     }
     public function scopeByDate($query, $queryDate){
-        $weekCount = 4;
+        $weekCount = 6;
         
         // always start on sunday and end on saturday & no last week
         Carbon::setWeekStartsAt(Carbon::SUNDAY);

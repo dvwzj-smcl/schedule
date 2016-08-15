@@ -56,7 +56,7 @@ Route::group(['prefix' => 'api', 'middleware' => ['jwt.auth']], function () {
     Route::group(['prefix'=>'schedules'], function() {
         Route::get('init', 'Schedule\ScheduleController@init');
         Route::get('doctors/{doctor_id}/slots', 'Schedule\ScheduleController@getDoctorSlots');
-        Route::get('doctors/{doctor_id}/events/{timestamp?}', 'Schedule\ScheduleController@getDoctorEvents');
+        Route::get('doctors/{doctor_id}/events/{date?}', 'Schedule\ScheduleController@getDoctorEvents');
         // todo: get category slot
         Route::resource('events', 'Schedule\EventController');
         
