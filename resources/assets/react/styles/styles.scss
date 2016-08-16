@@ -51,6 +51,7 @@ body { margin: 0; font-family: 'roboto', 'segoe ui', 'droid sans', tahoma, arial
 .panel-bar.secondary>h1 { color: #7a7a7a !important; }
 
 .con-pad { padding: $conpad; }
+.semicon { padding: $conpad; }
 
 /* button */
 
@@ -59,7 +60,13 @@ body { margin: 0; font-family: 'roboto', 'segoe ui', 'droid sans', tahoma, arial
 .icon-btn.left-most { margin-left: -8px !important; }
 .button.rightmargin { margin-right: 12px; }
 
+.button-group { margin-bottom: 24px; }
+.button-group.right { text-align: right; }
+.button-group.right .button { margin-left: 16px; }
+.button-group .icon-only-btn { min-width: 0 !important; width: 10px; padding: 0 10px; }
+
 /* form */
+
 //.semiform input { padding-bottom: 12px !important; }
 .form-wrap { width: 100%; }
 .btn-wrap { width: 100%; }
@@ -67,10 +74,17 @@ body { margin: 0; font-family: 'roboto', 'segoe ui', 'droid sans', tahoma, arial
 .semiForm.compact>div { margin-top: -10px !important; }
 
 /* alignment */
+
 #app { height: 100%; }
 .center { display: table !important; width: 100% !important; height: 100% !important; position: absolute; }
 .center-inner{ display: table-cell; vertical-align: middle; text-align: center; }
 .center-modal{ width: 100%; padding-top: 24px; text-align: center; }
+
+/* Headers */
+
+/* Calendar */
+.calendar-header h2 { float:left; margin-top: 8px; }
+
 
 /* todo : please change the name */
 .parent{
