@@ -24,8 +24,13 @@ import SemiText from '../forms/SemiText';
 import SemiForm from '../forms/SemiForm';
 import Calendar from '../widgets/Calendar';
 import SemiModal from '../widgets/SemiModal';
+import SemiButton from '../widgets/SemiButton';
 import ContextMenu from '../widgets/ContextMenu';
 import $ from 'jquery';
+
+import FloatingActionButton from 'material-ui/FloatingActionButton';
+import ContentAdd from 'material-ui/svg-icons/content/add';
+import {HardwareKeyboardArrowRight, HardwareKeyboardArrowLeft} from 'material-ui/svg-icons';
 
 class SchedulePage extends Component {
     constructor(props, context) {
@@ -130,19 +135,21 @@ class SchedulePage extends Component {
 
         // should we load data?
         if(this.loading) return;
-        if(this.data) {
-            let slots = this.data.slots;
-            let currentDate = new Date(date);
-            currentDate.setHours(0,0,0,0);
-            currentDate = currentDate.getTime();
-            for(let i in slots) {
-                let slot = slots[i];
-                let slotDate = new Date(slot.start);
-                slotDate.setHours(0,0,0,0);
-                slotDate = slotDate.getTime();
-                if(slotDate == currentDate) {
-                    console.log('*slot', new Date(slotDate), new Date(currentDate));
-                    return;
+        if(doctor_id == this.props.params.doctor_id) {
+            if(this.data) {
+                let slots = this.data.slots;
+                let currentDate = new Date(date);
+                currentDate.setHours(0,0,0,0);
+                currentDate = currentDate.getTime();
+                for(let i in slots) {
+                    let slot = slots[i];
+                    let slotDate = new Date(slot.start);
+                    slotDate.setHours(0,0,0,0);
+                    slotDate = slotDate.getTime();
+                    if(slotDate == currentDate) {
+                        console.log('*slot', new Date(slotDate), new Date(currentDate));
+                        return;
+                    }
                 }
             }
         }
@@ -264,6 +271,7 @@ class SchedulePage extends Component {
         }
     };
 
+    // todo: remove this
     onCalendarViewChange = (startDate) => {
         if(this.canChangeUrl) { // prevent change url on load
             // console.log('startDate', startDate);
@@ -295,6 +303,20 @@ class SchedulePage extends Component {
             ((0|(1<<8) + r + (256 - r) * percent / 100).toString(16)).substr(1) +
             ((0|(1<<8) + g + (256 - g) * percent / 100).toString(16)).substr(1) +
             ((0|(1<<8) + b + (256 - b) * percent / 100).toString(16)).substr(1);
+    };
+
+    nextWeek = (isNext) => {
+        let current = new Date(this.props.params.date);
+        console.log('isNext', isNext);
+        if(isNext) {
+            let nextWeek = new Date(current.getTime() + 7 * 24 * 60 * 60 * 1000);
+            nextWeek = this.context.helper.toDateString(nextWeek);
+            this.context.router.push(`/schedules/${this.props.params.doctor_id}/${nextWeek}`);
+        } else {
+            let prevWeek = new Date(current.getTime() - 7 * 24 * 60 * 60 * 1000);
+            prevWeek = this.context.helper.toDateString(prevWeek);
+            this.context.router.push(`/schedules/${this.props.params.doctor_id}/${prevWeek}`);
+        }
     };
 
     render() {
@@ -347,6 +369,36 @@ class SchedulePage extends Component {
             </SemiModal>
         );
 
+        return (
+            <Panel title="Schedule">
+                {eventModal}
+                {eventPopover}
+                <div className="semicon">
+                    <div className="calendar-header">
+                        <h2>{(new Date(this.props.params.date)).toString()}</h2>
+                        <div className="button-group right" style={{zIndex: 999999}}>
+                            <FloatingActionButton mini={true} className="button" onTouchTap={this.nextWeek.bind(this, false)}>
+                                <HardwareKeyboardArrowLeft />
+                            </FloatingActionButton>
+                            <FloatingActionButton mini={true} className="button" onTouchTap={this.nextWeek.bind(this, true)}>
+                                <HardwareKeyboardArrowRight />
+                            </FloatingActionButton>
+                        </div>
+                    </div>
+                    <div>
+                        <Calendar droppable={false} editable={false} ref="calendar"
+                                  eventClick={this.eventClick}
+                                  eventRender={this.eventRender}
+                                  dayClick={this.dayClick}
+                                  selectable={false}
+                                  defaultDate={props.params.date} // gotoDate on first load
+                                  onViewChange={this.onCalendarViewChange}
+                                  header={false}
+                        />
+                    </div>
+                </div>
+            </Panel>
+        );
         let eventPopover = (
             <ContextMenu ref="eventContextMenu" onSelect={this.onContextMenuSelect}
                 data={[
@@ -355,22 +407,6 @@ class SchedulePage extends Component {
                 ]}
             >
             </ContextMenu>
-        );
-        return (
-            <Panel title="Schedule">
-                {eventModal}
-                {eventPopover}
-                <div className="con-pad">
-                    <Calendar droppable={false} editable={false} ref="calendar"
-                              eventClick={this.eventClick}
-                              eventRender={this.eventRender}
-                              dayClick={this.dayClick}
-                              selectable={false}
-                              defaultDate={props.params.date} // gotoDate on first load
-                              onViewChange={this.onCalendarViewChange}
-                    />
-                </div>
-            </Panel>
         );
     }
 }
