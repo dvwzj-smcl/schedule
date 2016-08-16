@@ -319,6 +319,16 @@ export class ValidationSelectField extends Validation.components.Select {
         let input = this.props.states[this.props.name];
         hintText = ((this.props.multiple ? input&&input.value.length : input&&input.value) ? '' : hintText);
         let value = this.props.states.hasOwnProperty(this.props.name) ? this.props.states[this.props.name].value : (this.props.value ? this.props.value : (this.props.multiple ? [] : ""));
+
+        // fix: accept both array and object as options
+        console.log('options', options);
+        let items = options? [] : null;
+        if(typeof options === 'object') { // object or array only
+            for(let i in options) {
+                let id = options[i].id ? parseInt(options[i].id) : parseInt(i);
+                items.push(<MenuItem value={id} key={id} primaryText={options[i].name}/>);
+            }
+        }
         return (
             <div className={this.props.containerClassName || null}>
                 {this.props.multiple ?
@@ -327,7 +337,7 @@ export class ValidationSelectField extends Validation.components.Select {
                     </MultiSelect>
                     :
                     <SelectField ref='node' {...rest} hintText={hintText} value={value} onChange={this.handleChange.bind(this)}>
-                        {options.map((option, index)=><MenuItem key={index} value={option.id} primaryText={option.name}/>)}
+                        {items}
                     </SelectField>
                 }
                 <IconButton onTouchTap={this.handleClear.bind(this)} style={{display: this.props.validations.indexOf('optional')==-1 ? 'none' : ((this.props.multiple ? input&&input.value.length : input&&input.value) ? 'inline-block': 'none')}}>

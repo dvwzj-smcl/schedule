@@ -5,13 +5,18 @@ import ReactDOM from 'react-dom';
 import Loading from '../widgets/Loading';
 import FormGenerator from './VFormGenerator';
 import SemiValidation from './SemiValidation';
+import {Grid, Row, Col} from 'react-flexbox-grid';
 
 class SemiForm extends Component {
-    constructor(props) {
-        super(props);
+    constructor(props, context) {
+        super(props, context);
         this.state = {
             canSubmit: false,
-            ready: props.onLoad ? false : true // for loading spinner
+            ready: props.onLoad ? false : true, // for loading spinner
+
+            // * gen
+            values: props.formTemplate.values ? props.formTemplate.values : {},
+            data: props.formTemplate.data ? props.formTemplate.data : {}
         };
         this.enableButton = this.enableButton.bind(this);
         this.disableButton = this.disableButton.bind(this);
@@ -22,6 +27,19 @@ class SemiForm extends Component {
         this.onLoad = this.onLoad.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
     }
+
+    // * gen
+    componentWillReceiveProps(nextProps) {
+        this.setFormState(nextProps);
+    }
+
+    // * gen
+    setFormState = (props) => {
+        this.setState({
+            values: props.formTemplate.values ? props.formTemplate.values : {},
+            data: props.formTemplate.data ? props.formTemplate.data : {}
+        });
+    };
 
     enableButton() {
         if (this.state.canSubmit === true) return;
@@ -110,8 +128,106 @@ class SemiForm extends Component {
         let buttonRight = props.buttonRight ? 'btn-right' : '';
         let styleClass = props.compact ? 'compact' : '';
 
+        /**
+         *
+         * Form Generator Section ------------------
+         *
+         */
+
+        let components = [];
+        if(formTemplate) {
+            let values = this.state.values;
+            let data = this.state.data;
+            // todo: validator & component
+            for (let rowId in formTemplate.components) {
+
+                let row = formTemplate.components[rowId];
+                let cols = [];
+                let md = Math.floor(12 / row.length); // equally width for now
+                for (let itemId in row) {
+
+                    let item = row[itemId];
+                    let component = null;
+                    // let {type, validations, ...rest} = item;
+                    // Object.assign(rest, {
+                    //     fullWidth: true
+                    // });
+
+                    let {name} = item;
+                    let value = values[name]; // todo
+
+                    let defaultValues = {
+                        required: false,
+                        disabled: false,
+                        fullWidth: true
+                    };
+
+                    let validations = ['optional'];
+
+                    let overrideValues = { // props with different names or need processing
+                        floatingLabelText: item.label, // todo: * and optional
+                        hintText: item.hint ? item.hint : '',
+                        value,
+                        validations
+                    };
+
+                    let {type, ...rest} = Object.assign(defaultValues, item, overrideValues);
+
+                    console.log('rest', rest);
+
+
+                    // let rest = {
+                    //     name,
+                    //     floatingLabelText: item.label,
+                    //     value: value,
+                    //     required: item.required,
+                    //     defaultValue: item.defaultValue,
+                    //     disabled: item.disabled || false,
+                    //     fullWidth: true,
+                    //     floatingLabelFixed: item.floatingLabelFixed || false
+                    // };
+
+                    switch (type) {
+                        case 'text':
+                            component = (
+                                <SemiValidation.components.TextField
+                                    {...rest}
+                                />
+                            );
+                            break;
+                        case 'select':
+                            component = (
+                                <SemiValidation.components.SelectField
+                                    options={data[name]}
+                                    {...rest}
+                                />
+                            );
+                            break;
+                        case 'date':
+                            component = (
+                                <SemiValidation.components.DatePicker
+                                    {...rest}
+                                />
+                            );
+                            break;
+                    }
+                    cols.push(<Col key={itemId} xs md={md}>{component}</Col>);
+                } // item
+                let rowComponent = (<Row key={rowId}>{cols}</Row>);
+                components.push(rowComponent);
+
+            } // row
+        }
+
+        /**
+         *
+         * End Form Generator Section ------------------
+         *
+         */
+
         let formItems = (this.state.ready) ?
-            (formTemplate) ? <FormGenerator formTemplate={formTemplate}/> : children : <Loading inline/>;
+            // (formTemplate) ? <FormGenerator formTemplate={formTemplate}/> : children : <Loading inline/>;
+            (formTemplate) ? components : children : <Loading inline/>;
 
         return (
             <SemiValidation.components.Form
@@ -121,8 +237,6 @@ class SemiForm extends Component {
                 {...rest}
             >
                 {formItems}
-
-
                 <div className="btn-wrap">
                     {submitBtn}
                     {resetBtn}

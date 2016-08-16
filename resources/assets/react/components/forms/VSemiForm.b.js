@@ -1,9 +1,10 @@
-import React, { PropTypes, Component } from 'react';
+import React, {PropTypes, Component} from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
-import { Form } from 'formsy-react';
+import {Form} from 'formsy-react';
 import ReactDOM from 'react-dom';
 import Loading from '../widgets/Loading';
-import FormGenerator from './FormGenerator';
+import FormGenerator from './VFormGenerator';
+import SemiValidation from './SemiValidation';
 
 class SemiForm extends Component {
     constructor(props) {
@@ -23,7 +24,7 @@ class SemiForm extends Component {
     }
 
     enableButton() {
-        if(this.state.canSubmit === true) return;
+        if (this.state.canSubmit === true) return;
         // console.log('enable!');
         this.setState({
             canSubmit: true
@@ -31,7 +32,7 @@ class SemiForm extends Component {
     }
 
     disableButton() {
-        if(this.state.canSubmit === false) return;
+        if (this.state.canSubmit === false) return;
         // console.log('disable!');
         this.setState({
             canSubmit: false
@@ -39,8 +40,8 @@ class SemiForm extends Component {
     }
 
     componentDidMount() {
-        if(this.props.onLoad) {
-            this.props.onLoad(this.context.ajax).then( (/*data*/) => {
+        if (this.props.onLoad) {
+            this.props.onLoad(this.context.ajax).then((/*data*/) => {
                 this.setState({ready: true})
             });
         }
@@ -50,28 +51,29 @@ class SemiForm extends Component {
         // todo: add Loading... to submit button
         return this.context.ajax.call(method, url, data);
     }
-    
+
     onLoad(urls) { // called only once when mount
-        if(Array.isArray(urls)) {
+        if (Array.isArray(urls)) {
             return this.context.ajax.getAll(urls);
         }
         return this.context.ajax.call('get', urls);
     }
 
     onSubmit(data) {
-        if(this.props.onSubmit) {
+        if (this.props.onSubmit) {
             let promise = this.props.onSubmit(data, this.context.ajax);
-            if(promise) {
-                return promise.then( response => {
+            if (promise) {
+                return promise.then(response => {
                     // todo: submit loading here...
-                }).catch( error => {
+                }).catch(error => {
                     this.context.dialog.alert(error, 'Error!');
                 });
             }
         }
     }
 
-    notifyFormError(/*data*/) {}
+    notifyFormError(/*data*/) {
+    }
 
     // for triggering submit button using ref
     submit() {
@@ -87,15 +89,16 @@ class SemiForm extends Component {
         let props = this.props;
         let {children, formTemplate, noSubmitButton, submitLabel, ...rest} = props;
         let resetBtn = props.hasReset && !props.noButton ? (
-            <RaisedButton
+            <SemiValidation.components.RaisedButton
                 label="Reset"
+                type="button"
                 style={{marginTop: 24, marginLeft: 24}}
                 onClick={this.resetForm}
             />
         ) : null;
 
         let submitBtn = noSubmitButton || props.noButton ? null : (
-            <RaisedButton
+            <SemiValidation.components.RaisedButton
                 formNoValidate
                 secondary={true}
                 style={{marginTop: 24}}
@@ -104,29 +107,27 @@ class SemiForm extends Component {
                 disabled={!this.state.canSubmit}
             />);
 
-        let buttonRight = props.buttonRight? 'btn-right' : '';
-        let styleClass = props.compact? 'compact' : '';
+        let buttonRight = props.buttonRight ? 'btn-right' : '';
+        let styleClass = props.compact ? 'compact' : '';
 
         let formItems = (this.state.ready) ?
-            (formTemplate) ? <FormGenerator formTemplate={formTemplate} /> : children : <Loading inline />;
+            (formTemplate) ? <FormGenerator formTemplate={formTemplate}/> : children : <Loading inline/>;
 
         return (
-            <Form
+            <SemiValidation.components.Form
                 className={`semiForm ${buttonRight} ${styleClass}`}
-                onValid={this.enableButton}
-                onInvalid={this.disableButton}
-                onValidSubmit={this.onSubmit}
-                onInvalidSubmit={this.notifyFormError}
+                onSubmit={this.onSubmit}
                 ref="form"
                 {...rest}
             >
                 {formItems}
+
+
                 <div className="btn-wrap">
                     {submitBtn}
                     {resetBtn}
                 </div>
-                <button style={{display:'none'}} ref="submitBtn" type="submit">Submit</button>
-            </Form>);
+            </SemiValidation.components.Form>);
     }
 }
 
@@ -151,7 +152,7 @@ SemiForm.propTypes = {
 };
 SemiForm.contextTypes = {
     ajax: PropTypes.object,
-    dialog: PropTypes.object
+    dialog: PropTypes.object.isRequired
 };
 
 export default SemiForm;
