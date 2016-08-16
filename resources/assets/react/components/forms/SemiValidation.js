@@ -197,7 +197,7 @@ export class ValidationForm extends Validation.components.Form {
             let key = Object.keys(obj)[0];
             if(typeof obj[key]=="number") return true;
             if(typeof obj[key]=="string" && obj[key].trim()) return true;
-            if(typeof obj[key]=="object" && obj[key].length) return true;
+            if(typeof obj[key]=="object" && (obj[key]!==null&&obj[key].length>0)) return true;
             return false;
         });
         return data.length ? data.reduce((a,b)=>Object.assign({},a,b)) : {};
@@ -207,7 +207,7 @@ export class ValidationForm extends Validation.components.Form {
         let componentState = this.state.states[component.props.name];
         let checkbox = (component.props.type === 'checkbox' || component.props.type === 'radio');
         Object.assign(componentState, {
-            value: value ? value : event.target.value,
+            value: value!==undefined ? value : event.target.value,
             isChanged: isChanged || componentState.isChanged || event.type === 'change',
             isUsed: isUsed || checkbox || componentState.isUsed || event.type === 'blur',
             isChecked: !componentState.isChecked
@@ -405,10 +405,9 @@ export class ValidationAutoComplete extends Component {
                 this.setState({sources: []});
             }
         }
-        if(!value) {
-            this.props._update(this, event, true, true, null);
-            this.props.onChange && this.props.onChange(event, index, null);
-        }
+
+        this.props._update(this, event, true, true, this.props.typeahead ? value : null);
+        this.props.onChange && this.props.onChange(event, index, this.props.typeahead ? value : null);
     }
     handleClear(){
         this.props._update(this, event, true, true, null);
@@ -449,6 +448,13 @@ export class ValidationAutoComplete extends Component {
                 </IconButton>
             </div>
         )
+    }
+}
+export class ValidationTypeAhead extends Component {
+    render(){
+        return (
+            <ValidationAutoComplete {...this.props} typeahead />
+        );
     }
 }
 export class ValidationColorPicker extends Component {
@@ -592,6 +598,7 @@ const components = Object.assign({}, Validation.components, {
     SelectField: ValidationSelectField,
     MultipleSelectField: ValidationMultipleSelectField,
     AutoComplete: ValidationAutoComplete,
+    TypeAhead: ValidationTypeAhead,
     ColorPicker: ValidationColorPicker,
     DatePicker: ValidationDatePicker
 });
