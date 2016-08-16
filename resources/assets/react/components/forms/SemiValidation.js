@@ -43,7 +43,7 @@ Object.assign(Validation.rules, {
         rule: (value, component, form) => {
             let optional = component.props.validations.indexOf("optional")>-1;
             //let check = /^#(?:[0-9a-f]{3}){1,2}$/i.test(value);
-            let check = validator.isHexColor(value);
+            let check = value&&validator.isHexColor(value);
             return optional ? (value ? check : true) : check;
         },
         hint: value => {
@@ -189,7 +189,7 @@ class MultiSelect extends SelectField {
 
 export class ValidationForm extends Validation.components.Form {
     getData(){
-        return Object.keys(this.state.states).map((key)=> {
+        let data = Object.keys(this.state.states).map((key)=> {
             let obj = {};
             obj[key] = this.state.states[key].value;
             return obj;
@@ -199,7 +199,8 @@ export class ValidationForm extends Validation.components.Form {
             if(typeof obj[key]=="string" && obj[key].trim()) return true;
             if(typeof obj[key]=="object" && obj[key].length) return true;
             return false;
-        }).reduce((a,b)=>Object.assign({},a,b));
+        });
+        return data.length ? data.reduce((a,b)=>Object.assign({},a,b)) : {};
     }
     _update(component, event, isChanged, isUsed, value) {
         this.state.states[component.props.name] = this.state.states[component.props.name] || {};
@@ -233,6 +234,11 @@ export class ValidationForm extends Validation.components.Form {
     }
 }
 export class ValidationTextField extends Validation.components.Input {
+    handleClear(){
+        this.props._update(this, event, true, true, null);
+        this.props.onChange && this.props.onChange(null);
+        this.refs.node.input.value = null;
+    }
     render(){
         let {
             _register,
@@ -244,6 +250,7 @@ export class ValidationTextField extends Validation.components.Input {
             errorClassName,
             containerClassName,
             ...rest} = this.props;
+        let input = this.props.states[this.props.name];
         return (
             <div className={this.props.containerClassName || null}>
                 <TextField
@@ -255,6 +262,9 @@ export class ValidationTextField extends Validation.components.Input {
                     defaultValue={this.props.defaultValue}
                     onChange={this.handleChange.bind(this)}
                     onBlur={this.handleBlur.bind(this)} />
+                <IconButton onTouchTap={this.handleClear.bind(this)} style={{display: this.props.validations.indexOf('optional')==-1 ? 'none' : (input&&input.value ? 'inline-block': 'none')}}>
+                    <ClearIcon/>
+                </IconButton>
             </div>
         );
     }
@@ -288,6 +298,11 @@ export class ValidationSelectField extends Validation.components.Select {
         event.persist();
         this.props.onChange && this.props.onChange(event, index, value);
     }
+    handleClear(){
+        let value = this.props.multiple ? [] : null;
+        this.props._update(this, event, true, true, value);
+        this.props.onChange && this.props.onChange(value);
+    }
     render() {
         let {
             _register,
@@ -302,7 +317,7 @@ export class ValidationSelectField extends Validation.components.Select {
             hintText,
             ...rest} = this.props;
         let input = this.props.states[this.props.name];
-        hintText = (input&&input.value.length ? '' : hintText);
+        hintText = ((this.props.multiple ? input&&input.value.length : input&&input.value) ? '' : hintText);
         let value = this.props.states.hasOwnProperty(this.props.name) ? this.props.states[this.props.name].value : (this.props.value ? this.props.value : (this.props.multiple ? [] : ""));
         return (
             <div className={this.props.containerClassName || null}>
@@ -315,6 +330,9 @@ export class ValidationSelectField extends Validation.components.Select {
                         {options.map((option, index)=><MenuItem key={index} value={option.id} primaryText={option.name}/>)}
                     </SelectField>
                 }
+                <IconButton onTouchTap={this.handleClear.bind(this)} style={{display: this.props.validations.indexOf('optional')==-1 ? 'none' : ((this.props.multiple ? input&&input.value.length : input&&input.value) ? 'inline-block': 'none')}}>
+                    <ClearIcon/>
+                </IconButton>
             </div>
         );
     }
@@ -335,6 +353,7 @@ export class ValidationAutoComplete extends Component {
         this.props._register(this);
         this.handleNewRequest = this.handleNewRequest.bind(this);
         this.handleUpdateInput = this.handleUpdateInput.bind(this);
+        this.handleClear = this.handleClear.bind(this);
     }
     ajax(method, url, data, success, error){
         //data = JSON.stringify(data);
@@ -391,6 +410,11 @@ export class ValidationAutoComplete extends Component {
             this.props.onChange && this.props.onChange(event, index, null);
         }
     }
+    handleClear(){
+        this.props._update(this, event, true, true, null);
+        this.props.onChange && this.props.onChange(null);
+        this.refs.node.setState({searchText: ''});
+    }
     render() {
         let {
             _register,
@@ -403,6 +427,7 @@ export class ValidationAutoComplete extends Component {
             containerClassName,
             dataSource,
             ...rest} = this.props;
+        let input = this.props.states[this.props.name];
         return (
             <div className={this.props.containerClassName || null}>
                 <AutoComplete
@@ -418,6 +443,9 @@ export class ValidationAutoComplete extends Component {
                     onUpdateInput={this.handleUpdateInput} />
                 <IconButton disabled>
                     <KeyboardIcon/>
+                </IconButton>
+                <IconButton onTouchTap={this.handleClear} style={{display: this.props.validations.indexOf('optional')==-1 ? 'none' : (input&&input.value ? 'inline-block': 'none')}}>
+                    <ClearIcon/>
                 </IconButton>
             </div>
         )
@@ -435,6 +463,7 @@ export class ValidationColorPicker extends Component {
         this.handleOpen = this.handleOpen.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleClear = this.handleClear.bind(this);
     }
     handleChangeInput(event,value){
         let error = handleError(this.props);
@@ -462,6 +491,12 @@ export class ValidationColorPicker extends Component {
         this.props.onChange && this.props.onChange(event, index, this.state.color.hex);
         this.refs.node.input.value = this.state.color.hex;
     };
+    handleClear(){
+        this.setState({color: null});
+        this.props._update(this, event, true, true, null);
+        this.props.onChange && this.props.onChange(null);
+        this.refs.node.input.value = null;
+    }
     render(){
         let {hintText, validations, ...rest} = this.props;
         let input = this.props.states[this.props.name];
@@ -486,6 +521,9 @@ export class ValidationColorPicker extends Component {
                 <TextField {...rest} validations={validations} ref='node' hintText={hintText} onChange={this.handleChangeInput} errorText={handleError(this.props)} />
                 <IconButton onTouchTap={this.handleOpen}>
                     <PaletteIcon/>
+                </IconButton>
+                <IconButton onTouchTap={this.handleClear} style={{display: this.props.validations.indexOf('optional')==-1 ? 'none' : (input&&input.value ? 'inline-block': 'none')}}>
+                    <ClearIcon/>
                 </IconButton>
                 <Dialog title="Color Picker"
                         actions={actions}
@@ -539,7 +577,7 @@ export class ValidationDatePicker extends Component {
                 <IconButton disabled>
                     <DateRangeIcon/>
                 </IconButton>
-                <IconButton onTouchTap={this.handleClear} style={{display: input&&input.value ? 'inline-block': 'none'}}>
+                <IconButton onTouchTap={this.handleClear} style={{display: this.props.validations.indexOf('optional')==-1 ? 'none' : (input&&input.value ? 'inline-block': 'none')}}>
                     <ClearIcon/>
                 </IconButton>
             </div>
