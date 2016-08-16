@@ -3,7 +3,6 @@ import RaisedButton from 'material-ui/RaisedButton';
 import {Form} from 'formsy-react';
 import ReactDOM from 'react-dom';
 import Loading from '../widgets/Loading';
-import FormGenerator from './VFormGenerator';
 import SemiValidation from './SemiValidation';
 import {Grid, Row, Col} from 'react-flexbox-grid';
 

@@ -371,7 +371,7 @@ class SchedulePage extends Component {
 
         return (
             <Panel title="Schedule">
-                {eventModal}
+                {eventModal}n
                 {eventPopover}
                 <div className="semicon">
                     <div className="calendar-header">
