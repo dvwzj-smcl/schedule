@@ -6,6 +6,8 @@ import { SwatchesPicker } from 'react-color';
 import IconButton from 'material-ui/IconButton/IconButton';
 import PaletteIcon from 'material-ui/svg-icons/image/palette';
 import KeyboardIcon from 'material-ui/svg-icons/hardware/keyboard';
+import DateRangeIcon from 'material-ui/svg-icons/action/date-range';
+import ClearIcon from 'material-ui/svg-icons/content/clear';
 import Dialog from 'material-ui/Dialog';
 import Paper from 'material-ui/Paper';
 import TextField from 'material-ui/TextField';
@@ -17,6 +19,8 @@ import DropDownMenu from 'material-ui/DropDownMenu';
 import Checkbox from 'material-ui/Checkbox';
 import {ListItem} from 'material-ui/List';
 import AutoComplete from 'material-ui/AutoComplete';
+import DatePicker from 'material-ui/DatePicker';
+import moment from 'moment';
 
 Object.assign(Validation.rules, {
     required: {
@@ -497,6 +501,52 @@ export class ValidationColorPicker extends Component {
     }
 }
 
+export class ValidationDatePicker extends Component {
+    constructor(props) {
+        super(props);
+        this.props._register(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleClear = this.handleClear.bind(this);
+    }
+    handleChange(n, value){
+        let date = moment(value);
+        this.props._update(this, event, true, true, date.format(this.props.format ? this.props.format : 'YYYY-MM-DD'));
+        this.props.onChange && this.props.onChange(date);
+    }
+    handleClear(){
+        this.props._update(this, event, true, true, null);
+        this.props.onChange && this.props.onChange(null);
+    }
+    render(){
+        let {
+            _register,
+            _update,
+            _validate,
+            validations,
+            states,
+            errors,
+            errorClassName,
+            containerClassName,
+            dataSource,
+            hintText,
+            ...rest} = this.props;
+        let input = this.props.states[this.props.name];
+        let value = input&&input.value ? new Date(input.value) : null;
+        hintText = (value ? '' : (hintText || "Date"));
+        return (
+            <div className={this.props.containerClassName || null}>
+                <DatePicker {...rest} value={value} hintText={hintText} onChange={this.handleChange} style={{display: 'inline-block'}}/>
+                <IconButton disabled>
+                    <DateRangeIcon/>
+                </IconButton>
+                <IconButton onTouchTap={this.handleClear} style={{display: input&&input.value ? 'inline-block': 'none'}}>
+                    <ClearIcon/>
+                </IconButton>
+            </div>
+        );
+    }
+}
+
 const components = Object.assign({}, Validation.components, {
     Form: ValidationForm,
     TextField: ValidationTextField,
@@ -504,7 +554,8 @@ const components = Object.assign({}, Validation.components, {
     SelectField: ValidationSelectField,
     MultipleSelectField: ValidationMultipleSelectField,
     AutoComplete: ValidationAutoComplete,
-    ColorPicker: ValidationColorPicker
+    ColorPicker: ValidationColorPicker,
+    DatePicker: ValidationDatePicker
 });
 
 const SemiValidation = Object.assign({}, Validation, {components});

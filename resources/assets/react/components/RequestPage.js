@@ -96,7 +96,8 @@ class RequestPage extends Component {
                                         <SemiValidation.components.SelectField hintText="Test 2" multiple name="test2" floatingLabelText="Multiple Selection (Required)" floatingLabelFixed={true} validations={['required']} options={[{id:3, name:'test 3'}, {id:4, name:'test 4'}]} />
                                         <SemiValidation.components.MultipleSelectField hintText="Test 3" name="test3" floatingLabelText="Multiple Selection (Optional)" floatingLabelFixed={true} validations={['optional']} options={[{id:5, name:'test 5'}, {id:6, name:'test 6'}]} />
                                         <SemiValidation.components.AutoComplete hintText="Doctor" name="doctor_id" floatingLabelText="Auto Complete (Required)" floatingLabelFixed={true} dataSource={[{value:1,text:'test 1'},{value:2,text:'test 2'}]} dataSourceSearch="name" dataSourceResult="doctors" dataSourceMap={{value:"id", text:"user.name"}} validations={['required']} />
-                                        <SemiValidation.components.ColorPicker name="color" floatingLabelText="Color Picker (Optional)" floatingLabelFixed={true} validations={['optional']} />
+                                        <SemiValidation.components.ColorPicker hintText="Color" name="color" floatingLabelText="Color Picker (Optional)" floatingLabelFixed={true} validations={['optional']} />
+                                        <SemiValidation.components.DatePicker name="date" floatingLabelText="Date Picker (Optional)" format="YYYY-MM-DD" floatingLabelFixed={true} validations={['optional']} />
                                         <SemiValidation.components.RaisedButton label="Submit" type="submit" />
                                     </SemiValidation.components.Form>
                                 </div>
