@@ -1,8 +1,5 @@
 import React, { PropTypes, Component } from 'react';
-
-import SemiSelect from './SemiSelect';
-import SemiDate from './SemiDate';
-import SemiText from './SemiText';
+import SemiValidation from './SemiValidation';
 
 import {Grid, Row, Col} from 'react-flexbox-grid';
 
@@ -30,6 +27,7 @@ class FormGenerator extends Component {
         let data = this.state.data;
         // todo: validator & component
         for(let rowId in formTemplate.components) {
+
             let row = formTemplate.components[rowId];
             let cols = [];
             let md = Math.floor(12/row.length); // equally width for now
@@ -41,36 +39,60 @@ class FormGenerator extends Component {
                 // Object.assign(rest, {
                 //     fullWidth: true
                 // });
+
                 let {name} = item;
                 let value = values[name]; // todo
-                let rest = {
-                    name,
-                    floatingLabelText: item.label,
-                    value: value,
-                    required: item.required,
-                    defaultValue: item.defaultValue,
-                    disabled: item.disabled || false,
+
+                let defaultValues = {
+                    required: false,
+                    disabled: false,
                     fullWidth: true
                 };
-                switch(item.type) {
+
+                let validations = ['optional'];
+
+                let overrideValues = { // props with different names or need processing
+                    floatingLabelText: item.label, // todo: * and optional
+                    hintText: item.hint ? item.hint : '',
+                    value,
+                    validations
+                };
+
+                let {type, ...rest} = Object.assign(defaultValues, item, overrideValues);
+
+                console.log('rest', rest);
+
+
+                // let rest = {
+                //     name,
+                //     floatingLabelText: item.label,
+                //     value: value,
+                //     required: item.required,
+                //     defaultValue: item.defaultValue,
+                //     disabled: item.disabled || false,
+                //     fullWidth: true,
+                //     floatingLabelFixed: item.floatingLabelFixed || false
+                // };
+
+                switch(type) {
                     case 'text':
                         component = (
-                            <SemiText
+                            <SemiValidation.components.TextField
                                 {...rest}
                             />
                         );
                         break;
                     case 'select':
                         component = (
-                            <SemiSelect
-                                data={data[name]}
+                            <SemiValidation.components.SelectField
+                                options={data[name]}
                                 {...rest}
                             />
                         );
                         break;
                     case 'date':
                         component = (
-                            <SemiDate
+                            <SemiValidation.components.DatePicker
                                 {...rest}
                             />
                         );

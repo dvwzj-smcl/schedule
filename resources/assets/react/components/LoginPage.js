@@ -19,20 +19,30 @@ class LoginPage extends Component {
             numericError: "Please provide a number",
             urlError: "Please provide a valid URL"
         };
-        this.submitForm = this.submitForm.bind(this);
+        this.onSubmit = this.onSubmit.bind(this);
     }
 
-    submitForm(data) {
+    onSubmit = (data) => {
+        console.log('data', data);
         this.props.actions.login(data.username, data.password).then((json)=>{
             console.log('json', json);
             if(this.props.actions.isAuthenticated()){
                 this.context.router.replace(this.props.routing.locationBeforeTransitions.query.ref || '/');
             }
         });
-    }
+    };
     
     render() {
         // console.log('render: login');
+        let formTemplate = {
+            data: {},
+            values: {username: 'sale1', password: 'asdfasdf'},
+            components: [
+                [{type: 'text', name: 'username', label: 'Username', required: true, hint: 'your username or email'}],
+                [{type: 'text', name: 'password', label: 'Password', required: true}]
+            ]
+        };
+
         return (
             <Grid className="parent">
                 <Alert open={this.props.user.error !== null} title="Login Failed" description={this.props.user.error} />
@@ -42,32 +52,7 @@ class LoginPage extends Component {
                             <AppBar
                                 title="Login"
                                 showMenuIconButton={false} />
-                            <SemiForm
-                                onValidSubmit={this.submitForm}
-                                style={{padding: '16px 24px'}}>
-                                <SemiText
-                                    name="username"
-                                    validations="isAlphanumeric"
-                                    validationError={this.errorMessages.wordsError}
-                                    required
-                                    hintText="What is your username?"
-                                    floatingLabelText="Username"
-                                    defaultValue="sale1"
-                                    underlineShow={false}
-                                    />
-                                <Divider />
-                                <SemiText
-                                    name="password"
-                                    type="password"
-                                    validationError={this.errorMessages.wordsError}
-                                    required
-                                    hintText="What is your password?"
-                                    floatingLabelText="Password"
-                                    defaultValue="asdfasdf"
-                                    underlineShow={false}
-                                    />
-                                <Divider />
-                            </SemiForm>
+                            <SemiForm onSubmit={this.onSubmit} style={{padding: '16px 24px'}} formTemplate={formTemplate} />
                         </Paper>
                     </Col>
                 </Row>
