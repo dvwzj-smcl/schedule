@@ -308,8 +308,8 @@ class SchedulePage extends Component {
         let state = this.state;
         let formTemplate = {
             data: this.state.eventModal.data,
-            // values: this.state.eventModal.values,
-            values: {first_name: 'Semi', last_name: 'colon', hn: '55123456', phone: '0871234567', contact: 'kickass.to'}, // default values
+            values: this.state.eventModal.values,
+            // values: {first_name: 'Semi', last_name: 'colon', hn: '55123456', phone: '0871234567', contact: 'kickass.to'}, // default values
             settings: {},
             validations: {
                 hn: {rule: '/^\d{6,7}$/', hint: 'Invalid HN'}

@@ -9,7 +9,10 @@ import {Grid, Row, Col} from 'react-flexbox-grid';
 class FormGenerator extends Component {
     constructor(props) {
         super(props);
-        this.setFormState(props);
+        this.state = {
+            values: props.formTemplate.values ? props.formTemplate.values : {},
+            data: props.formTemplate.data ? props.formTemplate.data : {}
+        }
     }
 
     componentWillReceiveProps(nextProps) {
@@ -17,10 +20,10 @@ class FormGenerator extends Component {
     }
 
     setFormState = (props) => {
-        this.state = {
+        this.setState({
             values: props.formTemplate.values ? props.formTemplate.values : {},
             data: props.formTemplate.data ? props.formTemplate.data : {}
-        }
+        });
     };
 
     render() {
