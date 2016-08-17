@@ -69,10 +69,9 @@ class ScheduleController extends Controller
         return BF::result(true, ['slots' => $slots], '[schedule] get slot');
     }
     
-    public function getDoctorEvents($doctor_id, $dateParam){
+    public function getDoctorEvents($doctor_id, $dateParam = null){
         // parse date
         if(empty($dateParam)) $date = Carbon::now();
-//        else $date = Carbon::createFromTimestamp($dateParam);
         else $date = Carbon::parse($dateParam);
         $date2 = clone $date;
 //        dd($date->setTime(0,0));
@@ -90,7 +89,14 @@ class ScheduleController extends Controller
 //        }
 
 
-        $query = Slot::with('category')->byDate($date)->where('sc_doctor_id', $doctor_id);
+        if(Input::has(['start', 'end'])) {
+            $start = Carbon::createFromTimestamp(Input::get('start'));
+            $end = Carbon::createFromTimestamp(Input::get('end'));
+            $query = Slot::with('category')->byDate($start, $end)->where('sc_doctor_id', $doctor_id);
+        } else {
+            $query = Slot::with('category')->byDate($date)->where('sc_doctor_id', $doctor_id);
+
+        }
 
         $slots = $query->get();
         $events = [];

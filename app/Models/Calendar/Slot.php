@@ -36,18 +36,24 @@ class Slot extends Model
         $limit = clone $startDate;
         return $query->where('start', '<', $startDate)->where('start', '>', $limit->addMonth(-1));
     }
-    public function scopeByDate($query, $queryDate){
+    public function scopeByDate($query, $startParam, $endParam = null){
         $weekCount = 6;
         
         // always start on sunday and end on saturday & no last week
         Carbon::setWeekStartsAt(Carbon::SUNDAY);
         Carbon::setWeekEndsAt(Carbon::SATURDAY);
 
-        $thisWeekSunday = Carbon::now()->startOfWeek();
-        $querySunday = $queryDate->startOfWeek()->addWeeks(-$weekCount);
-        $start = ($querySunday < $thisWeekSunday) ? $thisWeekSunday : $querySunday;
-        $end = clone $start;
-        $end->addWeeks($weekCount*2);
+        if($endParam == null) {
+            $thisWeekSunday = Carbon::now()->startOfWeek();
+            $querySunday = $startParam->startOfWeek()->addWeeks(-$weekCount);
+            $start = ($querySunday < $thisWeekSunday) ? $thisWeekSunday : $querySunday;
+            $end = clone $start;
+            $end->addWeeks($weekCount*2);
+        } else {
+            $start = $startParam;
+            $end = $endParam;
+        }
+        
         return $query->where('start', '>', $start)->where('start', '<', $end)->orderBy('start');
     }
     //public function doctor_category(){

@@ -59,22 +59,11 @@ class SchedulePage extends Component {
             this.init().then(calendar => {
                 calendar.gotoDate(nextParams.date);
             });
-            // this.loadSlotsWithEvents();
         }
-        // this.setViewState(nextProps.params);
     }
     
     componentWillMount() {
-        // this.setViewState(this.props.params);
     }
-
-    // todo: remove this and above
-    // setViewState = params => {
-    //     this.setState({view: {
-    //         doctor: params.doctor_id ? params.doctor_id : 1,
-    //         date: params.date ? new Date(params.date) : new Date()
-    //     }})
-    // };
 
     componentDidUpdate() {
     }
@@ -128,10 +117,10 @@ class SchedulePage extends Component {
 
     refreshCalendar = (doctor_id, date) => {
 
+        return;
+
         if(!doctor_id) doctor_id = this.props.params.doctor_id;
         if(!date) date = this.props.params.date;
-
-        // console.log('load****');
 
         // should we load data?
         if(this.loading) return;
@@ -156,8 +145,7 @@ class SchedulePage extends Component {
 
         // prepare and fetch data
         date = new Date(date);
-        let dateParam = this.context.helper.toDateString(date);
-        console.log('date', date);
+        let dateParam = date.getISODate();
         this.loading = true;
         this.context.ajax.call('get', `schedules/doctors/${doctor_id}/events/${dateParam}`, null).then( response => {
             this.init().then( calendar => {
@@ -266,20 +254,14 @@ class SchedulePage extends Component {
             let values = {
                 customer: {}, start: this.context.helper.toDate(date)
             };
+            console.log('data', data, values);
             this.setState({eventModal:{data, values}});
             this.refs.eventModal.open({sc_category_id, id});
         }
     };
 
-    // todo: remove this
     onCalendarViewChange = (startDate) => {
-        if(this.canChangeUrl) { // prevent change url on load
-            // console.log('startDate', startDate);
-            let date = this.context.helper.toDateString(startDate);
-            this.context.router.push(`/schedules/${this.props.params.doctor_id}/${date}`);
-        } else {
-            this.canChangeUrl = true;
-        }
+        // do nothing now
     };
 
     eventRender = (event, element) => { // trick: passing event data to background event
@@ -310,12 +292,10 @@ class SchedulePage extends Component {
         console.log('isNext', isNext);
         if(isNext) {
             let nextWeek = new Date(current.getTime() + 7 * 24 * 60 * 60 * 1000);
-            nextWeek = this.context.helper.toDateString(nextWeek);
-            this.context.router.push(`/schedules/${this.props.params.doctor_id}/${nextWeek}`);
+            this.context.router.push(`/schedules/${this.props.params.doctor_id}/${nextWeek.getISODate()}`);
         } else {
             let prevWeek = new Date(current.getTime() - 7 * 24 * 60 * 60 * 1000);
-            prevWeek = this.context.helper.toDateString(prevWeek);
-            this.context.router.push(`/schedules/${this.props.params.doctor_id}/${prevWeek}`);
+            this.context.router.push(`/schedules/${this.props.params.doctor_id}/${prevWeek.getISODate()}`);
         }
     };
 
@@ -328,7 +308,8 @@ class SchedulePage extends Component {
         let state = this.state;
         let formTemplate = {
             data: this.state.eventModal.data,
-            values: this.state.eventModal.values,
+            // values: this.state.eventModal.values,
+            values: {first_name: 'Semi', last_name: 'colon', hn: '55123456', phone: '0871234567', contact: 'kickass.to'}, // default values
             settings: {},
             validations: {
                 hn: {rule: '/^\d{6,7}$/', hint: 'Invalid HN'}
@@ -349,33 +330,77 @@ class SchedulePage extends Component {
                 [
                     {type: 'text', name: 'contact', label: 'Contact*', required: true, hint:'Facebook, Line or other social media'}
                 ]
-                // [
-                //     {defaultValue: 'ftest', type: 'text', name: 'first_name', label: 'First Name*', required: true},
-                //     {defaultValue: 'ltest', type: 'text', name: 'last_name', label: 'Last Name*', required: true}
-                // ],
-                // [
-                //     {defaultValue: '5500123', type: 'text', name: 'hn', label: 'HN', required: true, validations: ['hn'], hint:'optional. (eg. 5512345)'},
-                //     {defaultValue: '0871234567', type: 'text', name: 'phone', label: 'Phone**', required: true, hint:'phone or mobile number'}
-                // ],
-                // [
-                //     {defaultValue: 'test contact', type: 'text', name: 'contact', label: 'Phone*', required: true, hint:'Facebook, Line or other social media'}
-                // ]
             ]
         };
 
         let eventModal = (
-            <SemiModal onSubmit={this.onAddEventSubmit} ref="eventModal">
-                <FormGenerator formTemplate={formTemplate} />
-            </SemiModal>
+            <SemiModal onSubmit={this.onAddEventSubmit} ref="eventModal" formTemplate={formTemplate} />
         );
+
+        let eventPopover = (
+            <ContextMenu ref="eventContextMenu" onSelect={this.onContextMenuSelect}
+                         data={[
+                    {id:'cancel', name:'Cancel'},
+                    {id:'edit', name:'Edit'}
+                ]}
+            >
+            </ContextMenu>
+        );
+
+        // init Calendar and Fetching
+
+        let me = this;
+        let calendarSettings = {
+            header: false,
+            droppable: false,
+            editable: false,
+            selectable: false,
+            defaultDate: props.params.date, // gotoDate on first load
+            eventClick: this.eventClick,
+            eventRender: this.eventRender,
+            dayClick: this.dayClick,
+            onViewChange: this.onCalendarViewChange,
+            events: function (start, end, timezone, callback) {
+                // console.log('start, end', start, end);
+                let params = 'start='+start.unix()+'&end='+end.unix();
+                me.context.ajax.call('get', `schedules/doctors/${props.params.doctor_id}/events?${params}`).then( response => {
+                    me.init().then( calendar => {
+                        let {slots,events} = response.data;
+                        me.user = me.props.user;
+                        for(let i in slots) {
+                            let slot = slots[i];
+                            let doctor_id = slot.sc_doctor_id;
+                            let cat_id = slot.sc_category_id;
+                            slot.index = i; // array index
+                            // if(slot.is_full) slot.rendering = 'background';
+                            slot.rendering = 'background';
+                            slot.color = me.colors[doctor_id][cat_id].bgColor;
+                        }
+                        for(let i in events) {
+                            let event = events[i];
+                            event.self = (event.sale_id == me.user.id) || false;
+                            // todo: hide events
+                            event.color = event.self ? me.eventColors.self : me.eventColors.other;
+                        }
+                        // callback(events);
+                        // callback(slots);
+                        callback(slots.concat(events));
+                        // calendar.setEventSource(slots);
+                        // calendar.addEventSource(events);
+                        me.data = {slots, events};
+                        me.loading = false;
+                    });
+                }).catch( error => {} );
+            }
+        };
 
         return (
             <Panel title="Schedule">
-                {eventModal}n
+                {eventModal}
                 {eventPopover}
                 <div className="semicon">
                     <div className="calendar-header">
-                        <h2>{(new Date(this.props.params.date)).toString()}</h2>
+                        <h2>{(new Date(this.props.params.date)).toDateString()}</h2>
                         <div className="button-group right" style={{zIndex: 999999}}>
                             <FloatingActionButton mini={true} className="button" onTouchTap={this.nextWeek.bind(this, false)}>
                                 <HardwareKeyboardArrowLeft />
@@ -386,27 +411,10 @@ class SchedulePage extends Component {
                         </div>
                     </div>
                     <div>
-                        <Calendar droppable={false} editable={false} ref="calendar"
-                                  eventClick={this.eventClick}
-                                  eventRender={this.eventRender}
-                                  dayClick={this.dayClick}
-                                  selectable={false}
-                                  defaultDate={props.params.date} // gotoDate on first load
-                                  onViewChange={this.onCalendarViewChange}
-                                  header={false}
-                        />
+                        <Calendar {...calendarSettings} ref="calendar" />
                     </div>
                 </div>
             </Panel>
-        );
-        let eventPopover = (
-            <ContextMenu ref="eventContextMenu" onSelect={this.onContextMenuSelect}
-                data={[
-                    {id:'cancel', name:'Cancel'},
-                    {id:'edit', name:'Edit'}
-                ]}
-            >
-            </ContextMenu>
         );
     }
 }

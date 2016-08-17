@@ -51,8 +51,7 @@ class SearchPage extends Component {
     };
 
     onSubmit = (data) => {
-        let date = this.context.helper.toDateString(data.date);
-        this.context.router.push(`/schedules/${data.doctor_id}/${date}`);
+        this.context.router.push(`/schedules/${data.doctor_id}/${data.date.getISODate()}`);
     };
 
     render() {

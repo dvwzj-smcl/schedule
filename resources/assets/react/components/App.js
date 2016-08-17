@@ -24,13 +24,6 @@ class App extends Component {
                 }
             },
             helper: {
-                toDateString: (date) => {
-                    let month = date.getMonth()+1;
-                    if(month < 10) month = '0'+month;
-                    let day = date.getDate();
-                    if(day < 10) day = '0'+day;
-                    return date.getFullYear()+'-'+month+'-'+day;
-                },
                 toDate: (moment) => { // from Moment to Date
                     return new Date(moment.format('YYYY-MM-DD H:mm:ss'));
                 }
@@ -52,6 +45,14 @@ class App extends Component {
         );
     }
 }
+
+Date.prototype.getISODate = function() {
+    let month = this.getMonth()+1;
+    if(month < 10) month = '0'+month;
+    let day = this.getDate();
+    if(day < 10) day = '0'+day;
+    return this.getFullYear()+'-'+month+'-'+day;
+};
 
 App.propTypes = {
     children: PropTypes.element,
