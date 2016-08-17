@@ -35,6 +35,27 @@ import TextField from 'material-ui/TextField';
 //import ErrorMessage from './forms/ErrorMessage';
 
 import SemiValidation from './forms/SemiValidation';
+import Validation from 'react-validation';
+
+Object.assign(Validation.rules, {
+    semi: {
+        rule: (value, component, form) => {
+            return value&&value.match(/semi:/g);
+        },
+        hint: value => {
+            return "Accept only `semi:`";
+        }
+    },
+    semi2: {
+        rule: (value, component, form) => {
+            let re = new RegExp(/semi:/g);
+            return value&&re.test(value);
+        },
+        hint: value => {
+            return "Accept only `semi:`";
+        }
+    }
+});
 
 class RequestPage extends Component {
     constructor(props, context) {
@@ -144,6 +165,8 @@ class RequestPage extends Component {
                 <SemiValidation.components.TypeAhead hintText="Doctor Name" name="doctor_name" floatingLabelText="TypeAhead (Required)" fullWidth={true} floatingLabelFixed={true} dataSource={[{value:'test 1',text:'test 1'},{value:'test 2',text:'test 2'}]} dataSourceSearch="name" dataSourceResult="doctors" dataSourceMap={{value:"user.name", text:"user.name"}} validations={['optional']} />
                 <SemiValidation.components.ColorPicker hintText="Color" name="color" floatingLabelText="Color Picker (Optional)" fullWidth={true} floatingLabelFixed={true} validations={['optional']} />
                 <SemiValidation.components.DatePicker name="date" floatingLabelText="Date Picker (Optional)" format="YYYY-MM-DD" fullWidth={true} floatingLabelFixed={true} validations={['optional']} />
+                <SemiValidation.components.TextField hintText="Just type 'semi:'" name="semi" floatingLabelText="Semi (Required)" fullWidth={true} floatingLabelFixed={true} validations={['required', 'semi']} />
+                <SemiValidation.components.TextField hintText="Just type 'semi:'" name="semi2" floatingLabelText="Semi (Required)" fullWidth={true} floatingLabelFixed={true} validations={['required', 'semi2']} />
             </div>
         );
 
