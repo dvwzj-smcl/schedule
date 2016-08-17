@@ -40,7 +40,9 @@ import Validation from 'react-validation';
 Object.assign(Validation.rules, {
     semi: {
         rule: (value, component, form) => {
-            return value&&value.match(/semi:/g);
+            let optional = component.props.validations.indexOf("optional")>-1;
+            let check = value&&value&&value.match(/semi:/g);
+            return optional ? (value ? check : true) : check;
         },
         hint: value => {
             return "Accept only `semi:`";
@@ -48,8 +50,10 @@ Object.assign(Validation.rules, {
     },
     semi2: {
         rule: (value, component, form) => {
+            let optional = component.props.validations.indexOf("optional")>-1;
             let re = new RegExp(/semi:/g);
-            return value&&re.test(value);
+            let check = value&&re.test(value);
+            return optional ? (value ? check : true) : check;
         },
         hint: value => {
             return "Accept only `semi:`";
@@ -146,7 +150,7 @@ class RequestPage extends Component {
                         <SemiValidation.components.DatePicker name="date" floatingLabelText="Date Picker (Optional)" format="YYYY-MM-DD" fullWidth={true} floatingLabelFixed={true} validations={['optional']} />
                     </Col>
                     <Col xs md={6}>
-                        <SemiValidation.components.TextField hintText="Username" name="username" floatingLabelText="Username (Required)" fullWidth={true} floatingLabelFixed={true} validations={['optional']} />
+                        <SemiValidation.components.TextField hintText="Username" name="username" floatingLabelText="Username (Optional)" fullWidth={true} floatingLabelFixed={true} validations={['optional']} />
                     </Col>
                 </Row>
                 <Row>
@@ -158,16 +162,16 @@ class RequestPage extends Component {
                     </Col>
                 </Row>
                 <SemiValidation.components.TextField hintText="Email" name="email" floatingLabelText="Email (Optional)" fullWidth={true} floatingLabelFixed={true} validations={['optional', 'email']} />
-                <SemiValidation.components.SelectField value={1} hintText="Test 1" name="test" floatingLabelText="Single Selection (Required)" fullWidth={true} floatingLabelFixed={true} validations={['optional']} options={[{id:1, name:'test 1'}, {id:2, name:'test 2'}]} />
-                <SemiValidation.components.SelectField hintText="Test 2" multiple name="test2" floatingLabelText="Multiple Selection (Required)" fullWidth={true} floatingLabelFixed={true} validations={['optional']} options={[{id:3, name:'test 3'}, {id:4, name:'test 4'}]} />
+                <SemiValidation.components.SelectField value={1} hintText="Test 1" name="test" floatingLabelText="Single Selection (Optional)" fullWidth={true} floatingLabelFixed={true} validations={['optional']} options={[{id:1, name:'test 1'}, {id:2, name:'test 2'}]} />
+                <SemiValidation.components.SelectField hintText="Test 2" multiple name="test2" floatingLabelText="Multiple Selection (Optional)" fullWidth={true} floatingLabelFixed={true} validations={['optional']} options={[{id:3, name:'test 3'}, {id:4, name:'test 4'}]} />
                 <SemiValidation.components.MultipleSelectField hintText="Test 3" name="test3" floatingLabelText="Multiple Selection (Optional)" fullWidth={true} floatingLabelFixed={true} validations={['optional']} options={[{id:5, name:'test 5'}, {id:6, name:'test 6'}]} />
-                <SemiValidation.components.AutoComplete hintText="Doctor" name="doctor_id" floatingLabelText="Auto Complete (Required)" fullWidth={true} floatingLabelFixed={true} dataSource={[{value:1,text:'test 1'},{value:2,text:'test 2'}]} dataSourceSearch="name" dataSourceResult="doctors" dataSourceMap={{value:"id", text:"user.name"}} validations={['optional']} />
-                <SemiValidation.components.AutoComplete typeahead hintText="Doctor Name" name="doctor_name" floatingLabelText="TypeAhead (Required)" fullWidth={true} floatingLabelFixed={true} dataSource={[{value:'test 1',text:'test 1'},{value:'test 2',text:'test 2'}]} dataSourceSearch="name" dataSourceResult="doctors" dataSourceMap={{value:"user.name", text:"user.name"}} validations={['optional']} />
-                <SemiValidation.components.TypeAhead hintText="Doctor Name 2" name="doctor_name2" floatingLabelText="TypeAhead (Required)" fullWidth={true} floatingLabelFixed={true} dataSource={[{value:'test 1',text:'test 1'},{value:'test 2',text:'test 2'}]} dataSourceSearch="name" dataSourceResult="doctors" dataSourceMap={{value:"user.name", text:"user.name"}} validations={['optional']} />
+                <SemiValidation.components.AutoComplete hintText="Doctor" name="doctor_id" floatingLabelText="Auto Complete (Optional)" fullWidth={true} floatingLabelFixed={true} dataSource={[{value:1,text:'test 1'},{value:2,text:'test 2'}]} dataSourceSearch="name" dataSourceResult="doctors" dataSourceMap={{value:"id", text:"user.name"}} validations={['optional']} />
+                <SemiValidation.components.AutoComplete typeahead hintText="Doctor Name" name="doctor_name" floatingLabelText="TypeAhead (Optional)" fullWidth={true} floatingLabelFixed={true} dataSource={[{value:'test 1',text:'test 1'},{value:'test 2',text:'test 2'}]} dataSourceSearch="name" dataSourceResult="doctors" dataSourceMap={{value:"user.name", text:"user.name"}} validations={['optional']} />
+                <SemiValidation.components.TypeAhead hintText="Doctor Name 2" name="doctor_name2" floatingLabelText="TypeAhead (Optional)" fullWidth={true} floatingLabelFixed={true} dataSource={[{value:'test 1',text:'test 1'},{value:'test 2',text:'test 2'}]} dataSourceSearch="name" dataSourceResult="doctors" dataSourceMap={{value:"user.name", text:"user.name"}} validations={['optional']} />
                 <SemiValidation.components.ColorPicker hintText="Color" name="color" floatingLabelText="Color Picker (Optional)" fullWidth={true} floatingLabelFixed={true} validations={['optional']} />
                 <SemiValidation.components.DatePicker name="date" floatingLabelText="Date Picker (Optional)" format="YYYY-MM-DD" fullWidth={true} floatingLabelFixed={true} validations={['optional']} />
                 <SemiValidation.components.TextField value="semi:" hintText="Just type 'semi:'" name="semi" floatingLabelText="Semi (Required)" fullWidth={true} floatingLabelFixed={true} validations={['required', 'semi']} />
-                <SemiValidation.components.TextField hintText="Just type 'semi:'" name="semi2" floatingLabelText="Semi (Required)" fullWidth={true} floatingLabelFixed={true} validations={['required', 'semi2']} />
+                <SemiValidation.components.TextField hintText="Just type 'semi:'" name="semi2" floatingLabelText="Semi (Optional)" fullWidth={true} floatingLabelFixed={true} validations={['optional', 'semi2']} />
                 <SemiValidation.components.Radio name="test4" value={5} floatingLabelText="Radio Selection (Optional)" fullWidth={true} floatingLabelFixed={true} validations={['optional']} options={[{id:5, name:'test 5'}, {id:6, name:'test 6'}]} />
                 <SemiValidation.components.Radio multiple name="test5" value={[7]} floatingLabelText="Checkbox Selection (Optional)" fullWidth={true} floatingLabelFixed={true} validations={['optional']} options={[{id:7, name:'test 7'}, {id:8, name:'test 8'}]} />
                 <SemiValidation.components.Checkbox name="test6" floatingLabelText="Checkbox Selection (Optional)" fullWidth={true} floatingLabelFixed={true} validations={['optional']} options={[{id:9, name:'test 9'}, {id:10, name:'test 10'}]} />
