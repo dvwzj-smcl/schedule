@@ -128,6 +128,14 @@ class RequestPage extends Component {
                         <SemiValidation.components.TextField hintText="Username" name="username" floatingLabelText="Username (Required)" fullWidth={true} floatingLabelFixed={true} validations={['optional']} />
                     </Col>
                 </Row>
+                <Row>
+                    <Col xs md={6}>
+                        <SemiValidation.components.TextField hintText="Password"  name="password" floatingLabelText="Passsword (Required)" fullWidth={true} floatingLabelFixed={true} validations={['required', 'password']} />
+                    </Col>
+                    <Col xs md={6}>
+                        <SemiValidation.components.TextField hintText="Password Confirm" name="passwordConfirm" floatingLabelText="Passsword (Required)" fullWidth={true} floatingLabelFixed={true} validations={['required', 'password']} />
+                    </Col>
+                </Row>
                 <SemiValidation.components.TextField hintText="Email" name="email" floatingLabelText="Email (Optional)" fullWidth={true} floatingLabelFixed={true} validations={['optional', 'email']} />
                 <SemiValidation.components.SelectField value={1} hintText="Test 1" name="test" floatingLabelText="Single Selection (Required)" fullWidth={true} floatingLabelFixed={true} validations={['optional']} options={[{id:1, name:'test 1'}, {id:2, name:'test 2'}]} />
                 <SemiValidation.components.SelectField hintText="Test 2" multiple name="test2" floatingLabelText="Multiple Selection (Required)" fullWidth={true} floatingLabelFixed={true} validations={['optional']} options={[{id:3, name:'test 3'}, {id:4, name:'test 4'}]} />

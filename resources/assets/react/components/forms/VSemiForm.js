@@ -232,6 +232,8 @@ class SemiForm extends Component {
             <SemiValidation.components.Form
                 className={`semiForm ${buttonRight} ${styleClass}`}
                 onSubmit={this.onSubmit}
+                onValid={this.enableButton}
+                onInvalid={this.disableButton}
                 ref="form"
                 {...rest}
             >
