@@ -151,10 +151,10 @@ class RequestPage extends Component {
                 </Row>
                 <Row>
                     <Col xs md={6}>
-                        <SemiValidation.components.TextField hintText="Password"  name="password" floatingLabelText="Passsword (Required)" fullWidth={true} floatingLabelFixed={true} validations={['required', 'password']} />
+                        <SemiValidation.components.TextField hintText="Password"  name="password" type="password" floatingLabelText="Passsword (Required)" fullWidth={true} floatingLabelFixed={true} validations={['required', 'password']} />
                     </Col>
                     <Col xs md={6}>
-                        <SemiValidation.components.TextField hintText="Password Confirm" name="passwordConfirm" floatingLabelText="Passsword (Required)" fullWidth={true} floatingLabelFixed={true} validations={['required', 'password']} />
+                        <SemiValidation.components.TextField hintText="Password Confirm" name="passwordConfirm" type="password" floatingLabelText="Passsword (Required)" fullWidth={true} floatingLabelFixed={true} validations={['required', 'password']} />
                     </Col>
                 </Row>
                 <SemiValidation.components.TextField hintText="Email" name="email" floatingLabelText="Email (Optional)" fullWidth={true} floatingLabelFixed={true} validations={['optional', 'email']} />
@@ -166,8 +166,11 @@ class RequestPage extends Component {
                 <SemiValidation.components.TypeAhead hintText="Doctor Name 2" name="doctor_name2" floatingLabelText="TypeAhead (Required)" fullWidth={true} floatingLabelFixed={true} dataSource={[{value:'test 1',text:'test 1'},{value:'test 2',text:'test 2'}]} dataSourceSearch="name" dataSourceResult="doctors" dataSourceMap={{value:"user.name", text:"user.name"}} validations={['optional']} />
                 <SemiValidation.components.ColorPicker hintText="Color" name="color" floatingLabelText="Color Picker (Optional)" fullWidth={true} floatingLabelFixed={true} validations={['optional']} />
                 <SemiValidation.components.DatePicker name="date" floatingLabelText="Date Picker (Optional)" format="YYYY-MM-DD" fullWidth={true} floatingLabelFixed={true} validations={['optional']} />
-                <SemiValidation.components.TextField hintText="Just type 'semi:'" name="semi" floatingLabelText="Semi (Required)" fullWidth={true} floatingLabelFixed={true} validations={['required', 'semi']} />
+                <SemiValidation.components.TextField value="semi:" hintText="Just type 'semi:'" name="semi" floatingLabelText="Semi (Required)" fullWidth={true} floatingLabelFixed={true} validations={['required', 'semi']} />
                 <SemiValidation.components.TextField hintText="Just type 'semi:'" name="semi2" floatingLabelText="Semi (Required)" fullWidth={true} floatingLabelFixed={true} validations={['required', 'semi2']} />
+                <SemiValidation.components.Radio name="test4" value={5} floatingLabelText="Radio Selection (Optional)" fullWidth={true} floatingLabelFixed={true} validations={['optional']} options={[{id:5, name:'test 5'}, {id:6, name:'test 6'}]} />
+                <SemiValidation.components.Radio multiple name="test5" value={[7]} floatingLabelText="Checkbox Selection (Optional)" fullWidth={true} floatingLabelFixed={true} validations={['optional']} options={[{id:7, name:'test 7'}, {id:8, name:'test 8'}]} />
+                <SemiValidation.components.Checkbox name="test6" floatingLabelText="Checkbox Selection (Optional)" fullWidth={true} floatingLabelFixed={true} validations={['optional']} options={[{id:9, name:'test 9'}, {id:10, name:'test 10'}]} />
             </div>
         );
 

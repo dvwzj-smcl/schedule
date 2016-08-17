@@ -17,9 +17,11 @@ import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import Checkbox from 'material-ui/Checkbox';
-import {ListItem} from 'material-ui/List';
+import {List, ListItem} from 'material-ui/List';
+import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import AutoComplete from 'material-ui/AutoComplete';
 import DatePicker from 'material-ui/DatePicker';
+import Subheader from 'material-ui/Subheader';
 import moment from 'moment';
 
 Object.assign(Validation.rules, {
@@ -53,7 +55,7 @@ Object.assign(Validation.rules, {
     email: {
         rule: (value, component, form) => {
             let optional = component.props.validations.indexOf("optional")>-1;
-            let check = validator.isEmail(value);
+            let check = value&&validator.isEmail(value);
             return optional ? (value ? check : true) : check;
         },
         hint: value => {
@@ -258,7 +260,7 @@ export class ValidationTextField extends Validation.components.Input {
         this.props.value && this.props._update(this, event, true, true, this.props.value);
     }
     handleClear(){
-        this.props._update(this, event, true, true, null);
+        this.props._update(this, event, true, true, '');
         this.props.onChange && this.props.onChange(null);
         this.refs.node.input.value = null;
     }
@@ -275,6 +277,7 @@ export class ValidationTextField extends Validation.components.Input {
             ...rest} = this.props;
         let input = this.props.states[this.props.name];
         let width = (this.props.fullWidth ? `calc(100% - 120px)` : `auto`);
+        let value = this.props.states.hasOwnProperty(this.props.name) ? this.props.states[this.props.name].value : (this.props.value ? this.props.value : (this.props.multiple ? [] : ""));
         return (
             <div className={this.props.containerClassName || null}>
                 <TextField
@@ -285,6 +288,7 @@ export class ValidationTextField extends Validation.components.Input {
                     errorText={handleError(this.props)}
                     className={this.props.className || null}
                     defaultValue={this.props.defaultValue}
+                    value={value}
                     onChange={this.handleChange.bind(this)}
                     onBlur={this.handleBlur.bind(this)} />
                 <IconButton onTouchTap={this.handleClear.bind(this)} style={{width: 50, display: this.props.validations.indexOf('optional')==-1||this.props.value ? 'none' : (input&&input.value ? 'inline-block': 'none')}}>
@@ -384,6 +388,83 @@ export class ValidationMultipleSelectField extends ValidationSelectField {
     render() {
         return (
             <ValidationSelectField {...this.props} multiple />
+        )
+    }
+}
+export class ValidationRadio extends ValidationSelectField {
+    handleClear(){
+        let value = this.props.value ? this.props.value : null;
+        this.props._update(this, event, true, true, value);
+        this.props.onChange && this.props.onChange(value);
+    }
+    handleChange(event, value){
+        this.props._update(this, event, true, true, value);
+        event.persist();
+        this.props.onChange && this.props.onChange(event, index, value);
+    }
+    handleCheck(value, event, isInputChecked){
+        let input = this.props.states[this.props.name];
+        let values = (input&&input.value||[]).slice(0, (input&&input.value||[]).length);
+        let index = values.indexOf(value);
+        if(index==-1){
+            values.push(value);
+        }else{
+            values.splice(index,1);
+        }
+        this.props._update(this, event, true, true, values);
+        event.persist();
+        this.props.onChange && this.props.onChange(event, index, values);
+
+    }
+    render(){
+        let {
+            _register,
+            _update,
+            _validate,
+            validations,
+            states,
+            errors,
+            errorClassName,
+            containerClassName,
+            hintText,
+            options,
+            ...rest} = this.props;
+        let input = this.props.states[this.props.name];
+        let value = this.props.states.hasOwnProperty(this.props.name) ? this.props.states[this.props.name].value : (this.props.value ? this.props.value : (this.props.multiple ? [] : ""));
+
+        // fix: accept both array and object as options
+        console.log('options', options);
+        let items = options? [] : null;
+        if(typeof options === 'object') { // object or array only
+            for(let i in options) {
+                let id = options[i].id ? parseInt(options[i].id) : parseInt(i);
+                items.push(this.props.multiple ? <Checkbox key={id} label={options[i].name} defaultChecked={(value||[]).indexOf(id)>-1} style={{marginBottom: 16}} onCheck={this.handleCheck.bind(this, id)} /> : <RadioButton key={id} label={options[i].name} value={id.toString()} style={{marginBottom: 16}} />);
+            }
+        }
+        let width = (this.props.fullWidth ? `calc(100% - 120px)` : `auto`);
+        return (
+            <div className={this.props.containerClassName || null}>
+                <TextField ref="text" hintText={this.props.hintText} floatingLabelText={this.props.floatingLabelText} floatingLabelFixed={this.props.floatingLabelFixed} underlineDisabledStyle={{borderBottom: 'none'}} disabled />
+                {this.props.multiple ?
+                    <div>
+                        {items}
+                    </div>
+                    :
+                    <RadioButtonGroup {...rest} style={{width: width}} defaultSelected={value.toString()} onChange={this.handleChange.bind(this)} >
+                        {items}
+                    </RadioButtonGroup>
+                }
+                <IconButton onTouchTap={this.handleClear.bind(this)} style={{width: 50, display: this.props.validations.indexOf('optional')==-1||this.props.value ? 'none' : ( input&&input.value ? 'inline-block': 'none')}}>
+                    <ClearIcon/>
+                </IconButton>
+            </div>
+        );
+    }
+}
+export class ValidationCheckbox extends ValidationRadio {
+    render() {
+        return (
+            <ValidationRadio {...this.props} multiple />
         )
     }
 }
@@ -656,7 +737,9 @@ const components = Object.assign({}, Validation.components, {
     AutoComplete: ValidationAutoComplete,
     TypeAhead: ValidationTypeAhead,
     ColorPicker: ValidationColorPicker,
-    DatePicker: ValidationDatePicker
+    DatePicker: ValidationDatePicker,
+    Radio: ValidationRadio,
+    Checkbox: ValidationCheckbox
 });
 
 const SemiValidation = Object.assign({}, Validation, {components});
