@@ -32,6 +32,10 @@ class Calendar extends Component {
         calendar.fullCalendar('addEventSource', source);
     }
 
+    refresh(source) {
+        $('#calendar').fullCalendar('refetchEventSources', source);
+    }
+
     onViewChange = () => {
 
     };

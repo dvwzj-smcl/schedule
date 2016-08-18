@@ -44,7 +44,7 @@ class Event extends Model
 
     public function cancel()
     {
-        return $this->update(['status'=>'cancel']);
+        return $this->update(['status'=>'canceled']);
     }
 
 

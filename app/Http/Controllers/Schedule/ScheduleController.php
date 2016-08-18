@@ -119,6 +119,7 @@ class ScheduleController extends Controller
                     'slot_id' => $event->sc_slot_id,
                     'category_id' => $slot->category->id,
                     'sub_category_id' => $event->sc_sub_category_id,
+                    'status' => $event->status,
                     'title' => $nameLookup[$slot->category->id][$event->sc_sub_category_id],
                     'customer' => $customer
                 ];

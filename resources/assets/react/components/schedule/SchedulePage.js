@@ -9,9 +9,7 @@ import Loading from '../widgets/Loading';
 import {List, ListItem} from 'material-ui/List';
 import {ContentInbox, ActionGrade, ContentSend, ContentDrafts, ActionInfo, ActionCancel} from 'material-ui/svg-icons';
 import {ActionHome, ActionEvent, ActionEventSeat, ContentSave} from 'material-ui/svg-icons';
-
 // import Paper from 'material-ui/Paper';
-// import Divider from 'material-ui/Divider';
 // import FlatButton from 'material-ui/FlatButton';
 
 import * as scheduleActions from '../../actions/scheduleActions';
@@ -41,11 +39,7 @@ class SchedulePage extends Component {
                 customer:{}
             }
         };
-        // variables
-        this.eventColors = {
-            other: '#B1B1B1',
-            self: '#7AE7BF'
-        };
+        this.eventColors = context.eventColors;
         this.loaded = {};
     }
 
@@ -73,7 +67,7 @@ class SchedulePage extends Component {
             this.props.actions.init();
         }
         this.init().then( calendar => {
-            // Brighter Background Color
+            // Lookup for Brighter Background Colors
             let doctors = this.props.schedule.data.doctors;
             let colors = {};
             for(let doctor_id in doctors) {
@@ -88,8 +82,6 @@ class SchedulePage extends Component {
                 }
             }
             this.colors = colors;
-            this.refreshCalendar();
-            this.loading = false;
         });
     }
 
@@ -114,65 +106,11 @@ class SchedulePage extends Component {
     initialized = () => {
         return this.props.schedule && this.props.schedule.init;
     };
-
-    refreshCalendar = (doctor_id, date) => {
-
-        return;
-
-        if(!doctor_id) doctor_id = this.props.params.doctor_id;
-        if(!date) date = this.props.params.date;
-
-        // should we load data?
-        if(this.loading) return;
-        if(doctor_id == this.props.params.doctor_id) {
-            if(this.data) {
-                let slots = this.data.slots;
-                let currentDate = new Date(date);
-                currentDate.setHours(0,0,0,0);
-                currentDate = currentDate.getTime();
-                for(let i in slots) {
-                    let slot = slots[i];
-                    let slotDate = new Date(slot.start);
-                    slotDate.setHours(0,0,0,0);
-                    slotDate = slotDate.getTime();
-                    if(slotDate == currentDate) {
-                        console.log('*slot', new Date(slotDate), new Date(currentDate));
-                        return;
-                    }
-                }
-            }
-        }
-
-        // prepare and fetch data
-        date = new Date(date);
-        let dateParam = date.getISODate();
-        this.loading = true;
-        this.context.ajax.call('get', `schedules/doctors/${doctor_id}/events/${dateParam}`, null).then( response => {
-            this.init().then( calendar => {
-                let {slots,events} = response.data;
-                this.user = this.props.user;
-                for(let i in slots) {
-                    let slot = slots[i];
-                    let doctor_id = slot.sc_doctor_id;
-                    let cat_id = slot.sc_category_id;
-                    slot.index = i; // array index
-                    // if(slot.is_full) slot.rendering = 'background';
-                    slot.rendering = 'background';
-                    slot.color = this.colors[doctor_id][cat_id].bgColor;
-                }
-                for(let i in events) {
-                    let event = events[i];
-                    event.self = (event.sale_id == this.user.id) || false;
-                    // todo: hide events
-                    event.color = event.self ? this.eventColors.self : this.eventColors.other;
-                }
-                calendar.setEventSource(slots);
-                calendar.addEventSource(events);
-
-                this.data = {slots, events};
-                this.loading = false;
-            });
-        }).catch( error => {} );
+    
+    refreshCalendar = () => {
+        this.init().then(calendar=> { // refresh
+            calendar.refresh(this.fetchEventSource);
+        });
     };
 
     onContextMenuSelect = (key) => {
@@ -299,6 +237,41 @@ class SchedulePage extends Component {
         }
     };
 
+    fetchEventSource = (start, end, timezone, callback) => {
+        let props = this.props;
+        let me = this;
+        let params = 'start='+start.unix()+'&end='+end.unix();
+        me.loading = true;
+        me.context.ajax.call('get', `schedules/doctors/${props.params.doctor_id}/events?${params}`).then( response => {
+            me.init().then( calendar => {
+                let {slots,events} = response.data;
+                me.user = me.props.user;
+                for(let i in slots) {
+                    let slot = slots[i];
+                    let doctor_id = slot.sc_doctor_id;
+                    let cat_id = slot.sc_category_id;
+                    slot.index = i; // array index
+                    // if(slot.is_full) slot.rendering = 'background';
+                    slot.rendering = 'background';
+                    slot.color = me.colors[doctor_id][cat_id].bgColor;
+                }
+                for(let i in events) {
+                    let event = events[i];
+                    event.self = (event.sale_id == me.user.id) || false;
+                    // todo: hide events
+                    event.color = event.self ? me.eventColors[event.status] : me.eventColors.other;
+                }
+                // callback(events);
+                // callback(slots);
+                callback(slots.concat(events));
+                // calendar.setEventSource(slots);
+                // calendar.addEventSource(events);
+                me.data = {slots, events};
+                me.loading = false;
+            });
+        }).catch( error => {} );
+    };
+
     render() {
         // console.log('render: sc page', this.state);
         if(!this.initialized()) return <Loading />;
@@ -341,6 +314,8 @@ class SchedulePage extends Component {
             <ContextMenu ref="eventContextMenu" onSelect={this.onContextMenuSelect}
                          data={[
                     {id:'cancel', name:'Cancel'},
+                    {id:'reject', name:'Reject'},
+                    {id:'accept', name:'Accept'},
                     {id:'edit', name:'Edit'}
                 ]}
             >
@@ -360,38 +335,7 @@ class SchedulePage extends Component {
             eventRender: this.eventRender,
             dayClick: this.dayClick,
             onViewChange: this.onCalendarViewChange,
-            events: function (start, end, timezone, callback) {
-                // console.log('start, end', start, end);
-                let params = 'start='+start.unix()+'&end='+end.unix();
-                me.context.ajax.call('get', `schedules/doctors/${props.params.doctor_id}/events?${params}`).then( response => {
-                    me.init().then( calendar => {
-                        let {slots,events} = response.data;
-                        me.user = me.props.user;
-                        for(let i in slots) {
-                            let slot = slots[i];
-                            let doctor_id = slot.sc_doctor_id;
-                            let cat_id = slot.sc_category_id;
-                            slot.index = i; // array index
-                            // if(slot.is_full) slot.rendering = 'background';
-                            slot.rendering = 'background';
-                            slot.color = me.colors[doctor_id][cat_id].bgColor;
-                        }
-                        for(let i in events) {
-                            let event = events[i];
-                            event.self = (event.sale_id == me.user.id) || false;
-                            // todo: hide events
-                            event.color = event.self ? me.eventColors.self : me.eventColors.other;
-                        }
-                        // callback(events);
-                        // callback(slots);
-                        callback(slots.concat(events));
-                        // calendar.setEventSource(slots);
-                        // calendar.addEventSource(events);
-                        me.data = {slots, events};
-                        me.loading = false;
-                    });
-                }).catch( error => {} );
-            }
+            events: this.fetchEventSource
         };
 
         return (
@@ -424,6 +368,7 @@ SchedulePage.contextTypes = {
     router: PropTypes.object,
     helper: PropTypes.object,
     ajax: PropTypes.object,
+    eventColors: PropTypes.object,
     dialog: PropTypes.object
 };
 

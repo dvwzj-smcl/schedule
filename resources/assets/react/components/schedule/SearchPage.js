@@ -9,9 +9,9 @@ import Loading from '../widgets/Loading';
 import {List, ListItem} from 'material-ui/List';
 import {ContentInbox, ActionGrade, ContentSend, ContentDrafts, ActionInfo, ActionCancel} from 'material-ui/svg-icons';
 import {ActionHome, ActionEvent, ActionEventSeat, ContentSave} from 'material-ui/svg-icons';
+import Divider from 'material-ui/Divider';
 
 // import Paper from 'material-ui/Paper';
-// import Divider from 'material-ui/Divider';
 // import FlatButton from 'material-ui/FlatButton';
 
 import * as scheduleActions from '../../actions/scheduleActions';
@@ -24,6 +24,22 @@ class SearchPage extends Component {
     constructor(props, context) {
         super(props, context);
         this.setValuesState(props.params);
+        // variables
+        this.eventColors = {
+            other: '#B1B1B1',
+            approved: '#7AE7BF',
+            rejected: '#C22326',
+            canceled: '#FDB632',
+            pending: '#00AAA0'
+        };
+    }
+
+    parseShowParam = (show) => {
+        // todo:
+    };
+
+    getChildContext() {
+        return {eventColors: this.eventColors};
     }
 
     componentWillReceiveProps(nextProps) {
@@ -75,6 +91,8 @@ class SearchPage extends Component {
             ]
         };
 
+        let colors = this.eventColors;
+
         return (
             <div>
                 <PageHeading title="Schedule" description={formTemplate.values.date.toString()} />
@@ -82,16 +100,19 @@ class SearchPage extends Component {
                     <Row>
                         <Col md={3}>
                             <Panel title="Goto" type="secondary">
-                                <div style={{padding: 12}}>
+                                <div className="semicon">
                                     <SemiForm submitLabel="GO" buttonRight compact onSubmit={this.onSubmit} formTemplate={formTemplate}>
                                     </SemiForm>
                                 </div>
                             </Panel>
-                            <Panel title="Goto" type="secondary">
-                                <div style={{padding: 12}}>
-                                    <Checkbox
-                                        onCheck={this.onCheck}
-                                    />
+                            <Panel title="Show" type="secondary">
+                                <div className="semicon">
+                                    <Checkbox label="Other" onCheck={this.onCheck} checked={true} iconStyle={{fill: colors['other']}} labelStyle={{color: colors['other']}} />
+                                    <Divider style={{marginBottom: 8, marginTop: 8}} />
+                                    <Checkbox label="Approved" onCheck={this.onCheck} checked={true} iconStyle={{fill: colors['approved']}} labelStyle={{color: colors['approved']}} />
+                                    <Checkbox label="Pending" onCheck={this.onCheck} checked={true} iconStyle={{fill: colors['pending']}} labelStyle={{color: colors['pending']}} />
+                                    <Checkbox label="Rejected" onCheck={this.onCheck} checked={true} iconStyle={{fill: colors['rejected']}} labelStyle={{color: colors['rejected']}} />
+                                    <Checkbox label="Canceled" onCheck={this.onCheck} checked={true} iconStyle={{fill: colors['canceled']}} labelStyle={{color: colors['canceled']}} />
                                 </div>
                             </Panel>
                         </Col>
@@ -111,6 +132,9 @@ SearchPage.contextTypes = {
     ajax: PropTypes.object,
     helper: PropTypes.object,
     dialog: PropTypes.object
+};
+SearchPage.childContextTypes = {
+    eventColors: PropTypes.object
 };
 
 const mapStateToProps = ({user, schedule}) => ({user, schedule});

@@ -41,9 +41,11 @@ class EventController extends Controller
             $event['end'] = $end;
 
             // check overlap time
-            if(Event::where('sc_slot_id', $slot->id)->where('start', '<', $end)->where('end', '>', $end)->count() > 0) {
+            if(Event::where('sc_slot_id', $slot->id)->where('start', '<', $end)->where('end', '>', $start)->count() > 0){
+                // todo: pending status
                 throw new \Exception('Time overlap with another event');
             };
+            $event['status'] = 'approved';
 
             // create customer
             $customer = $request->get('customer');
