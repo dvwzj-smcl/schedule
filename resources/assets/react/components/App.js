@@ -22,19 +22,6 @@ class App extends Component {
                 getAll: (urls) => {
                     return getAll(urls, this.props.user.access_token);
                 }
-            },
-            helper: {
-                toDate: (moment) => { // from Moment to Date
-                    return new Date(moment.format('YYYY-MM-DD H:mm:ss'));
-                },
-                isParamChanged: (params, nextParams) => { // from Moment to Date
-                    if(params.length !== nextParams) return true;
-                    console.log('params, nextParams', params, nextParams);
-                    for(let i in nextParams) {
-                        if(params[i] !== nextParams[i]) return true;
-                    }
-                    return false;
-                }
             }
         }
     }
@@ -70,7 +57,6 @@ App.propTypes = {
 };
 App.childContextTypes = {
     ajax: PropTypes.object,
-    helper: PropTypes.object
 };
 
 const mapStateToProps = ({user}) => ({user});

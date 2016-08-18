@@ -23,9 +23,9 @@ const menus = [
         permissions : ['organize-schedules']
     },
     {
-        text: "Manage Slots",
+        text: "Doctor's Slots",
         icon: <ActionDashboard />,
-        to: "/organizer",
+        to: "/slots",
         permissions : ['organize-schedules']
     },
     {

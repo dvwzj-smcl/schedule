@@ -30,6 +30,8 @@ import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import {HardwareKeyboardArrowRight, HardwareKeyboardArrowLeft} from 'material-ui/svg-icons';
 
+import helper from '../../libs/helper';
+
 class SchedulePage extends Component {
     constructor(props, context) {
         super(props, context);
@@ -46,7 +48,7 @@ class SchedulePage extends Component {
     componentWillReceiveProps(nextProps) {
         let params = this.props.params;
         let nextParams = nextProps.params;
-        if(this.context.helper.isParamChanged(params, nextProps.params)) {
+        if(helper.isParamChanged(params, nextProps.params)) {
             this.refreshCalendar();
 
             // todo: goto when click GO only
@@ -176,13 +178,14 @@ class SchedulePage extends Component {
 
     eventClick = (calEvent, jsEvent) => {
         // console.log('calEvent.sale_id', calEvent, jsEvent);
+        console.log('calEvent.status', calEvent.status);
         if(!calEvent.self) return;
         this.calEvent = calEvent; // pass value without using state
         this.refs.eventContextMenu.open(jsEvent.target);
     };
 
     dayClick = (date, jsEvent) => {
-        console.log('date', this.context.helper.toDate(date));
+        console.log('date', helper.toDate(date));
         if (jsEvent.target.classList.contains('fc-bgevent')) {
             let slot = $(jsEvent.target).data();
             let {id, sc_category_id} = slot;
@@ -191,7 +194,7 @@ class SchedulePage extends Component {
                 sub_category_id: this.doctors[this.props.params.doctor_id].categories[sc_category_id].sub_categories
             };
             let values = {
-                customer: {}, start: this.context.helper.toDate(date)
+                customer: {}, start: helper.toDate(date)
             };
             console.log('data', data, values);
             this.setState({eventModal:{data, values}});
@@ -256,21 +259,37 @@ class SchedulePage extends Component {
                     slot.rendering = 'background';
                     slot.color = me.colors[doctor_id][cat_id].bgColor;
                 }
-                for(let i in events) {
-                    let event = events[i];
-                    event.self = (event.sale_id == me.user.id) || false;
-                    // hide events
-                    if(this.context.hides[event.status]) {
-                        // todo: hide class name
-                        console.log('his.context.hides[event.status', this.context.hides[event.status]);
-                        event = undefined;
-                        continue;
-                    }
-                    // console.log('this.context.hides', this.context.hides);
+                // for(let event of events) {
+                //     event.self = (event.sale_id == me.user.id) || false;
+                //     let remove = false;
+                //     if(event.self) {
+                //         if(this.context.hides[event.status]) remove = true;
+                //     } else {
+                //         if(this.context.hides['other']) remove = true;
+                //     }
+                //
+                //     if(remove) {
+                //         event = null;
+                //         continue;
+                //     }
+                //     console.log('***', event.self, event.status);
+                //     // colors
+                //     event.color = event.self ? me.eventColors[event.status] : me.eventColors.other;
+                //     console.log('event.color', event.color);
+                // }
 
+                events = events.filter(event=> {
+                    event.self = (event.sale_id == me.user.id) || false;
+                    if(event.self) {
+                        if(this.context.hides[event.status]) return false;
+                    } else {
+                        if(this.context.hides['other']) return false;
+                    }
                     // colors
                     event.color = event.self ? me.eventColors[event.status] : me.eventColors.other;
-                }
+                    return true;
+                });
+
                 console.log('events', events);
                 callback(slots.concat(events));
                 me.data = {slots, events};
@@ -373,7 +392,6 @@ class SchedulePage extends Component {
 SchedulePage.propTypes = {};
 SchedulePage.contextTypes = {
     router: PropTypes.object,
-    helper: PropTypes.object,
     ajax: PropTypes.object,
     hides: PropTypes.object,
     eventColors: PropTypes.object,

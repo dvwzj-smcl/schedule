@@ -4,18 +4,24 @@ import { routerActions } from 'react-router-redux';
 import { UserAuthWrapper } from 'redux-auth-wrapper';
 
 import App from '../components/App';
+import LoginPage from '../components/LoginPage';
+import NotFoundPage from '../components/NotFoundPage';
+
 import HomePage from '../components/HomePage';
 import CalendarPage from '../components/CalendarPage';
+
 import OrganizerPage from '../components/OrganizerPage';
 import RequestPage from '../components/RequestPage';
+
 import SchedulePage from '../components/schedule/SchedulePage';
 import SearchPage from '../components/schedule/SearchPage';
 import DoctorPage from '../components/schedule/DoctorPage';
 import DoctorSettingPage from '../components/schedule/DoctorSettingPage';
-import LoginPage from '../components/LoginPage';
-import NotFoundPage from '../components/NotFoundPage';
+import SlotPage from '../components/schedule/SlotPage';
+
 import UserPage from '../components/user/UserPage';
 import UserModal from '../components/user/UserModal';
+
 
 
 const UserIsAuthenticated = UserAuthWrapper({
@@ -40,7 +46,7 @@ export default function configureRoute(store){
                 <Route path="create" component={UserIsAuthenticated(UserModal)} />
                 <Route path=":id" component={UserIsAuthenticated(UserModal)} />
             </Route>
-            <Route path="organizer" component={UserIsAuthenticated(OrganizerPage)} />
+            <Route path="slots" component={UserIsAuthenticated(SlotPage)} />
             <Route path="request" component={UserIsAuthenticated(RequestPage)} />
             <Route path="schedules" component={UserIsAuthenticated(SearchPage)}>
                 <Route path=":doctor_id(/:date)(/:hides)" component={UserIsAuthenticated(SchedulePage)} />
