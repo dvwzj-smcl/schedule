@@ -26,6 +26,14 @@ class App extends Component {
             helper: {
                 toDate: (moment) => { // from Moment to Date
                     return new Date(moment.format('YYYY-MM-DD H:mm:ss'));
+                },
+                isParamChanged: (params, nextParams) => { // from Moment to Date
+                    if(params.length !== nextParams) return true;
+                    console.log('params, nextParams', params, nextParams);
+                    for(let i in nextParams) {
+                        if(params[i] !== nextParams[i]) return true;
+                    }
+                    return false;
                 }
             }
         }

@@ -43,7 +43,7 @@ export default function configureRoute(store){
             <Route path="organizer" component={UserIsAuthenticated(OrganizerPage)} />
             <Route path="request" component={UserIsAuthenticated(RequestPage)} />
             <Route path="schedules" component={UserIsAuthenticated(SearchPage)}>
-                <Route path=":doctor_id(/:date)(/:show)" component={UserIsAuthenticated(SchedulePage)} />
+                <Route path=":doctor_id(/:date)(/:hides)" component={UserIsAuthenticated(SchedulePage)} />
             </Route>
             <Route path="doctors/settings" component={UserIsAuthenticated(DoctorPage)}>
                 <Route path=":doctor_id" component={UserIsAuthenticated(DoctorSettingPage)} />

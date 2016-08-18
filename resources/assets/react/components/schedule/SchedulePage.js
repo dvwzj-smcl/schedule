@@ -46,8 +46,8 @@ class SchedulePage extends Component {
     componentWillReceiveProps(nextProps) {
         let params = this.props.params;
         let nextParams = nextProps.params;
-        if(params.date != nextParams.date || params.doctor_id != nextParams.doctor_id) {
-            this.refreshCalendar(nextParams.doctor_id, nextParams.date);
+        if(this.context.helper.isParamChanged(params, nextProps.params)) {
+            this.refreshCalendar();
 
             // todo: goto when click GO only
             this.init().then(calendar => {
@@ -108,6 +108,7 @@ class SchedulePage extends Component {
     };
     
     refreshCalendar = () => {
+        console.log('refresh');
         this.init().then(calendar=> { // refresh
             calendar.refresh(this.fetchEventSource);
         });
@@ -258,14 +259,20 @@ class SchedulePage extends Component {
                 for(let i in events) {
                     let event = events[i];
                     event.self = (event.sale_id == me.user.id) || false;
-                    // todo: hide events
+                    // hide events
+                    if(this.context.hides[event.status]) {
+                        // todo: hide class name
+                        console.log('his.context.hides[event.status', this.context.hides[event.status]);
+                        event = undefined;
+                        continue;
+                    }
+                    // console.log('this.context.hides', this.context.hides);
+
+                    // colors
                     event.color = event.self ? me.eventColors[event.status] : me.eventColors.other;
                 }
-                // callback(events);
-                // callback(slots);
+                console.log('events', events);
                 callback(slots.concat(events));
-                // calendar.setEventSource(slots);
-                // calendar.addEventSource(events);
                 me.data = {slots, events};
                 me.loading = false;
             });
@@ -368,6 +375,7 @@ SchedulePage.contextTypes = {
     router: PropTypes.object,
     helper: PropTypes.object,
     ajax: PropTypes.object,
+    hides: PropTypes.object,
     eventColors: PropTypes.object,
     dialog: PropTypes.object
 };

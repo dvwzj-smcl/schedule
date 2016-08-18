@@ -34,22 +34,42 @@ class SearchPage extends Component {
         };
     }
 
-    parseShowParam = (show) => {
-        // todo:
-    };
-
-    getChildContext() {
-        return {eventColors: this.eventColors};
-    }
-
     componentWillReceiveProps(nextProps) {
         this.setValuesState(nextProps.params);
+        this.hides = this.parseHideParam(nextProps.params.hides);
+    }
+
+    componentWillMount() {
+        this.hides = this.parseHideParam(this.props.params.hides);
     }
 
     componentDidMount() {
         if(!this.initialized()) {
             this.props.actions.init();
         }
+    }
+
+    parseHideParam = hides => {
+        if(!hides) hides = '';
+        return {
+            other: this.has(hides, 'o'),
+            approved: this.has(hides, 'a'),
+            pending: this.has(hides, 'p'),
+            rejected: this.has(hides, 'r'),
+            canceled: this.has(hides, 'c')
+        }
+    };
+
+    has = (str, find) => {
+        let result = str.indexOf(find);
+        return result != -1;
+    };
+
+    getChildContext() {
+        return {
+            eventColors: this.eventColors,
+            hides: this.hides
+        };
     }
 
     setValuesState = (params) => {
@@ -71,12 +91,28 @@ class SearchPage extends Component {
         this.context.router.push(`/schedules/${data.doctor_id}/${data.date.getISODate()}`);
     };
 
-    onCheck = (param, asdf) => {
-        console.log('param', param,asdf);
+    onHideChange = () => {
+        let h = this.hides;
+        let params = this.props.params;
+        let hides = '';
+        if(h.other) hides += 'o';
+        if(h.approved) hides += 'a';
+        if(h.pending) hides += 'p';
+        if(h.rejected) hides += 'r';
+        if(h.canceled) hides += 'c';
+        this.context.router.push(`/schedules/${params.doctor_id}/${params.date}/${hides}`);
+    };
+
+    onCheck = (obj, value) => {
+        let name = obj.target.getAttribute('name');
+        if(this.hides[name] !== value) {
+            this.hides[name] = value;
+            this.onHideChange();
+        }
     };
 
     render() {
-        // console.log('render: search*', this.state.values);
+        console.log('render: search*', this.state.values);
         if(!this.initialized()) return <Loading />;
         let props = this.props;
         let {doctors} = props.schedule.data;
@@ -92,6 +128,7 @@ class SearchPage extends Component {
         };
 
         let colors = this.eventColors;
+        let hides = this.hides;
 
         return (
             <div>
@@ -107,12 +144,12 @@ class SearchPage extends Component {
                             </Panel>
                             <Panel title="Show" type="secondary">
                                 <div className="semicon">
-                                    <Checkbox label="Other" onCheck={this.onCheck} checked={true} iconStyle={{fill: colors['other']}} labelStyle={{color: colors['other']}} />
+                                    <Checkbox name="other" label="Other" onCheck={this.onCheck} checked={!hides.other} iconStyle={{fill: colors['other']}} labelStyle={{color: colors['other']}} />
                                     <Divider style={{marginBottom: 8, marginTop: 8}} />
-                                    <Checkbox label="Approved" onCheck={this.onCheck} checked={true} iconStyle={{fill: colors['approved']}} labelStyle={{color: colors['approved']}} />
-                                    <Checkbox label="Pending" onCheck={this.onCheck} checked={true} iconStyle={{fill: colors['pending']}} labelStyle={{color: colors['pending']}} />
-                                    <Checkbox label="Rejected" onCheck={this.onCheck} checked={true} iconStyle={{fill: colors['rejected']}} labelStyle={{color: colors['rejected']}} />
-                                    <Checkbox label="Canceled" onCheck={this.onCheck} checked={true} iconStyle={{fill: colors['canceled']}} labelStyle={{color: colors['canceled']}} />
+                                    <Checkbox name="approved" label="Approved" onCheck={this.onCheck} checked={!hides.approved} iconStyle={{fill: colors['approved']}} labelStyle={{color: colors['approved']}} />
+                                    <Checkbox name="pending" label="Pending" onCheck={this.onCheck} checked={!hides.pending} iconStyle={{fill: colors['pending']}} labelStyle={{color: colors['pending']}} />
+                                    <Checkbox name="rejected" label="Rejected" onCheck={this.onCheck} checked={!hides.rejected} iconStyle={{fill: colors['rejected']}} labelStyle={{color: colors['rejected']}} />
+                                    <Checkbox name="canceled" label="Canceled" onCheck={this.onCheck} checked={!hides.canceled} iconStyle={{fill: colors['canceled']}} labelStyle={{color: colors['canceled']}} />
                                 </div>
                             </Panel>
                         </Col>
@@ -134,7 +171,8 @@ SearchPage.contextTypes = {
     dialog: PropTypes.object
 };
 SearchPage.childContextTypes = {
-    eventColors: PropTypes.object
+    eventColors: PropTypes.object,
+    hides: PropTypes.object
 };
 
 const mapStateToProps = ({user, schedule}) => ({user, schedule});
