@@ -18,6 +18,7 @@ import * as scheduleActions from '../../actions/scheduleActions';
 
 // Forms
 import SemiForm from '../forms/SemiForm';
+import Checkbox from 'material-ui/Checkbox';
 
 class SearchPage extends Component {
     constructor(props, context) {
@@ -54,6 +55,10 @@ class SearchPage extends Component {
         this.context.router.push(`/schedules/${data.doctor_id}/${data.date.getISODate()}`);
     };
 
+    onCheck = (param, asdf) => {
+        console.log('param', param,asdf);
+    };
+
     render() {
         // console.log('render: search*', this.state.values);
         if(!this.initialized()) return <Loading />;
@@ -80,6 +85,13 @@ class SearchPage extends Component {
                                 <div style={{padding: 12}}>
                                     <SemiForm submitLabel="GO" buttonRight compact onSubmit={this.onSubmit} formTemplate={formTemplate}>
                                     </SemiForm>
+                                </div>
+                            </Panel>
+                            <Panel title="Goto" type="secondary">
+                                <div style={{padding: 12}}>
+                                    <Checkbox
+                                        onCheck={this.onCheck}
+                                    />
                                 </div>
                             </Panel>
                         </Col>
