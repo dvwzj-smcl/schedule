@@ -38,7 +38,8 @@ class LoginPage extends Component {
             data: {},
             values: {username: 'sale1', password: 'asdfasdf'},
             components: [
-                [{type: 'select', name: 'doctor_id', label: 'Doctor*', required: true}]
+                [{type: 'text', name: 'username', label: 'Username', required: true, hint: 'your username or email'}],
+                [{type: 'text', name: 'password', label: 'Password', required: true}]
             ]
         };
 
