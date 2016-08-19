@@ -259,25 +259,8 @@ class SchedulePage extends Component {
                     slot.rendering = 'background';
                     slot.color = me.colors[doctor_id][cat_id].bgColor;
                 }
-                // for(let event of events) {
-                //     event.self = (event.sale_id == me.user.id) || false;
-                //     let remove = false;
-                //     if(event.self) {
-                //         if(this.context.hides[event.status]) remove = true;
-                //     } else {
-                //         if(this.context.hides['other']) remove = true;
-                //     }
-                //
-                //     if(remove) {
-                //         event = null;
-                //         continue;
-                //     }
-                //     console.log('***', event.self, event.status);
-                //     // colors
-                //     event.color = event.self ? me.eventColors[event.status] : me.eventColors.other;
-                //     console.log('event.color', event.color);
-                // }
 
+                // filter events
                 events = events.filter(event=> {
                     event.self = (event.sale_id == me.user.id) || false;
                     if(event.self) {
@@ -290,7 +273,6 @@ class SchedulePage extends Component {
                     return true;
                 });
 
-                console.log('events', events);
                 callback(slots.concat(events));
                 me.data = {slots, events};
                 me.loading = false;

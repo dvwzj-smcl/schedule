@@ -191,6 +191,10 @@ class MultiSelect extends SelectField {
 }
 
 export class ValidationForm extends Validation.components.Form {
+    static propTypes = {
+        onInvalid: PropTypes.func,
+        onValid: PropTypes.func
+    };
     getData(){
         let data = Object.keys(this.state.states).map((key)=> {
             let obj = {};

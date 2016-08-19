@@ -17,7 +17,7 @@ import {ActionHome, ActionEvent, ActionEventSeat, ContentSave} from 'material-ui
 import * as scheduleActions from '../../actions/scheduleActions';
 
 // Forms
-import SemiForm from '../forms/VSemiForm';
+import SemiForm from '../forms/SemiForm';
 
 class DoctorPage extends Component {
     constructor(props, context) {

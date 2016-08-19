@@ -12,7 +12,7 @@ import MenuItem from 'material-ui/MenuItem';
 import SelectField from 'material-ui/SelectField';
 // Forms
 import SemiText from './forms/SemiText';
-import SemiForm from './forms/SemiForm';
+import SemiForm from './forms/SemiFormsy';
 import FormsyDate from 'formsy-material-ui/lib/FormsyDate';
 import FormsySelect from 'formsy-material-ui/lib/FormsySelect';
 
