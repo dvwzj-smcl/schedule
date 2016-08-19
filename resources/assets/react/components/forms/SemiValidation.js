@@ -230,7 +230,7 @@ export class ValidationForm extends Validation.components.Form {
     }
     _clone(children) {
         return React.Children.map(children, child => {
-            if (typeof child !== 'object') {
+            if (typeof child !== 'object' || !child) {
                 return child;
             }
             let props = {};
@@ -248,7 +248,7 @@ export class ValidationForm extends Validation.components.Form {
     }
     handleSubmit(event){
         event.preventDefault();
-        this.props.onSubmit && this.props.onSubmit(event, this.getData(), this.state.errors);
+        this.props.onSubmit && this.props.onSubmit( this.getData(), this.state.errors, event);
     }
     render() {
         return <form {...this.props} onSubmit={this.handleSubmit.bind(this)}>

@@ -5,6 +5,7 @@ import {Grid, Row, Col} from 'react-flexbox-grid';
 import Panel from './widgets/Panel';
 import PageHeading from './widgets/PageHeading';
 import SemiModal from './widgets/SemiModal';
+import SemiDataTable from './widgets/SemiDataTable';
 //import SemiSelect from './forms/SemiSelect';
 
 import {List, ListItem} from 'material-ui/List';
@@ -178,6 +179,39 @@ class RequestPage extends Component {
             </div>
         );
 
+        const data = [
+            {
+                name: 'John Smith',
+                status: 'Employed',
+                selected: true
+            },
+            {
+                name: 'Randal White',
+                status: 'Unemployed'
+            },
+            {
+                name: 'Stephanie Sanders',
+                status: 'Employed',
+                selected: true
+            },
+            {
+                name: 'Steve Brown',
+                status: 'Employed'
+            },
+            {
+                name: 'Joyce Whitten',
+                status: 'Employed'
+            },
+            {
+                name: 'Samuel Roberts',
+                status: 'Employed'
+            },
+            {
+                name: 'Adam Moore',
+                status: 'Employed'
+            }
+        ];
+
         return (
             <div>
                 <PageHeading title="Request" description="description" />
@@ -192,6 +226,33 @@ class RequestPage extends Component {
                                     </SemiValidation.components.Form>
                                 </div>
                             </Panel>
+                            <SemiDataTable settings={{
+                                table:{
+                                    selectable: false
+                                },
+                                header:{
+                                    displaySelectAll: false,
+                                    enableSelectAll: false,
+                                    adjustForCheckbox: false
+                                },
+                                body:{
+                                    displayRowCheckbox: false
+                                },
+                                fields:[
+                                    {
+                                        title: "Name",
+                                        key: "name"
+                                    },
+                                    {
+                                        title: "Status",
+                                        tooltip: "Status (tooltip)",
+                                        key: "status",
+                                        custom: (row,index)=>row.status
+                                    }
+                                ],
+                                limit: 1
+                            }}
+                            data={data} />
                         </Col>
                         <Col md={3}>
                         </Col>
