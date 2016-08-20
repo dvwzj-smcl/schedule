@@ -6,6 +6,7 @@ import { UserAuthWrapper } from 'redux-auth-wrapper';
 import App from '../components/App';
 import LoginPage from '../components/LoginPage';
 import NotFoundPage from '../components/NotFoundPage';
+import DashboardPage from '../components/DashboardPage';
 
 import HomePage from '../components/HomePage';
 import CalendarPage from '../components/CalendarPage';
@@ -14,6 +15,7 @@ import OrganizerPage from '../components/OrganizerPage';
 import RequestPage from '../components/RequestPage';
 
 import SchedulePage from '../components/schedule/SchedulePage';
+import SalePage from '../components/schedule/SalePage';
 import SearchPage from '../components/schedule/SearchPage';
 import DoctorPage from '../components/schedule/DoctorPage';
 import DoctorSettingPage from '../components/schedule/DoctorSettingPage';
@@ -40,7 +42,7 @@ export default function configureRoute(store){
     const useLogin = true; // true - to normally have to log in - change here
     return (useLogin) ? (
         <Route path="/" component={App}>
-            <IndexRoute component={UserIsAuthenticated(HomePage)} />
+            <IndexRoute component={UserIsAuthenticated(DashboardPage)} />
             <Route path="login" component={LoginPage} />
             <Route path="users" component={UserIsAuthenticated(UserPage)}>
                 <Route path="create" component={UserIsAuthenticated(UserModal)} />
@@ -49,7 +51,7 @@ export default function configureRoute(store){
             <Route path="slots" component={UserIsAuthenticated(SlotPage)} />
             <Route path="request" component={UserIsAuthenticated(RequestPage)} />
             <Route path="schedules" component={UserIsAuthenticated(SearchPage)}>
-                <Route path=":doctor_id(/:date)(/:hides)" component={UserIsAuthenticated(SchedulePage)} />
+                <Route path=":doctor_id(/:date)(/:hides)" component={UserIsAuthenticated(SalePage)} />
             </Route>
             <Route path="doctors/settings" component={UserIsAuthenticated(DoctorPage)}>
                 <Route path=":doctor_id" component={UserIsAuthenticated(DoctorSettingPage)} />

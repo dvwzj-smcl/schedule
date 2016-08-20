@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import {Grid, Row, Col} from 'react-flexbox-grid';
 import Panel from '../widgets/Panel';
 import PageHeading from '../widgets/PageHeading';
@@ -12,7 +11,6 @@ import {ActionHome, ActionEvent, ActionEventSeat, ContentSave} from 'material-ui
 // import Paper from 'material-ui/Paper';
 // import FlatButton from 'material-ui/FlatButton';
 
-import * as scheduleActions from '../../actions/scheduleActions';
 
 // Forms
 import SemiSelect from '../forms/SemiSelect';
@@ -49,12 +47,12 @@ class SchedulePage extends Component {
         let params = this.props.params;
         let nextParams = nextProps.params;
         if(helper.isParamChanged(params, nextProps.params)) {
-            this.refreshCalendar();
-
             // todo: goto when click GO only
             this.init().then(calendar => {
                 calendar.gotoDate(nextParams.date);
             });
+            console.log('nextParams.date', nextParams.date);
+            // this.refreshCalendar();
         }
     }
     
@@ -151,7 +149,7 @@ class SchedulePage extends Component {
             slot_id: data.id,
             event: {
                 id: values.event_id,
-                start: data.start,
+                start: values.start,
                 sc_slot_id: data.id,
                 sc_sub_category_id: data.sub_category_id,
                 sale_id: this.props.user.id
@@ -231,7 +229,6 @@ class SchedulePage extends Component {
 
     nextWeek = (isNext) => {
         let current = new Date(this.props.params.date);
-        console.log('isNext', isNext);
         if(isNext) {
             let nextWeek = new Date(current.getTime() + 7 * 24 * 60 * 60 * 1000);
             this.context.router.push(`/schedules/${this.props.params.doctor_id}/${nextWeek.getISODate()}`);
@@ -242,9 +239,11 @@ class SchedulePage extends Component {
     };
 
     fetchEventSource = (start, end, timezone, callback) => {
+        // fix: override FC's start/end
+        let params = 'start='+start.unix()+'&end='+end.unix();
         let props = this.props;
         let me = this;
-        let params = 'start='+start.unix()+'&end='+end.unix();
+        if(me.loading) return;
         me.loading = true;
         me.context.ajax.call('get', `schedules/doctors/${props.params.doctor_id}/events?${params}`).then( response => {
             me.init().then( calendar => {
@@ -259,25 +258,8 @@ class SchedulePage extends Component {
                     slot.rendering = 'background';
                     slot.color = me.colors[doctor_id][cat_id].bgColor;
                 }
-                // for(let event of events) {
-                //     event.self = (event.sale_id == me.user.id) || false;
-                //     let remove = false;
-                //     if(event.self) {
-                //         if(this.context.hides[event.status]) remove = true;
-                //     } else {
-                //         if(this.context.hides['other']) remove = true;
-                //     }
-                //
-                //     if(remove) {
-                //         event = null;
-                //         continue;
-                //     }
-                //     console.log('***', event.self, event.status);
-                //     // colors
-                //     event.color = event.self ? me.eventColors[event.status] : me.eventColors.other;
-                //     console.log('event.color', event.color);
-                // }
 
+                // filter events
                 events = events.filter(event=> {
                     event.self = (event.sale_id == me.user.id) || false;
                     if(event.self) {
@@ -290,12 +272,13 @@ class SchedulePage extends Component {
                     return true;
                 });
 
-                console.log('events', events);
                 callback(slots.concat(events));
                 me.data = {slots, events};
                 me.loading = false;
             });
-        }).catch( error => {} );
+        }).catch( error => {
+            me.loading = false;
+        });
     };
 
     render() {
@@ -336,16 +319,10 @@ class SchedulePage extends Component {
             <SemiModal onSubmit={this.onAddEventSubmit} ref="eventModal" formTemplate={formTemplate} />
         );
 
+        console.log('props.eventActions', props.eventActions);
+        
         let eventPopover = (
-            <ContextMenu ref="eventContextMenu" onSelect={this.onContextMenuSelect}
-                         data={[
-                    {id:'cancel', name:'Cancel'},
-                    {id:'reject', name:'Reject'},
-                    {id:'accept', name:'Accept'},
-                    {id:'edit', name:'Edit'}
-                ]}
-            >
-            </ContextMenu>
+            <ContextMenu ref="eventContextMenu" onSelect={this.onContextMenuSelect} data={props.eventActions} />
         );
 
         // init Calendar and Fetching
@@ -398,8 +375,4 @@ SchedulePage.contextTypes = {
     dialog: PropTypes.object
 };
 
-const mapStateToProps = ({user, schedule}) => ({user, schedule});
-const mapDispatchToProps = (dispatch) => ({actions: {
-    init: bindActionCreators(scheduleActions.initSchedule, dispatch)
-}});
-export default connect(mapStateToProps, mapDispatchToProps)(SchedulePage);
+export default SchedulePage;

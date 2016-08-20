@@ -56,6 +56,7 @@ class FormGenerator extends Component {
                     fullWidth: true
                 };
                 switch(item.type) {
+                    case 'password':
                     case 'text':
                         component = (
                             <SemiText

@@ -70,8 +70,13 @@ body { margin: 0; font-family: 'roboto', 'segoe ui', 'droid sans', tahoma, arial
 //.semiform input { padding-bottom: 12px !important; }
 .form-wrap { width: 100%; }
 .btn-wrap { width: 100%; }
-.btn-right .btn-wrap { text-align: right; }
+.btn-right .btn-wrap { text-align: right; margin-right: 16px; }
 .semiForm.compact>div { margin-top: -10px !important; }
+
+/* SemiValidation fix */
+.btn-wrap>div { display: inline; }
+.btn-right .btn-wrap>div>div{ left: 16px !important; }
+.semiForm .btn-icon, .btn-icon { width: 36px !important; }
 
 /* alignment */
 

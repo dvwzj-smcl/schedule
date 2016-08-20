@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import SemiForm from '../forms/SemiForm';
+import SemiForm from '../forms/SemiFormsy';
 
 class SemiModal extends Component {
     constructor(props, context) {

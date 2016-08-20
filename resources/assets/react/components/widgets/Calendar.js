@@ -7,7 +7,6 @@ import 'jquery-ui/ui/widgets/draggable';
 import 'jquery-ui/ui/widgets/droppable';
 import 'fullcalendar';
 import 'fullcalendar/dist/lang-all';
-import moment from 'moment';
 
 class Calendar extends Component {
     constructor(props, context) {

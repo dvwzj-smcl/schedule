@@ -1,28 +1,29 @@
 import jwt from 'jsonwebtoken';
 
-function baseUrl(endpoint){ // change here
-    // return 'http://localhost/schedule/api'+(endpoint.substr(0,1)=='/' ? endpoint : endpoint.substr(1));
-    // return 'http://192.168.1.10/semi_server_pok/public/api'+(endpoint.substr(0,1)=='/' ? endpoint : endpoint.substr(1));
-    // return 'http://192.168.1.10/schedule/public/api'+(endpoint.substr(0,1)=='/' ? endpoint : endpoint.substr(1));
-    // return 'http://localhost/semi_server_pok/public/api'+(endpoint.substr(0,1)=='/' ? endpoint : endpoint.substr(1));
-    return 'http://localhost/schedule/public/api'+(endpoint ? (endpoint.substr(0,1)=='/' ? endpoint : '/'+endpoint) : '');
+function baseUrl(endpoint) {
+    let endpointStr = endpoint ? (endpoint.substr(0, 1) == '/' ? endpoint : '/' + endpoint) : '';
+    if (process.env.NODE_ENV == 'development') {
+        return `http://localhost/schedule/public/api${endpointStr}`;
+    }
+    let host = window.location.host;
+    if (host.indexOf('localhost') !== -1) {
+        return `http://localhost/schedule/public/api${endpointStr}`;
+    }
+    return `/public/api${endpointStr}`;
 }
-
 const appKey = 'base64:GLqxLeosxabv4rH6FYsDISUT3yrqdWD3jZGbKiJsqhA=';
-// const appKey = 'base64:Q6ERrj4q7NCiSD27kFQNrRkiJFS//jIHbcXHzF4+3qQ='; // pok
-// const appKey = 'base64:lw65FxR9qSD137bNTvrQM6kOSG9dLNyyGx8JTdaO/OQ=';
 
-
-function payload(payload){
+function payload(payload) {
     return jwt.sign({
         payload
     }, appKey);
     // return jwt.sign(data, appKey);
 }
-function verify(encode){
+function verify(encode) {
     return jwt.verify(encode, appKey);
 }
-function sign(decode){
+
+function sign(decode) {
     return jwt.sign(decode, appKey);
 }
 
@@ -34,8 +35,3 @@ const api = {
 };
 
 export default api;
-
-/**
- * normal ajax
- */
-

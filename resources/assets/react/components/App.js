@@ -49,6 +49,10 @@ Date.prototype.getISODate = function() {
     return this.getFullYear()+'-'+month+'-'+day;
 };
 
+Date.prototype.unix = function() {
+    return this.getTime()/1000;
+};
+
 App.propTypes = {
     children: PropTypes.element,
     location: PropTypes.object,

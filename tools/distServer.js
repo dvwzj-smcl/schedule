@@ -11,7 +11,9 @@ browserSync({
     port: 3001
   },
   server: {
-    baseDir: 'public/react'
+    // baseDir: 'public/react'
+    // baseDir: 'public'
+    baseDir: ''
   },
 
   files: [

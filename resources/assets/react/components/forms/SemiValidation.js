@@ -277,9 +277,15 @@ export class ValidationTextField extends Validation.components.Input {
             containerClassName,
             ...rest} = this.props;
         let input = this.props.states[this.props.name];
-        let width = (this.props.fullWidth ? `calc(100% - 120px)` : `auto`);
         let value = this.props.states.hasOwnProperty(this.props.name) ? this.props.states[this.props.name].value : (this.props.value ? this.props.value : (this.props.multiple ? [] : ""));
-        console.log(this.props.validations.indexOf('optional')==-1, this.props.value);
+
+        // fix width
+        let minusWidth = 0;
+        if(this.props.type=='password') minusWidth += 36;
+        if(input && input.value) minusWidth += 36;
+        let width = (this.props.fullWidth ? `calc(100% - ${minusWidth}px)` : `auto`);
+
+        // console.log(this.props.validations.indexOf('optional')==-1, this.props.value);
         return (
             <div className={this.props.containerClassName || null}>
                 <TextField
@@ -293,10 +299,10 @@ export class ValidationTextField extends Validation.components.Input {
                     value={value}
                     onChange={this.handleChange.bind(this)}
                     onBlur={this.handleBlur.bind(this)} />
-                <IconButton disabled style={{width: 50, display: this.props.type=='password' ? 'inline-block' : 'none'}}>
+                <IconButton className="btn-icon" disabled style={{display: this.props.type=='password' ? 'inline-block' : 'none'}}>
                     <VisibleOffIcon/>
                 </IconButton>
-                <IconButton onTouchTap={this.handleClear.bind(this)} style={{width: 50, display: this.props.value ? 'none' : (input&&input.value ? 'inline-block': 'none')}}>
+                <IconButton className="btn-icon" onTouchTap={this.handleClear.bind(this)} style={{display: this.props.value ? 'none' : (input&&input.value ? 'inline-block': 'none')}}>
                     <ClearIcon/>
                 </IconButton>
             </div>
@@ -362,7 +368,7 @@ export class ValidationSelectField extends Validation.components.Select {
         let value = this.props.states.hasOwnProperty(this.props.name) ? this.props.states[this.props.name].value : (this.props.value ? this.props.value : (this.props.multiple ? [] : ""));
 
         // fix: accept both array and object as options
-        console.log('options', options);
+        // console.log('options', options);
         let items = options? [] : null;
         if(typeof options === 'object') { // object or array only
             for(let i in options) {
@@ -370,7 +376,12 @@ export class ValidationSelectField extends Validation.components.Select {
                 items.push(<MenuItem value={id} key={id} primaryText={options[i].name}/>);
             }
         }
-        let width = (this.props.fullWidth ? `calc(100% - 120px)` : `auto`);
+
+        // fix width
+        let minusWidth = 0;
+        if(!this.props.value && (this.props.multiple && (input&&input.value.length))) minusWidth += 36;
+        let width = (this.props.fullWidth ? `calc(100% - ${minusWidth}px)` : `auto`);
+        
         return (
             <div className={this.props.containerClassName || null}>
                 {this.props.multiple ?
@@ -382,7 +393,7 @@ export class ValidationSelectField extends Validation.components.Select {
                         {items}
                     </SelectField>
                 }
-                <IconButton onTouchTap={this.handleClear.bind(this)} style={{width: 50, display: this.props.value ? 'none' : ((this.props.multiple ? input&&input.value.length : input&&input.value) ? 'inline-block': 'none')}}>
+                <IconButton className="btn-icon" onTouchTap={this.handleClear.bind(this)} style={{display: this.props.value ? 'none' : ((this.props.multiple ? input&&input.value.length : input&&input.value) ? 'inline-block': 'none')}}>
                     <ClearIcon/>
                 </IconButton>
             </div>
@@ -438,7 +449,7 @@ export class ValidationRadio extends ValidationSelectField {
         let value = this.props.states.hasOwnProperty(this.props.name) ? this.props.states[this.props.name].value : (this.props.value ? this.props.value : (this.props.multiple ? [] : ""));
 
         // fix: accept both array and object as options
-        console.log('options', options);
+        // console.log('options', options);
         let items = options? [] : null;
         if(typeof options === 'object') { // object or array only
             for(let i in options) {
@@ -459,7 +470,7 @@ export class ValidationRadio extends ValidationSelectField {
                         {items}
                     </RadioButtonGroup>
                 }
-                <IconButton onTouchTap={this.handleClear.bind(this)} style={{width: 50, display: this.props.value ? 'none' : ((this.props.multiple ? input&&input.value.length : input&&input.value) ? 'inline-block': 'none')}}>
+                <IconButton className="btn-icon" onTouchTap={this.handleClear.bind(this)} style={{width: 50, display: this.props.value ? 'none' : ((this.props.multiple ? input&&input.value.length : input&&input.value) ? 'inline-block': 'none')}}>
                     <ClearIcon/>
                 </IconButton>
             </div>
@@ -574,10 +585,10 @@ export class ValidationAutoComplete extends Component {
                     filter={AutoComplete.caseInsensitiveFilter}
                     dataSourceConfig={{value: 'text', text: 'text'}}
                     onUpdateInput={this.handleUpdateInput} />
-                <IconButton disabled style={{width: 50}}>
+                <IconButton className="btn-icon" disabled style={{width: 50}}>
                     <KeyboardIcon/>
                 </IconButton>
-                <IconButton onTouchTap={this.handleClear} style={{width: 50, display: this.props.value ? 'none' : (input&&input.value ? 'inline-block': 'none')}}>
+                <IconButton className="btn-icon" onTouchTap={this.handleClear} style={{width: 50, display: this.props.value ? 'none' : (input&&input.value ? 'inline-block': 'none')}}>
                     <ClearIcon/>
                 </IconButton>
             </div>
@@ -645,7 +656,12 @@ export class ValidationColorPicker extends Component {
         let input = this.props.states[this.props.name];
         hintText = (input&&input.value ? '' : (hintText || "Color"));
         validations.push("color");
-        let width = (this.props.fullWidth ? `calc(100% - 120px)` : `auto`);
+
+        // fix width
+        let minusWidth = 36;
+        if(!this.props.value && input&&input.value) minusWidth += 36;
+        let width = (this.props.fullWidth ? `calc(100% - ${minusWidth}px)` : `auto`);
+
         const actions = [
             <FlatButton
                 label="Cancel"
@@ -663,10 +679,10 @@ export class ValidationColorPicker extends Component {
         return (
             <div className={this.props.containerClassName || null}>
                 <TextField {...rest} validations={validations} style={{width: width}} ref='node' hintText={hintText} onChange={this.handleChangeInput} errorText={handleError(this.props)} />
-                <IconButton onTouchTap={this.handleOpen} style={{width: 50}}>
+                <IconButton className="btn-icon" onTouchTap={this.handleOpen}>
                     <PaletteIcon/>
                 </IconButton>
-                <IconButton onTouchTap={this.handleClear} style={{width: 50, display: this.props.value ? 'none' : (input&&input.value ? 'inline-block': 'none')}}>
+                <IconButton className="btn-icon" onTouchTap={this.handleClear} style={{display: this.props.value ? 'none' : (input&&input.value ? 'inline-block': 'none')}}>
                     <ClearIcon/>
                 </IconButton>
                 <Dialog title="Color Picker"
@@ -691,7 +707,8 @@ export class ValidationDatePicker extends Component {
         this.handleClear = this.handleClear.bind(this);
     }
     componentWillMount(){
-        this.props.value && this.props._update(this, event, true, true, this.props.value);
+        console.log('this.props.value', this.props.value);
+        this.props.value && this.props._update(this, event, true, true, this.props.value.getISODate());
     }
     handleChange(n, value){
         let date = moment(value);
@@ -718,14 +735,19 @@ export class ValidationDatePicker extends Component {
         let input = this.props.states[this.props.name];
         let value = input&&input.value ? new Date(input.value) : null;
         hintText = (value ? '' : (hintText || "Date"));
-        let width = (this.props.fullWidth ? `calc(100% - 120px)` : `auto`);
+
+        // fix width
+        let minusWidth = 36;
+        if(!this.props.value && input&&input.value) minusWidth += 36;
+        let width = (this.props.fullWidth ? `calc(100% - ${minusWidth}px)` : `auto`);
+
         return (
             <div className={this.props.containerClassName || null}>
                 <DatePicker {...rest} value={value} hintText={hintText} onChange={this.handleChange} style={{width: width, display: 'inline-block'}}/>
-                <IconButton disabled style={{width: 50}}>
+                <IconButton className="btn-icon" disabled>
                     <DateRangeIcon/>
                 </IconButton>
-                <IconButton onTouchTap={this.handleClear} style={{width: 50, display: this.props.value ? 'none' : (input&&input.value ? 'inline-block': 'none')}}>
+                <IconButton className="btn-icon" onTouchTap={this.handleClear} style={{display: this.props.value ? 'none' : (input&&input.value ? 'inline-block': 'none')}}>
                     <ClearIcon/>
                 </IconButton>
             </div>

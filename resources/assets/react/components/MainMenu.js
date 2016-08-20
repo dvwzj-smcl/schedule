@@ -12,7 +12,7 @@ import {ActionHome, ActionEvent, ActionEventSeat, ActionPermContactCalendar, Soc
 
 const menus = [
     {
-        text: "Home",
+        text: "Dashboard",
         icon: <ActionHome />,
         to: "/"
     },

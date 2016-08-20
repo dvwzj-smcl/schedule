@@ -16,7 +16,8 @@ use Firebase\JWT\JWT;
 use App\Models\User\User;
 use Carbon\Carbon;
 
-header('Access-Control-Allow-Origin:  http://localhost:3000');
+header('Access-Control-Allow-Origin:  *');
+//header('Access-Control-Allow-Origin:  http://schedule.mspinfo.net');
 header('Access-Control-Allow-Methods:  POST, GET, OPTIONS, PUT, PATCH, DELETE');
 header('Access-Control-Allow-Headers:  Content-Type, Authorization, Access-Token');
 

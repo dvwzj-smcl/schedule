@@ -22,7 +22,7 @@ fs.readFile('resources/assets/react/index.html', 'utf8', (readError, markup) => 
   const $ = cheerio.load(markup);
 
   // since a separate spreadsheet is only utilized for the production build, need to dynamically add this here.
-  $('head').append('<link rel="stylesheet" href="/styles.css">');
+  $('head').append('<link rel="stylesheet" href="styles.css">');
 
   if (useTrackJs) {
     if (trackJsToken) {
@@ -34,15 +34,34 @@ fs.readFile('resources/assets/react/index.html', 'utf8', (readError, markup) => 
     }
   }
 
-  fs.writeFile('public/react/index.html', $.html(), 'utf8', (writeError) => {
+  fs.writeFile('index.html', $.html(), 'utf8', (writeError) => {
     if (writeError) {
-      console.log('write error: index.html written to /public/react');
+      console.log('write error: index.html written to /');
       return console.log(chalkError(writeError));
     }
-    console.log(chalkSuccess('index.html written to /public/react'));
+    console.log(chalkSuccess('index.html written to /'));
 
     return writeError;
   });
 
   return readError;
 });
+
+// css
+// fs.readFile('resources/assets/react/index.html', 'utf8', (readError) => {
+//   if (readError) {
+//     return console.log(chalkError(readError));
+//   }
+//
+//   fs.writeFile('styles.css', $.html(), 'utf8', (writeError) => {
+//     if (writeError) {
+//       console.log('write error: styles.css written to /');
+//       return console.log(chalkError(writeError));
+//     }
+//     console.log(chalkSuccess('index.html written to /'));
+//
+//     return writeError;
+//   });
+//
+//   return readError;
+// });

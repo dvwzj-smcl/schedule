@@ -5,7 +5,7 @@ import {Grid, Row, Col} from 'react-flexbox-grid';
 import Panel from './widgets/Panel';
 import PageHeading from './widgets/PageHeading';
 import SemiModal from './widgets/SemiModal';
-import SemiDataTable from './widgets/SemiDataTable';
+// import SemiDataTable from './widgets/SemiDataTable';
 //import SemiSelect from './forms/SemiSelect';
 
 import {List, ListItem} from 'material-ui/List';
@@ -226,7 +226,7 @@ class RequestPage extends Component {
                                     </SemiValidation.components.Form>
                                 </div>
                             </Panel>
-                            <SemiDataTable settings={{
+                            {/*<SemiDataTable settings={{
                                 table:{
                                     selectable: false
                                 },
@@ -252,7 +252,7 @@ class RequestPage extends Component {
                                 ],
                                 limit: 1
                             }}
-                            data={data} />
+                            data={data} />*/}
                         </Col>
                         <Col md={3}>
                         </Col>

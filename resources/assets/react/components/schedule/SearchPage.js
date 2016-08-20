@@ -88,7 +88,9 @@ class SearchPage extends Component {
     };
 
     onSubmit = (data) => {
-        this.context.router.push(`/schedules/${data.doctor_id}/${data.date.getISODate()}`);
+        console.log('data', data);
+        let date = data.date ? (typeof data.date === 'string') ? data.date : data.date.getISODate() : new Date();
+        this.context.router.push(`/schedules/${data.doctor_id}/${date}`);
     };
 
     onHideChange = () => {
@@ -100,6 +102,7 @@ class SearchPage extends Component {
         if(h.pending) hides += 'p';
         if(h.rejected) hides += 'r';
         if(h.canceled) hides += 'c';
+        console.log('***hides', hides);
         this.context.router.push(`/schedules/${params.doctor_id}/${params.date}/${hides}`);
     };
 
@@ -138,7 +141,7 @@ class SearchPage extends Component {
                         <Col md={3}>
                             <Panel title="Goto" type="secondary">
                                 <div className="semicon">
-                                    <SemiForm submitLabel="GO" buttonRight compact onSubmit={this.onSubmit} formTemplate={formTemplate}>
+                                    <SemiForm submitLabel="GO" hasReset buttonRight compact onSubmit={this.onSubmit} formTemplate={formTemplate}>
                                     </SemiForm>
                                 </div>
                             </Panel>
