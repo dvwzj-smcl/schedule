@@ -37,6 +37,7 @@ class Layout extends Component {
     }
 
     logout() {
+        this.context.router.push('/login');
         this.props.actions.user.logout();
     }
 

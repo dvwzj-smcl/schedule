@@ -22,6 +22,10 @@ class LoginPage extends Component {
         this.onSubmit = this.onSubmit.bind(this);
     }
 
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.user.error) this.refs.alert.open([nextProps.user.error, 'Login Failed!']);
+    }
+
     componentWillMount() {
         // fix: wrong password no alert (for hashHistory)
         this.context.router.push('/login');
@@ -38,7 +42,7 @@ class LoginPage extends Component {
     };
     
     render() {
-        // console.log('render: login');
+        console.log('render: login', this.props.user, this.props.user.error !== null);
         let formTemplate = {
             data: {},
             values: {username: 'organizer1', password: 'asdfasdf'},
@@ -50,7 +54,7 @@ class LoginPage extends Component {
 
         return (
             <Grid className="center">
-                <Alert open={this.props.user.error !== null} title="Login Failed" description={this.props.user.error} />
+                <Alert ref='alert'/>
                 <Row className="center-inner">
                     <Col xs mdOffset={4} md={4}>
                         <Paper>

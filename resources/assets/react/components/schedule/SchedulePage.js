@@ -30,10 +30,12 @@ class SchedulePage extends Component {
 
     componentWillReceiveProps(nextProps) {
         this.setValuesState(nextProps.params);
+        this.hides = this.parseHideParam(nextProps.params.hides);
     }
 
     componentWillMount() {
         this.setValuesState(this.props.params);
+        this.hides = this.parseHideParam(this.props.params.hides);
     }
 
     componentDidMount() {
@@ -49,6 +51,17 @@ class SchedulePage extends Component {
             navigate: this.navigate
         };
     }
+
+    parseHideParam = hides => {
+        if(!hides) hides = '';
+        return {
+            other: hides.has('o'),
+            approved: hides.has('a'),
+            pending: hides.has('p'),
+            rejected: hides.has('r'),
+            canceled: hides.has('c')
+        }
+    };
 
     setValuesState = (params) => {
         let {doctor_id, date} = params;

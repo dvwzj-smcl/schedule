@@ -27,14 +27,17 @@ class App extends Component {
         }
     }
 
+    componentWillReceiveProps(nextProps) {
+        // fix: logout
+    }
+
     render() {
         // console.log('render: app', this.props.user);
         return (
             <MuiThemeProvider >
                 {(() => {
                     if(this.props.user.access_token) return <Layout appBarTitle="Schedule" children={this.props.children} location={this.props.location} user={this.props.user} actions={this.props.actions} />;
-                    else if(this.props.user.authenticating) return this.props.children;
-                    else if(this.props.user.error) return this.props.children;
+                    else if(this.props.user.authenticating || this.props.user.error || !this.props.user.access_token) return this.props.children;
                     else return <Loading />;
                 })()}
             </MuiThemeProvider>

@@ -16,27 +16,7 @@ class ScheduleFilter extends Component {
         super(props, context);
         // variables
         this.eventColors = context.eventColors;
-        this.hides = context.hides;
     }
-
-    componentWillReceiveProps(nextProps) {
-        if(nextProps.params) this.parseHideParam(nextProps.params.hides);
-    }
-
-    componentWillMount() {
-        if(this.props.params) this.parseHideParam(this.props.params.hides);
-    }
-
-    parseHideParam = hides => {
-        if(!hides) hides = '';
-        return {
-            other: hides.has('o'),
-            approved: hides.has('a'),
-            pending: hides.has('p'),
-            rejected: hides.has('r'),
-            canceled: hides.has('c')
-        }
-    };
 
     initialized = () => {
         return this.props.schedule && this.props.schedule.init;
@@ -50,7 +30,7 @@ class ScheduleFilter extends Component {
     
     onCheck = (obj) => {
         let name = obj.target.getAttribute('name');
-        let h = this.hides, hides = '';
+        let h = this.context.hides, hides = '';
         h[name] = !h[name];
         if(h.other) hides += 'o';
         if(h.approved) hides += 'a';
@@ -63,7 +43,7 @@ class ScheduleFilter extends Component {
     render() {
         if(!this.initialized()) return <Loading />;
         let colors = this.eventColors;
-        let hides = this.hides;
+        let hides = this.context.hides;
         let isOrganizer = this.props.params.role == 'organizer';
 
         return (

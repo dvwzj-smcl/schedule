@@ -57,6 +57,7 @@ class ScheduleCalendar extends Component {
     }
     
     componentWillMount() {
+        console.log('*cal', this.context.hides);
     }
 
     componentDidUpdate() {
@@ -269,7 +270,8 @@ class ScheduleCalendar extends Component {
                 if(this.isOrganizer) {
                     events = events.filter(event=> {
                         // colors
-                        event.color = me.eventColors[event.status]
+                        if(this.context.hides[event.status]) return false;
+                        event.color = me.eventColors[event.status];
                         return true;
                     });
                 } else {
@@ -296,7 +298,7 @@ class ScheduleCalendar extends Component {
     };
 
     render() {
-        // console.log('render: sc page', this.state);
+        console.log('render: calendar', this.state);
 
         let props = this.props;
         let params = props.params;
