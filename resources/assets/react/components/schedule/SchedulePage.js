@@ -1,104 +1,62 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import {Grid, Row, Col} from 'react-flexbox-grid';
 import Panel from '../widgets/Panel';
 import PageHeading from '../widgets/PageHeading';
 import Loading from '../widgets/Loading';
-
 import {List, ListItem} from 'material-ui/List';
-import {ContentInbox, ActionGrade, ContentSend, ContentDrafts, ActionInfo, ActionCancel} from 'material-ui/svg-icons';
-import {ActionHome, ActionEvent, ActionEventSeat, ContentSave} from 'material-ui/svg-icons';
+import {ActionPermIdentity, ActionInfo} from 'material-ui/svg-icons';
+import * as scheduleActions from '../../actions/scheduleActions';
+import SemiForm from '../forms/SemiForm';
+import ScheduleFilter from './ScheduleFilter';
+import ScheduleEventList from './ScheduleEventList';
 // import Paper from 'material-ui/Paper';
 // import FlatButton from 'material-ui/FlatButton';
-
-
-// Forms
-import SemiSelect from '../forms/SemiSelect';
-import SemiDate from '../forms/SemiDate';
-import FormGenerator from '../forms/FormGenerator';
-import SemiText from '../forms/SemiText';
-import SemiForm from '../forms/SemiForm';
-import Calendar from '../widgets/Calendar';
-import SemiModal from '../widgets/SemiModal';
-import SemiButton from '../widgets/SemiButton';
-import ContextMenu from '../widgets/ContextMenu';
-import $ from 'jquery';
-
-import FloatingActionButton from 'material-ui/FloatingActionButton';
-import ContentAdd from 'material-ui/svg-icons/content/add';
-import {HardwareKeyboardArrowRight, HardwareKeyboardArrowLeft} from 'material-ui/svg-icons';
-
-import helper from '../../libs/helper';
 
 class SchedulePage extends Component {
     constructor(props, context) {
         super(props, context);
-        this.state = {
-            eventModal: {
-                data:{},
-                customer:{}
-            }
+        // variables
+        this.eventColors = {
+            other: '#B1B1B1',
+            approved: '#00AAA0',
+            rejected: '#C22326',
+            canceled: '#FDB632',
+            pending: '#A8216B'
         };
-        this.eventColors = context.eventColors;
-        this.loaded = {};
+        this.hides = {}
     }
 
     componentWillReceiveProps(nextProps) {
-        let params = this.props.params;
-        let nextParams = nextProps.params;
-        if(helper.isParamChanged(params, nextProps.params)) {
-            // todo: goto when click GO only
-            this.init().then(calendar => {
-                calendar.gotoDate(nextParams.date);
-            });
-            console.log('nextParams.date', nextParams.date);
-            // this.refreshCalendar();
-        }
-    }
-    
-    componentWillMount() {
+        this.setValuesState(nextProps.params);
     }
 
-    componentDidUpdate() {
+    componentWillMount() {
+        this.setValuesState(this.props.params);
     }
 
     componentDidMount() {
         if(!this.initialized()) {
             this.props.actions.init();
         }
-        this.init().then( calendar => {
-            // Lookup for Brighter Background Colors
-            let doctors = this.props.schedule.data.doctors;
-            let colors = {};
-            for(let doctor_id in doctors) {
-                let doctor = doctors[doctor_id];
-                for(let category_id in doctor.categories) {
-                    let category = doctor.categories[category_id];
-                    if(!colors[doctor_id]) colors[doctor_id] = {};
-                    colors[doctor_id][category_id] = {
-                        color: category.color,
-                        bgColor: this.increaseBrightness(category.color, 50)
-                    }
-                }
-            }
-            this.colors = colors;
-        });
     }
 
-    // avoid refs.calendar && this.props.schedule.data undefined
-    init = () => {
-        return new Promise( resolve => {
-            let me = this;
-            if(me.refs.calendar && me.initialized()) {
-                this.doctors = this.props.schedule.data.doctors;
-                resolve(me.refs.calendar);
-            } else {
-                let interval = setInterval(function(){
-                    if(me.refs.calendar && me.initialized()) {
-                        clearInterval(interval);
-                        resolve(me.refs.calendar);
-                    }
-                }, 500);
+    getChildContext() {
+        return {
+            eventColors: this.eventColors,
+            hides: this.hides,
+            navigate: this.navigate
+        };
+    }
+
+    setValuesState = (params) => {
+        let {doctor_id, date} = params;
+        this.setState({
+            values: {
+                doctor_id: doctor_id ? parseInt(doctor_id) : 1,
+                date: date ? new Date(date) : new Date()
+                // date2: date ? new Date(date).toString() : new Date().toString(),
             }
         });
     };
@@ -106,273 +64,76 @@ class SchedulePage extends Component {
     initialized = () => {
         return this.props.schedule && this.props.schedule.init;
     };
-    
-    refreshCalendar = () => {
-        console.log('refresh');
-        this.init().then(calendar=> { // refresh
-            calendar.refresh(this.fetchEventSource);
-        });
+
+    onSubmit = (data) => {
+        console.log('data', data);
+        let date = data.date ? (typeof data.date === 'string') ? data.date : data.date.getISODate() : new Date();
+        this.navigate({date, doctor_id: data.doctor_id})
     };
 
-    onContextMenuSelect = (key) => {
-        // console.log('key', this.calEvent);
-        let {event_id, category_id, customer, sub_category_id, start} = this.calEvent;
-        if(key == 'edit') {
-            let data = {
-                sub_category_id: this.doctors[this.props.params.doctor_id].categories[category_id].sub_categories, isEdit: true
-            };
-            let values = {
-                ...customer, sub_category_id, start: new Date(start), event_id
-            };
-            this.setState({eventModal:{data, values}});
-            this.refs.eventModal.open();
-        } else if(key == 'cancel') {
-            this.context.dialog.confirm('Are you sure?', 'Cancel Appointment', (confirm) => {
-                if(confirm) {
-                    this.context.ajax.call('get', `schedules/events/${event_id}/cancel`, null).then( response => {
-                        this.refreshCalendar();
-                    }).catch( error => {
-                        this.context.dialog.alert(error, 'Error');
-                    });
-                }
-            });
-        }
-    };
-
-    // --- Modal Functions
-
-    onAddEventSubmit = (data, ajax) => {
-        // console.log('data from addCatId', data);
-        // 'status' and 'end' are calculated at the server
-        let values = this.state.eventModal.values;
-        let req = {
-            slot_id: data.id,
-            event: {
-                id: values.event_id,
-                start: values.start,
-                sc_slot_id: data.id,
-                sc_sub_category_id: data.sub_category_id,
-                sale_id: this.props.user.id
-            },
-            customer: {
-                id: values.id, // because spread
-                first_name: data.first_name,
-                last_name: data.last_name,
-                hn: data.hn,
-                phone: data.phone,
-                contact: data.contact
-            }
-        };
-        let method = this.state.eventModal.data.isEdit ? 'put' : 'post';
-        let url = this.state.eventModal.data.isEdit ? `schedules/events/${values.event_id}` : `schedules/events`;
-        return ajax.call(method, url, req).then( response => {
-            console.log('response', response);
-            this.refs.eventModal.close();
-            this.refreshCalendar();
-        });
-    };
-
-    // --- Full Calendar Functions
-
-    eventClick = (calEvent, jsEvent) => {
-        // console.log('calEvent.sale_id', calEvent, jsEvent);
-        console.log('calEvent.status', calEvent.status);
-        if(!calEvent.self) return;
-        this.calEvent = calEvent; // pass value without using state
-        this.refs.eventContextMenu.open(jsEvent.target);
-    };
-
-    dayClick = (date, jsEvent) => {
-        console.log('date', helper.toDate(date));
-        if (jsEvent.target.classList.contains('fc-bgevent')) {
-            let slot = $(jsEvent.target).data();
-            let {id, sc_category_id} = slot;
-            console.log('this.doctors[this.props.params.doctor_id]', this.doctors);
-            let data = {
-                sub_category_id: this.doctors[this.props.params.doctor_id].categories[sc_category_id].sub_categories
-            };
-            let values = {
-                customer: {}, start: helper.toDate(date)
-            };
-            console.log('data', data, values);
-            this.setState({eventModal:{data, values}});
-            this.refs.eventModal.open({sc_category_id, id});
-        }
-    };
-
-    onCalendarViewChange = (startDate) => {
-        // do nothing now
-    };
-
-    eventRender = (event, element) => { // trick: passing event data to background event
-        $(element).data(event);
-    };
-
-    increaseBrightness = (hex, percent) => {
-        // strip the leading # if it's there
-        hex = hex.replace(/^\s*#|\s*$/g, '');
-
-        // convert 3 char codes --> 6, e.g. `E0F` --> `EE00FF`
-        if(hex.length == 3){
-            hex = hex.replace(/(.)/g, '$1$1');
-        }
-
-        var r = parseInt(hex.substr(0, 2), 16),
-            g = parseInt(hex.substr(2, 2), 16),
-            b = parseInt(hex.substr(4, 2), 16);
-
-        return '#' +
-            ((0|(1<<8) + r + (256 - r) * percent / 100).toString(16)).substr(1) +
-            ((0|(1<<8) + g + (256 - g) * percent / 100).toString(16)).substr(1) +
-            ((0|(1<<8) + b + (256 - b) * percent / 100).toString(16)).substr(1);
-    };
-
-    nextWeek = (isNext) => {
-        let current = new Date(this.props.params.date);
-        if(isNext) {
-            let nextWeek = new Date(current.getTime() + 7 * 24 * 60 * 60 * 1000);
-            this.context.router.push(`/schedules/${this.props.params.doctor_id}/${nextWeek.getISODate()}`);
-        } else {
-            let prevWeek = new Date(current.getTime() - 7 * 24 * 60 * 60 * 1000);
-            this.context.router.push(`/schedules/${this.props.params.doctor_id}/${prevWeek.getISODate()}`);
-        }
-    };
-
-    fetchEventSource = (start, end, timezone, callback) => {
-        // fix: override FC's start/end
-        let params = 'start='+start.unix()+'&end='+end.unix();
-        let props = this.props;
-        let me = this;
-        if(me.loading) return;
-        me.loading = true;
-        me.context.ajax.call('get', `schedules/doctors/${props.params.doctor_id}/events?${params}`).then( response => {
-            me.init().then( calendar => {
-                let {slots,events} = response.data;
-                me.user = me.props.user;
-                for(let i in slots) {
-                    let slot = slots[i];
-                    let doctor_id = slot.sc_doctor_id;
-                    let cat_id = slot.sc_category_id;
-                    slot.index = i; // array index
-                    // if(slot.is_full) slot.rendering = 'background';
-                    slot.rendering = 'background';
-                    slot.color = me.colors[doctor_id][cat_id].bgColor;
-                }
-
-                // filter events
-                events = events.filter(event=> {
-                    event.self = (event.sale_id == me.user.id) || false;
-                    if(event.self) {
-                        if(this.context.hides[event.status]) return false;
-                    } else {
-                        if(this.context.hides['other']) return false;
-                    }
-                    // colors
-                    event.color = event.self ? me.eventColors[event.status] : me.eventColors.other;
-                    return true;
-                });
-
-                callback(slots.concat(events));
-                me.data = {slots, events};
-                me.loading = false;
-            });
-        }).catch( error => {
-            me.loading = false;
-        });
+    navigate = (params) => {
+        if(this.props.params.hides === undefined && params.hides === undefined) params.hides = ''; // fix hides undefined
+        // console.log('this.props.params', this.props.params);
+        params = Object.assign({
+            role: 'sale', doctor_id: 1, date: (new Date()).getISODate(), hides: ''
+        }, this.props.params, params);
+        // console.log('param-2', params);
+        this.context.router.push(`/schedules/${params.role}/${params.doctor_id}/${params.date}/${params.hides}`);
     };
 
     render() {
-        // console.log('render: sc page', this.state);
+        console.log('render: search*', this.props.schedule);
         if(!this.initialized()) return <Loading />;
-
         let props = this.props;
-        let data = props.schedule.data;
-        let state = this.state;
+        let {doctors} = props.schedule.data;
+
         let formTemplate = {
-            data: this.state.eventModal.data,
-            values: this.state.eventModal.values,
-            // values: {first_name: 'Semi', last_name: 'colon', hn: '55123456', phone: '0871234567', contact: 'kickass.to'}, // default values
-            settings: {},
-            validations: {
-                hn: {rule: '/^\d{6,7}$/', hint: 'Invalid HN'}
-            },
+            data: {doctor_id: doctors},
+            values: this.state.values,
             components: [
-                [
-                    {type: 'select', name: 'sub_category_id', label: 'Subcategory*', required: true, disabled: state.eventModal.data.isEdit},
-                    {type: 'date', name: 'start', label: 'Date', required: true, disabled: true}
-                ],
-                [
-                    {type: 'text', name: 'first_name', label: 'First Name*', required: true},
-                    {type: 'text', name: 'last_name', label: 'Last Name*', required: true}
-                ],
-                [
-                    {type: 'text', name: 'hn', label: 'HN', validations: ['hn'], hint:'optional. (eg. 5512345)'},
-                    {type: 'text', name: 'phone', label: 'Phone*', required: true, hint:'phone or mobile number'}
-                ],
-                [
-                    {type: 'text', name: 'contact', label: 'Contact*', required: true, hint:'Facebook, Line or other social media'}
-                ]
+                [{type: 'select', name: 'doctor_id', label: 'Doctor*', required: true}],
+                [{type: 'date', name: 'date', label: 'Date', required: true}]
             ]
         };
 
-        let eventModal = (
-            <SemiModal onSubmit={this.onAddEventSubmit} ref="eventModal" formTemplate={formTemplate} />
-        );
-
-        console.log('props.eventActions', props.eventActions);
-        
-        let eventPopover = (
-            <ContextMenu ref="eventContextMenu" onSelect={this.onContextMenuSelect} data={props.eventActions} />
-        );
-
-        // init Calendar and Fetching
-
-        let me = this;
-        let calendarSettings = {
-            header: false,
-            droppable: false,
-            editable: false,
-            selectable: false,
-            defaultDate: props.params.date, // gotoDate on first load
-            eventClick: this.eventClick,
-            eventRender: this.eventRender,
-            dayClick: this.dayClick,
-            onViewChange: this.onCalendarViewChange,
-            events: this.fetchEventSource
-        };
-
         return (
-            <Panel title="Schedule">
-                {eventModal}
-                {eventPopover}
-                <div className="semicon">
-                    <div className="calendar-header">
-                        <h2>{(new Date(this.props.params.date)).toDateString()}</h2>
-                        <div className="button-group right" style={{zIndex: 999999}}>
-                            <FloatingActionButton mini={true} className="button" onTouchTap={this.nextWeek.bind(this, false)}>
-                                <HardwareKeyboardArrowLeft />
-                            </FloatingActionButton>
-                            <FloatingActionButton mini={true} className="button" onTouchTap={this.nextWeek.bind(this, true)}>
-                                <HardwareKeyboardArrowRight />
-                            </FloatingActionButton>
-                        </div>
-                    </div>
-                    <div>
-                        <Calendar {...calendarSettings} ref="calendar" />
-                    </div>
-                </div>
-            </Panel>
+            <div>
+                <PageHeading title="Schedule" description={formTemplate.values.date.toString()} />
+                <Grid fluid className="content-wrap">
+                    <Row>
+                        <Col md={3}>
+                            <Panel title="Goto" type="secondary">
+                                <div className="semicon">
+                                    <SemiForm submitLabel="GO" buttonRight compact onSubmit={this.onSubmit} formTemplate={formTemplate} />
+                                </div>
+                            </Panel>
+                            <ScheduleFilter params={this.props.params} schedule={props.schedule}/>
+                            {this.props.params.role == 'organizer' ? <ScheduleEventList user={props.user} params={this.props.params} schedule={props.schedule}/> : null}
+                        </Col>
+                        <Col md={9}>
+                            {props.children}
+                        </Col>
+                    </Row>
+                </Grid>
+            </div>
         );
     }
 }
 
 SchedulePage.propTypes = {};
 SchedulePage.contextTypes = {
-    router: PropTypes.object,
+    router: PropTypes.object.isRequired,
     ajax: PropTypes.object,
-    hides: PropTypes.object,
-    eventColors: PropTypes.object,
     dialog: PropTypes.object
 };
+SchedulePage.childContextTypes = {
+    eventColors: PropTypes.object,
+    hides: PropTypes.object,
+    navigate: PropTypes.func
+};
 
-export default SchedulePage;
+const mapStateToProps = ({user, schedule}) => ({user, schedule});
+const mapDispatchToProps = (dispatch) => ({actions: {
+    init: bindActionCreators(scheduleActions.initSchedule, dispatch)
+}});
+export default connect(mapStateToProps, mapDispatchToProps)(SchedulePage);

@@ -54,8 +54,7 @@ class UserPage extends Component {
                     col:'role_name',
                     width:'40%'
                 }
-            ],
-          
+            ]
         };
         this.reloadPage = this.reloadPage.bind(this);
     }
@@ -75,13 +74,6 @@ class UserPage extends Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        // console.log('shouldComponentUpdate nextProps',nextProps);
-        // let updateComponent = false;
-        // // ถ้า ค่า prop ปัจจุบัน !== ค่า prop ก่อนหน้า ให้ อัพเดท
-        // if ((this.props.user!==nextProps.user) || (this.state.canSubmit !== nextState.canSubmit) ){
-        //     updateComponent = true ;
-        // }
-        // return updateComponent ;
         return true ;
     }
 
@@ -103,16 +95,18 @@ class UserPage extends Component {
                         <Col md={12}>
                             <Panel title="User Type">
                                 <div className="con-pad">
-                                    <SemiButton
-                                        semiType="add"
-                                        label="Add New"
-                                        link="/users/create"
-                                    />
-                                    <SemiButton
-                                        semiType="refresh"
-                                        label="Reload"
-                                        onClick={this.reloadPage}
-                                    />
+                                    <div className="button-group">
+                                        <SemiButton
+                                            semiType="add"
+                                            label="Add New"
+                                            link="/users/create"
+                                        />
+                                        <SemiButton
+                                            semiType="refresh"
+                                            label="Reload"
+                                            onClick={this.reloadPage}
+                                        />
+                                    </div>
                                 </div>
                                 <DataTable
                                     ref="db"

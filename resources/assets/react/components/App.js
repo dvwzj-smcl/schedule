@@ -8,6 +8,7 @@ import * as userActions from '../actions/userActions';
 import Layout from './Layout';
 import Loading from './widgets/Loading';
 import {ajax, getAll} from '../api/ApiCall';
+import helper from '../libs/helper';
 
 injectTapEventPlugin();
 
@@ -41,6 +42,8 @@ class App extends Component {
     }
 }
 
+// window.helper = helper;
+
 Date.prototype.getISODate = function() {
     let month = this.getMonth()+1;
     if(month < 10) month = '0'+month;
@@ -48,9 +51,28 @@ Date.prototype.getISODate = function() {
     if(day < 10) day = '0'+day;
     return this.getFullYear()+'-'+month+'-'+day;
 };
-
 Date.prototype.unix = function() {
     return this.getTime()/1000;
+};
+Date.prototype.getMonthName = function() {
+    var monthNames = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+    return monthNames[this.getMonth()];
+};
+Date.prototype.getShortMonthName = function() {
+    var monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+    return monthNames[this.getMonth()];
+};
+
+String.prototype.has = function(find) {
+    let result = this.indexOf(find);
+    return result != -1;
+};
+String.prototype.capitalize = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
 };
 
 App.propTypes = {
@@ -60,7 +82,7 @@ App.propTypes = {
     user: PropTypes.object
 };
 App.childContextTypes = {
-    ajax: PropTypes.object,
+    ajax: PropTypes.object
 };
 
 const mapStateToProps = ({user}) => ({user});

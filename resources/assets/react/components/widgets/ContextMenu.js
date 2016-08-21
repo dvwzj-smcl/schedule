@@ -13,11 +13,25 @@ class ContextMenu extends Component {
     }
 
     // exposed function
-    open = (event) => {
+    open = (event, options) => {
         // original (event is form Material-UI's RaisedButton click)
         // This prevents ghost click.
         // event.preventDefault();
         // let target = event.currentTarget;
+        let data = this.props.data;
+        for(let i in data) data[i]._hide = false;
+        if(options.hide) {
+            for(let key of options.hide) {
+                let found = false;
+                for(let i in data) {
+                    if(data[i].id == key) {
+                        data[i]._hide = true;
+                        found = true;
+                        break;
+                    }
+                }
+            }
+        }
 
         let target = event;
         this.setState({
@@ -37,12 +51,12 @@ class ContextMenu extends Component {
 
     render() {
         let {data, ...rest} = this.props;
-        let state = this.state;
+        let {hide} = this.state;
         let items = data? [] : null;
         if(typeof data === 'object') { // object or array only
             for(let i in data) {
                 let id = data[i].id ? data[i].id : parseInt(i);
-                items.push(<MenuItem value={id} key={id} primaryText={data[i].name}/>);
+                items.push(<MenuItem value={id} key={id} primaryText={data[i].name} style={{display: data[i]._hide ? 'none' : 'block'}} />);
             }
         }
         return (

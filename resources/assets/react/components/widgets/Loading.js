@@ -11,7 +11,7 @@ const Loading = ({inline}) => {
     );
     return (
         <div className="center">
-            <div className="center-inner">
+            <div className="center-inner loading">
                 <CircularProgress size={2} />
             </div>
         </div>

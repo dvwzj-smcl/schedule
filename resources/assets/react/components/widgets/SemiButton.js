@@ -14,7 +14,7 @@ class SemiButton extends Component{
     }
 
     linkTo(){
-        if(this.props.link) browserHistory.push(this.props.link);
+        if(this.props.link) this.context.router.push(this.props.link);
     }
 
     render() {
@@ -51,6 +51,9 @@ class SemiButton extends Component{
 
 SemiButton.propTypes = {
     link: PropTypes.string
+};
+SemiButton.contextTypes = {
+    router: PropTypes.object
 };
 
 export default SemiButton;

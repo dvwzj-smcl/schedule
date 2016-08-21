@@ -15,6 +15,7 @@ class DebuggerController extends Controller
 {
     public function index()
     {
+        dd((new Carbon())->addDay(-1));
         $branch_id = 1;
         $sales = \App\Models\User\User::whereBranchId($branch_id)->sales()->get()->pluck('user_id');
         dd($sales[rand(1, count($sales) - 1)]);

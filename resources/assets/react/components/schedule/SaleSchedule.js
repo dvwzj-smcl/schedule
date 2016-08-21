@@ -1,33 +1,33 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import SchedulePage from './SchedulePage';
+import ScheduleCalendar from './ScheduleCalendar';
 import { bindActionCreators } from 'redux';
 import * as scheduleActions from '../../actions/scheduleActions';
 
-class SalePage extends Component {
+class SaleSchedule extends Component {
     constructor(props, context) {
         super(props, context);
     }
 
     render() {
         let {...rest} = this.props;
+        let params = this.props.params;
         rest.hides = this.context.hides;
         rest.eventActions = [
             {id: 'cancel', name: 'Cancel'},
+            {id: 'reject', name: 'Reject'},
+            {id: 'accept', name: 'Accept'},
             {id: 'edit', name: 'Edit'}
         ];
-        // rest.eventActions = [
-        //     {id: 'cancel', name: 'Cancel'},
-        //     {id: 'reject', name: 'Reject'},
-        //     {id: 'accept', name: 'Accept'},
-        //     {id: 'edit', name: 'Edit'}
-        // ];
+        if(params.role == 'sale') {
+            rest.eventActions.splice(1,2);
+        }
         console.log('rest', rest);
-        return <SchedulePage {...rest} />;
+        return <ScheduleCalendar {...rest} />;
     }
 }
 
-SalePage.contextTypes = {
+SaleSchedule.contextTypes = {
     hides: PropTypes.object,
     eventColors: PropTypes.object
 };
@@ -36,4 +36,4 @@ const mapStateToProps = ({user, schedule}) => ({user, schedule});
 const mapDispatchToProps = (dispatch) => ({actions: {
     init: bindActionCreators(scheduleActions.initSchedule, dispatch)
 }});
-export default connect(mapStateToProps, mapDispatchToProps)(SalePage);
+export default connect(mapStateToProps, mapDispatchToProps)(SaleSchedule);

@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Event extends Model
 {
     protected $table = 'sc_events';
-    protected $fillable = ['start', 'end', 'sc_slot_id', 'sc_sub_category_id', 'sale_id', 'sc_customer_id', 'status'];
-
+    protected $guarded = ['id', 'created_at', 'updated_at'];
+    
+//    protected $fillable = ['start', 'end', 'sc_slot_id', 'sc_sub_category_id', 'sale_id', 'sc_customer_id', 'status'];
 //    protected $dates = ['start'];
 
     public function slot(){
@@ -27,7 +28,7 @@ class Event extends Model
      * 3. rejected
      * 4. cancel
      */
-    public function approved()
+    public function approve()
     {
         return $this->update(['status'=>'approved']);
     }
@@ -37,7 +38,7 @@ class Event extends Model
         return $this->update(['status'=>'pending']);
     }
 
-    public function rejected()
+    public function reject()
     {
         return $this->update(['status'=>'rejected']);
     }
@@ -46,36 +47,4 @@ class Event extends Model
     {
         return $this->update(['status'=>'canceled']);
     }
-
-
-    // -- status
-
-    /*
-    public function doctor_sub_category(){
-        return $this->belongsTo('App\Models\Calendar\DoctorSubCategory', 'sc_doctor_sub_category_id');
-    }
-    public function color(){
-        return $this->slot->doctor->categories()->where('sc_category_id', $this->sub_category->sc_category_id)->first()->color;
-    }
-    public function duration(){
-        return $this->slot->doctor->sub_categories()->where('sc_sub_category_id', $this->sc_sub_category_id)->first()->duration;
-    }*/
-
-
-    /*
-    public function color(){
-        return \App\Models\Calendar\DoctorCategory
-            ::where('sc_doctor_id', $this->slot->sc_doctor_id)
-            ->where('sc_category_id', $this->sub_category->sc_category_id)
-            ->first()
-            ->color;
-    }
-    public function duration(){
-        return \App\Models\Calendar\DoctorSubCategory
-            ::where('sc_doctor_id', $this->slot->sc_doctor_id)
-            ->where('sc_sub_category_id', $this->sc_sub_category_id)
-            ->first()
-            ->duration;
-    }
-    */
 }

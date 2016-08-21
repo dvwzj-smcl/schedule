@@ -52,18 +52,6 @@ class UserModal extends Component {
     }
 
 
-    // submitCallback(data) {
-    //
-    //     console.log('data', data);
-    //     if(data.error) {
-    //         // todo : show error
-    //     }
-    //
-    //     // this.context.router.push('/users');
-    //     this.context.dataTable.reload();
-    //     return true; // will goBack browser history
-    // }
-
     handleOpenPassword(){
         this.setState({changePass: !this.state.changePass});
     }
@@ -71,6 +59,7 @@ class UserModal extends Component {
     render() {
         let values = this.state.values;
         let editId = this.props.params.id;
+        let data = this.state.data;
         const {title,changePass} = this.state;
 
         let togglePass = (<Row style={{marginTop: 16}}>
@@ -84,6 +73,32 @@ class UserModal extends Component {
             </Col>
         </Row>);
 
+        let formTemplate = {
+            data: {branch_id: data.branches, roles: data.roles},
+            values: this.state.values,
+            components: [
+                [
+                    {type: 'text', name: 'username', label: 'Username*', required: true},
+                    {type: 'text', name: 'email', label: 'Email*', required: true, validations: ['email']}
+                ],
+                [
+                    {type: 'password', name: 'password', label: 'Password*', required: true, validations: ['password']},
+                    {type: 'password', name: 'passwordConfirm', label: 'Confirm Password*', hint: 'Same as password', required: true, validations: ['password']}
+                ],
+                [
+                    {type: 'text', name: 'name', label: 'Full Name*', required: true},
+                    {type: 'select', name: 'branch_id', label: 'Branch*'}
+                ],
+                [
+                    {type: 'text', name: 'phone', label: 'Phone*', required: true},
+                    {type: 'text', name: 'phone2', label: 'Secondary Phone', hint: 'Secondary phone number'}
+                ],
+                [
+                    {type: 'multiselect', name: 'roles', label: 'Roles*', required: true}
+                ]
+            ]
+        };
+
         return (
             <SemiModal
                 ref="modal"
@@ -91,6 +106,7 @@ class UserModal extends Component {
                 alwaysOpen // disable open/close for route modal
                 onLoad={this.onLoad}
                 onSubmit={this.onSubmit}
+                formTemplate={formTemplate}
             >
                 <Row>
                     <Col xs md={6}>

@@ -23,7 +23,7 @@ import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import AutoComplete from 'material-ui/AutoComplete';
 import DatePicker from 'material-ui/DatePicker';
 import Subheader from 'material-ui/Subheader';
-import moment from 'moment';
+// import moment from 'moment';
 
 Object.assign(Validation.rules, {
     required: {
@@ -76,6 +76,17 @@ Object.assign(Validation.rules, {
         },
         hint: value => {
             return "Passwords should be equal";
+        }
+    },
+    hn: {
+        rule: (value, component, form) => {
+            let optional = component.props.validations.indexOf("optional")>-1;
+            let re = new RegExp(/^\d{6,7}$/g);
+            let check = value&&re.test(value);
+            return optional ? (value ? check : true) : check;
+        },
+        hint: value => {
+            return "Invalid HN";
         }
     }
 });
@@ -137,6 +148,24 @@ class MultiSelect extends SelectField {
             myHintText = (!hintText && !floatingLabelText) ? ' ' : hintText;
         }
 
+        let checkboxItems = children ? children.map(item => {
+            let checkbox = <Checkbox
+                checked={(value || []).indexOf(item.props.value) >= 0}
+                onCheck={(e,v) => {
+			                		const index = value.indexOf(item.props.value);
+                                    if(index < 0) {
+                                        value.push(item.props.value);
+                                        if(this.props.onChange) this.props.onChange(e, index, value);
+                                    }else{
+                                        value.splice(index, 1);
+                                        if(this.props.onChange) this.props.onChange(e, index, value);
+                                    }
+			                	}} />;
+            return React.cloneElement(item, {
+                leftCheckbox: checkbox
+            });
+        }) : null;
+
         return (
             <TextField
                 style={style}
@@ -166,23 +195,7 @@ class MultiSelect extends SelectField {
                         }}
                         {...other}
                         >
-                        {children.map(item => {
-                            let checkbox = <Checkbox
-                                checked={(value || []).indexOf(item.props.value) >= 0}
-                                onCheck={(e,v) => {
-			                		const index = value.indexOf(item.props.value);
-                                    if(index < 0) {
-                                        value.push(item.props.value);
-                                        if(this.props.onChange) this.props.onChange(e, index, value);
-                                    }else{
-                                        value.splice(index, 1);
-                                        if(this.props.onChange) this.props.onChange(e, index, value);
-                                    }
-			                	}} />;
-                            return React.cloneElement(item, {
-                                leftCheckbox: checkbox
-                            });
-                        })}
+                        {checkboxItems}
                     </DropDownMenu>
                 </div>
             </TextField>
@@ -280,9 +293,12 @@ export class ValidationTextField extends Validation.components.Input {
         let value = this.props.states.hasOwnProperty(this.props.name) ? this.props.states[this.props.name].value : (this.props.value ? this.props.value : (this.props.multiple ? [] : ""));
 
         // fix width
-        let minusWidth = 0;
+        let minusWidth = 0, showClearIcon = false;
         if(this.props.type=='password') minusWidth += 36;
-        if(input && input.value) minusWidth += 36;
+        if(input && input.value) {
+            showClearIcon = true;
+            if(input && input.value) minusWidth += 36;
+        }
         let width = (this.props.fullWidth ? `calc(100% - ${minusWidth}px)` : `auto`);
 
         // console.log(this.props.validations.indexOf('optional')==-1, this.props.value);
@@ -302,7 +318,7 @@ export class ValidationTextField extends Validation.components.Input {
                 <IconButton className="btn-icon" disabled style={{display: this.props.type=='password' ? 'inline-block' : 'none'}}>
                     <VisibleOffIcon/>
                 </IconButton>
-                <IconButton className="btn-icon" onTouchTap={this.handleClear.bind(this)} style={{display: this.props.value ? 'none' : (input&&input.value ? 'inline-block': 'none')}}>
+                <IconButton className="btn-icon" onTouchTap={this.handleClear.bind(this)} style={{display: showClearIcon ? 'inline-block' : 'none'}}>
                     <ClearIcon/>
                 </IconButton>
             </div>
@@ -371,29 +387,38 @@ export class ValidationSelectField extends Validation.components.Select {
         // console.log('options', options);
         let items = options? [] : null;
         if(typeof options === 'object') { // object or array only
-            for(let i in options) {
-                let id = options[i].id ? parseInt(options[i].id) : parseInt(i);
-                items.push(<MenuItem value={id} key={id} primaryText={options[i].name}/>);
+            if(this.props.multiple) {
+                for(let i in options) {
+                    let id = options[i].id ? parseInt(options[i].id) : parseInt(i);
+                    items.push(<ListItem value={id} key={id} primaryText={options[i].name}/>);
+                }
+            } else {
+                for(let i in options) {
+                    let id = options[i].id ? parseInt(options[i].id) : parseInt(i);
+                    items.push(<MenuItem value={id} key={id} primaryText={options[i].name}/>);
+                }
             }
         }
 
         // fix width
         let minusWidth = 0;
-        if(!this.props.value && (this.props.multiple && (input&&input.value.length))) minusWidth += 36;
+        let showClearIcon = false;
+        if(this.props.multiple && (input&&input.value.length)) showClearIcon = true;
+        if(showClearIcon) minusWidth += 36;
         let width = (this.props.fullWidth ? `calc(100% - ${minusWidth}px)` : `auto`);
         
         return (
             <div className={this.props.containerClassName || null}>
                 {this.props.multiple ?
-                    <MultiSelect ref='node' {...rest} style={{width: width}} value={value} hintText={hintText} onChange={this.handleChange.bind(this)}  >
-                        {options.map((option, index)=><ListItem key={index} value={option.id} primaryText={option.name} />)}
+                    <MultiSelect ref='node' {...rest} style={{width: width}} value={value} hintText={hintText} onChange={this.handleChange.bind(this)}>
+                        {items}
                     </MultiSelect>
                     :
                     <SelectField ref='node' {...rest} style={{width: width}} value={value} hintText={hintText} onChange={this.handleChange.bind(this)}>
                         {items}
                     </SelectField>
                 }
-                <IconButton className="btn-icon" onTouchTap={this.handleClear.bind(this)} style={{display: this.props.value ? 'none' : ((this.props.multiple ? input&&input.value.length : input&&input.value) ? 'inline-block': 'none')}}>
+                <IconButton className="btn-icon" onTouchTap={this.handleClear.bind(this)} style={{display: showClearIcon ? 'inline-block' : 'none'}}>
                     <ClearIcon/>
                 </IconButton>
             </div>
@@ -707,12 +732,13 @@ export class ValidationDatePicker extends Component {
         this.handleClear = this.handleClear.bind(this);
     }
     componentWillMount(){
-        console.log('this.props.value', this.props.value);
         this.props.value && this.props._update(this, event, true, true, this.props.value.getISODate());
     }
     handleChange(n, value){
-        let date = moment(value);
-        this.props._update(this, event, true, true, date.format(this.props.format ? this.props.format : 'YYYY-MM-DD'));
+        // let date = moment(value);
+        // this.props._update(this, event, true, true, date.format(this.props.format ? this.props.format : 'YYYY-MM-DD'));
+        // please use Date instead of Moment
+        this.props._update(this, event, true, true, (new Date(value)).getISODate());
         this.props.onChange && this.props.onChange(date);
     }
     handleClear(){

@@ -11,12 +11,11 @@ import DashboardPage from '../components/DashboardPage';
 import HomePage from '../components/HomePage';
 import CalendarPage from '../components/CalendarPage';
 
-import OrganizerPage from '../components/OrganizerPage';
 import RequestPage from '../components/RequestPage';
 
+import ScheduleCalendar from '../components/schedule/ScheduleCalendar';
 import SchedulePage from '../components/schedule/SchedulePage';
-import SalePage from '../components/schedule/SalePage';
-import SearchPage from '../components/schedule/SearchPage';
+
 import DoctorPage from '../components/schedule/DoctorPage';
 import DoctorSettingPage from '../components/schedule/DoctorSettingPage';
 import SlotPage from '../components/schedule/SlotPage';
@@ -24,12 +23,11 @@ import SlotPage from '../components/schedule/SlotPage';
 import UserPage from '../components/user/UserPage';
 import UserModal from '../components/user/UserModal';
 
-
-
 const UserIsAuthenticated = UserAuthWrapper({
     authSelector: state => state.user, // how to get the user state
     authenticatingSelector: state => state.user.authenticating, // for async session loading.
     LoadingComponent: LoginPage, // how to get the user state
+    failureRedirectPath: '/#/login',
     predicate: auth => auth.authenticating!==true && !auth.error,
     redirectAction: routerActions.replace, // the redux action to dispatch for redirect
     wrapperDisplayName: 'UserIsAuthenticated' // a nice name for this auth check
@@ -50,8 +48,8 @@ export default function configureRoute(store){
             </Route>
             <Route path="slots" component={UserIsAuthenticated(SlotPage)} />
             <Route path="request" component={UserIsAuthenticated(RequestPage)} />
-            <Route path="schedules" component={UserIsAuthenticated(SearchPage)}>
-                <Route path=":doctor_id(/:date)(/:hides)" component={UserIsAuthenticated(SalePage)} />
+            <Route path="schedules/:role" component={UserIsAuthenticated(SchedulePage)}>
+                <Route path="(:doctor_id)(/:date)(/:hides)" component={UserIsAuthenticated(ScheduleCalendar)} />
             </Route>
             <Route path="doctors/settings" component={UserIsAuthenticated(DoctorPage)}>
                 <Route path=":doctor_id" component={UserIsAuthenticated(DoctorSettingPage)} />

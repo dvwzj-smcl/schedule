@@ -20,7 +20,7 @@ class UserModuleSeeder extends Seeder
         $role_sale = \App\Models\User\Role::create(['name'=>'sale', 'display_name'=>'User Sale', 'description'=>'Just a sale role']);
 
         $doctor_count = 3;
-        $sale_count = 3;
+        $sale_count = 2;
         $organizer_count = 2;
 
         // Generate Users

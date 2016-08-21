@@ -77,7 +77,7 @@ class SemiForm extends Component {
     }
 
     onSubmit(data, error, event) {
-        console.log('data, error', data, error);
+        // console.log('data, error', data, error);
         if (this.props.onSubmit) {
             let promise = this.props.onSubmit(data, this.context.ajax);
             if (promise) {
@@ -143,7 +143,12 @@ class SemiForm extends Component {
         if(formTemplate) {
             let values = this.state.values;
             let data = this.state.data;
-            // todo: validator & component
+
+            let validators = formTemplate.validators;
+            if (validators) {
+                // todo: validator & component
+            }
+
             for (let rowId in formTemplate.components) {
 
                 let row = formTemplate.components[rowId];
@@ -151,11 +156,10 @@ class SemiForm extends Component {
                 let md = Math.floor(12 / row.length); // equally width for now
                 for (let itemId in row) {
 
-                    let item = row[itemId];
-                    let component = null;
-
-                    let {name} = item;
-                    let value = values[name]; // todo
+                    let item = row[itemId],
+                        component = null,
+                        {name} = item,
+                        value = values[name];
 
                     let defaultValues = {
                         required: false,
@@ -163,7 +167,16 @@ class SemiForm extends Component {
                         fullWidth: true
                     };
 
-                    let validations = ['optional'];
+                    // console.log('item', item);
+                    let vs = item.validations,
+                        validations = item.required ? ['required'] : ['optional'];
+                    if (vs) {
+                        for(let v of vs) {
+                            validations.push(v);
+                        }
+                    }
+
+                    // console.log(name, 'validations', validations, item.required);
 
                     let overrideValues = { // props with different names or need processing
                         floatingLabelText: item.label, // todo: * and optional
@@ -194,6 +207,14 @@ class SemiForm extends Component {
                         case 'select':
                             component = (
                                 <SemiValidation.components.SelectField
+                                    options={data[name]}
+                                    {...rest}
+                                />
+                            );
+                            break;
+                        case 'multiselect':
+                            component = (
+                                <SemiValidation.components.MultipleSelectField
                                     options={data[name]}
                                     {...rest}
                                 />

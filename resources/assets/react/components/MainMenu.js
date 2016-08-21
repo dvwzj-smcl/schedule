@@ -17,9 +17,15 @@ const menus = [
         to: "/"
     },
     {
-        text: "Schedule",
+        text: "Sale's Schedule",
         icon: <ActionEvent />,
-        to: "/schedules",
+        to: "/schedules/sale",
+        permissions : ['organize-schedules']
+    },
+    {
+        text: "Organizer's Schedule",
+        icon: <ActionEvent />,
+        to: "/schedules/organizer",
         permissions : ['organize-schedules']
     },
     {

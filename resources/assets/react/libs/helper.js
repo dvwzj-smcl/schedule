@@ -8,6 +8,10 @@ const helper = {
             if(params[i] !== nextParams[i]) return true;
         }
         return false;
+    },
+    has : (str, find) => {
+        let result = str.indexOf(find);
+        return result != -1;
     }
 };
 

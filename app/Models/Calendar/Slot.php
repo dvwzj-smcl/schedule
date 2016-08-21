@@ -8,22 +8,25 @@ use Carbon\Carbon;
 class Slot extends Model
 {
     protected $table = 'sc_slots';
-    protected $fillable = ['start', 'end', 'sc_doctor_id', 'created_by', 'sc_category_id'];
-
-    protected $dates = ['start', 'end'];
+    protected $guarded = ['id', 'created_at', 'updated_at'];
+    protected $dates = ['start', 'end']; // auto Carbon
 
     public function doctor(){
         return $this->belongsTo('App\Models\User\Doctor', 'sc_doctor_id');
     }
+
     public function organizer(){
         return $this->belongsTo('App\Models\User\User', 'created_by');
     }
+
     public function category(){
         return $this->belongsTo('App\Models\Calendar\Category', 'sc_category_id');
     }
+
     public function doctor_category(){
         return $this->belongsTo('App\Models\Calendar\DoctorCategory', 'sc_doctor_category_id');
     }
+
     public function events(){
         return $this->hasMany('App\Models\Calendar\Event', 'sc_slot_id');
     }
@@ -32,10 +35,12 @@ class Slot extends Model
         $limit = clone $startDate;
         return $query->where('start', '>', $startDate)->where('start', '<', $limit->addMonth());
     }
+
     public function scopePrevious($query, $startDate){
         $limit = clone $startDate;
         return $query->where('start', '<', $startDate)->where('start', '>', $limit->addMonth(-1));
     }
+
     public function scopeByDate($query, $startParam, $endParam = null){
         $weekCount = 6;
         
@@ -53,15 +58,8 @@ class Slot extends Model
             $start = $startParam;
             $end = $endParam;
         }
-        
         return $query->where('start', '>', $start)->where('start', '<', $end)->orderBy('start');
     }
-    //public function doctor_category(){
-        //dd($this);
-        //dd($this->sc_doctor_id);
-        //return $this->hasMany('App\Models\Calendar\DoctorCategory', 'sc_category_id', 'sc_category_id')->where('sc_doctor_id', $this->sc_doctor_id);
-        //return $this->sc_category_id;
-    //}
 
     /*
     public function response(){

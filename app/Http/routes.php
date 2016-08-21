@@ -31,39 +31,29 @@ Route::group(['prefix' => 'api', 'middleware' => []], function () {
     Route::post('auth', 'User\AuthController@Login');
 });
 
-//--- Route ที่มีการเช็ค auth user
-//Route::group(['prefix' => 'api', 'middleware' => ['jwt.auth','permission']], function () {
-//    Route::controller('auth', 'User\AuthController');
-//    Route::resource('user', 'User\UserController');
-//    Route::resource('branch', 'User\BranchController');
-//    Route::resource('permission', 'User\PermissionController');
-//    Route::resource('role', 'User\RoleController');
-//
-//});
-Route::group(['prefix' => 'api', 'middleware' => ['jwt.auth']], function () {
+Route::group(['prefix' => 'api', 'middleware' => ['jwt.auth'/*,'permission'*/]], function () {
     // todo : branch
     Route::controller('auth', 'User\AuthController');
     Route::resource('users', 'User\UserController');
-
     Route::controller('branches', 'User\BranchController');
     Route::resource('branches', 'User\BranchController');
-
     Route::controller('roles', 'User\RoleController');
     Route::resource('roles', 'User\RoleController');
-
     Route::resource('permissions', 'User\PermissionController');
 
     // schedules
     Route::group(['prefix'=>'schedules'], function() {
         Route::get('init', 'Schedule\ScheduleController@init');
         Route::get('doctors/{doctor_id}/slots', 'Schedule\ScheduleController@getDoctorSlots');
-        Route::get('doctors/{doctor_id}/events/{date?}', 'Schedule\ScheduleController@getDoctorEvents');
+        Route::get('doctors/{doctor_id}/events/{date?}', 'Schedule\ScheduleController@getDoctorSlotsWithEvents');
+        Route::get('organizer/{user_id}/events', 'Schedule\ScheduleController@getOrganizerEvents');
         // todo: get category slot
         Route::resource('events', 'Schedule\EventController');
         
+        Route::get('events/{id}/approve', 'Schedule\EventController@approve');
         Route::get('events/{id}/cancel', 'Schedule\EventController@cancel');
-//        Route::post('events/{slot_id}/add_event', 'Schedule\SlotController@addEvent');
-//        Route::post('slots/{slot_id}/add_event', 'Schedule\SlotController@addEvent');
+        Route::get('events/{id}/reject', 'Schedule\EventController@reject');
+        Route::get('events/{id}/pending', 'Schedule\EventController@pending');
     });
     // slot ( create/update/delete/addevent )
     // doctor ( getSlot )

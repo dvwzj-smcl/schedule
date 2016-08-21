@@ -4,8 +4,6 @@ import {
     SCHEDULE_INIT_SUCCESS
 } from '../constants/actionTypes';
 
-import api from '../api';
-
 export function initSchedule() {
     return {
         types: [SCHEDULE_INIT_REQUEST, SCHEDULE_INIT_SUCCESS, SCHEDULE_INIT_FAILED],

@@ -32,17 +32,20 @@ body { margin: 0; font-family: 'roboto', 'segoe ui', 'droid sans', tahoma, arial
 
 .top-nav-wrap { float: left; position: fixed; width: 100%; z-index: 999; }
 .top-nav-bar { background: $fgcolor !important; padding-left: $sidebarexpanded+$conwrappad+24px !important; }
+.no-menu .top-nav-bar { padding-left:  $conwrappad+24px !important;}
 .side-nav-bar { background: $maincolor !important; color: $maintextcolor; letter-spacing: 1px; }
 
 /* page heading */
 
-.page-heading { background: #f1f1f1; float: left; width: 100%; box-sizing: border-box; padding: $navheight $conwrappad 0 $sidebarexpanded+$conwrappad;}
+.page-heading { background: #f1f1f1; float: left; width: 100%; box-sizing: border-box; padding: $navheight $conwrappad 0 $conwrappad;}
 .page-heading>h1 { font-size: 30px; font-weight: 400; margin: 20px 0 5px 0; }
 .page-heading>p { color: #666; font-size: 13px; font-weight: 300; margin: 0 0 20px 0; }
 
 /* content */
 
-.content-wrap { padding: 0 $conwrappad $conwrappad $sidebarexpanded+$conwrappad; background: $bgcolor; float: left; width: 100%; box-sizing: border-box; }
+.main-wrap { padding: 0 0 0 $sidebarexpanded !important; background: $bgcolor; float: left; width: 100%; box-sizing: border-box; }
+.no-menu .main-wrap { padding-left: 0 !important; }
+.content-wrap { padding: 0 $conwrappad $conwrappad $conwrappad !important; background: $bgcolor; float: left; width: 100%; box-sizing: border-box; }
 .content-wrap>div { padding: 0 !important;}
 
 .panel-bar { height: $barheight; z-index: 99 !important; }
@@ -61,8 +64,9 @@ body { margin: 0; font-family: 'roboto', 'segoe ui', 'droid sans', tahoma, arial
 .button.rightmargin { margin-right: 12px; }
 
 .button-group { margin-bottom: 24px; }
+.button-group .button { margin-right: 16px; }
 .button-group.right { text-align: right; }
-.button-group.right .button { margin-left: 16px; }
+.button-group.right .button { margin-left: 16px; margin-right: 0; }
 .button-group .icon-only-btn { min-width: 0 !important; width: 10px; padding: 0 10px; }
 
 /* form */
@@ -82,7 +86,8 @@ body { margin: 0; font-family: 'roboto', 'segoe ui', 'droid sans', tahoma, arial
 
 #app { height: 100%; }
 .center { display: table !important; width: 100% !important; height: 100% !important; position: absolute; }
-.center-inner{ display: table-cell; vertical-align: middle; text-align: center; }
+.center-inner{ display: table-cell !important; vertical-align: middle; }
+.center-inner.loading{ text-align: center; }
 .center-modal{ width: 100%; padding-top: 24px; text-align: center; }
 
 /* Headers */
@@ -91,29 +96,17 @@ body { margin: 0; font-family: 'roboto', 'segoe ui', 'droid sans', tahoma, arial
 .calendar-header h2 { float:left; margin-top: 8px; }
 
 /* Search Page */
-//$approved: #FF00FF;
-//.cal-checkbox {
-//  $approved: #00A000;
-//  &.self {
-//    & label {color: $approved !important;}
-//    & svg {fill: $approved !important;}
-//  }
-//}
-
-
-
-/* todo : please change the name */
-.parent{
-  display: table !important;
-  width: 100% !important;
-  height: 100% !important;
-  position:absolute;
+/*
+$approved: #FF00FF;
+.cal-checkbox {
+  $approved: #00A000;
+  &.self {
+    & label {color: $approved !important;}
+    & svg {fill: $approved !important;}
+  }
 }
+*/
 
-.child{
-  display: table-cell;
-  vertical-align: middle;
-}
 
 .pagination {
   text-align: right;

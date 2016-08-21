@@ -94,12 +94,51 @@ class ScheduleModuleSeeder extends Seeder
             $sub = $subs[rand(0, $maxId)];
             $end = clone $time;
             $end->addMinute($sub['duration']);
+            $reason = '';
+            $status = static::getRandomStatus();
+            $confirm_status = '';
+            if($status == 'approved') {
+                $confirm_status = static::getRandomConfirmStatus($time);
+            } else if($status == 'rejected') {
+                if(rand(0, 100) < 50) $reason = 'reject reason';
+            } else if($status == 'canceled') {
+                if(rand(0, 100) < 50) $reason = 'cancel reason';
+            }
             if($end > $limit) break;
-            if (rand(0, 100) > 20) {
-                \App\Models\Calendar\Event::create(['start'=>$time, 'end'=>$end, 'sc_slot_id'=>$slot->id, 'sc_sub_category_id'=>$sub['sub_category_id'], 'sale_id'=>static::getRandomSaleId($slot), 'sc_customer_id'=>rand(1, \App\Models\User\Customer::count()), 'status'=>'approved']);
+            if(rand(0, 100) > 20) {
+                \App\Models\Calendar\Event::create(['start'=>$time, 'end'=>$end, 'sc_slot_id'=>$slot->id, 'sc_sub_category_id'=>$sub['sub_category_id'], 'sale_id'=>static::getRandomSaleId($slot), 'sc_customer_id'=>rand(1, \App\Models\User\Customer::count()), 
+                    'status'=>$status, 'confirm_status'=>$confirm_status]);
             }
             $time->addMinute($sub['duration']);
         }
+    }
+
+    public function getRandomStatus() {
+        $status = ['approved', 'approved', 'rejected', 'canceled', 'pending'];
+        return $status[rand(0,count($status)-1)];
+    }
+    
+    public function getRandomConfirmStatus($time) {
+        $status = ['', ' done phoned', 'phoned', 'messaged', 'done messaged', 'failed'];
+        $today = \Carbon\Carbon::now();
+        $phoneDay = (new \Carbon\Carbon())->addDay(-3);
+        $messageDay = (new \Carbon\Carbon())->addDay(-3);
+        if($phoneDay < $time && $time < $today) {
+            if(rand(0, 100) < 50) {
+                if($messageDay < $time && $time < $today) {
+                    if(rand(0, 100) < 50) {
+                        return 'done messaged';
+                    }
+                    return 'messaged';
+                }
+                return 'phoned';
+            }
+            if($time < $messageDay) return 'done phoned';
+            return '';
+        } else if($time < $today) {
+            return $status[rand(0,count($status)-1)];
+        }
+        return '';
     }
 
     public function getRandomSaleId(\App\Models\Calendar\Slot $slot) {

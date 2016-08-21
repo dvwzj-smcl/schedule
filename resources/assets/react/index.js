@@ -3,7 +3,7 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
-import { Router, browserHistory } from 'react-router';
+import { Router, browserHistory, hashHistory } from 'react-router';
 import configureRoute from './route/configureRoute';
 import configureStore from './store/configureStore';
 require('./favicon.ico'); // Tell webpack to load favicon.ico
@@ -29,8 +29,10 @@ if(username && password) {
 
 const routes = configureRoute(store);
 
+
 // Create an enhanced history that syncs navigation events with the store
-const history = syncHistoryWithStore(browserHistory, store);
+// const history = syncHistoryWithStore(browserHistory, store); // Browser History
+const history = syncHistoryWithStore(hashHistory, store); // Hash History, fix
 
 render(
     <Provider store={store}>

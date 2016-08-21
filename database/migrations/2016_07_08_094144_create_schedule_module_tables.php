@@ -28,6 +28,10 @@ class CreateScheduleModuleTables extends Migration
             $table->string('phone');
             $table->string('contact');
             $table->timestamps();
+
+            $table->index('hn');
+            $table->index('first_name');
+            $table->index('last_name');
         });
         Schema::create('sc_categories', function (Blueprint $table) {
             $table->increments('id');
@@ -45,7 +49,7 @@ class CreateScheduleModuleTables extends Migration
             $table->increments('id');
             $table->dateTime('start');
             $table->dateTime('end');
-            $table->boolean('is_full')->default(false);
+            $table->boolean('locked')->default(false);
             $table->integer('created_by')->unsigned();
             $table->foreign('created_by')->references('id')->on('users')->onUpdate('cascade')->onDelete('restrict');
             $table->integer('sc_doctor_id')->unsigned();
@@ -67,17 +71,30 @@ class CreateScheduleModuleTables extends Migration
             $table->foreign('sale_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('restrict');
             $table->integer('sc_customer_id')->unsigned()->nullable();
             $table->foreign('sc_customer_id')->references('id')->on('sc_customers')->onUpdate('cascade')->onDelete('restrict');
+            $table->string('reason');
+            /*
+            * 0. none (no confirm)
+            * 1. phoned
+            * 2. messaged
+            * 3. done
+             * none 0
+             * phoned -> phoned done 10 11
+             * messaged -> messaged done 20 21
+             * no reply 3
+            */
+            $table->string('confirm_status');
+            /*
+             * approved
+             * pending
+             * rejected
+             * cancel
+             */
             $table->string('status');
             $table->timestamps();
-            /*
-             * 1. approved
-             * 2. pending
-             * 3. rejected
-             * 4. cancel
-             * 
-             */
 
-
+            $table->index('start');
+            $table->index('confirm_status');
+            $table->index('status');
         });
     }
 

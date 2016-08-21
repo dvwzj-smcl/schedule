@@ -41,4 +41,8 @@ class BaseFunctionManager {
         return \Auth::user()->id;
     }
 
+    public static function isOrganizer() {
+        return \Auth::user()->hasRole('organizer');
+    }
+
 }

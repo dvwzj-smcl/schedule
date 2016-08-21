@@ -46,22 +46,3 @@ fs.readFile('resources/assets/react/index.html', 'utf8', (readError, markup) => 
 
   return readError;
 });
-
-// css
-// fs.readFile('resources/assets/react/index.html', 'utf8', (readError) => {
-//   if (readError) {
-//     return console.log(chalkError(readError));
-//   }
-//
-//   fs.writeFile('styles.css', $.html(), 'utf8', (writeError) => {
-//     if (writeError) {
-//       console.log('write error: styles.css written to /');
-//       return console.log(chalkError(writeError));
-//     }
-//     console.log(chalkSuccess('index.html written to /'));
-//
-//     return writeError;
-//   });
-//
-//   return readError;
-// });

@@ -36,7 +36,8 @@ class EventController extends Controller
 
             // set time
             $start = Carbon::parse($event['start'], 'UTC')->setTimezone('Asia/Bangkok');
-            $end = clone $start; $end->addMinutes($subcat->duration);
+            //$end = clone $start; $end->addMinutes($subcat->duration);
+            $end = $start->copy()->addMinutes($subcat->duration);
             $event['start'] = $start;
             $event['end'] = $end;
 
@@ -92,6 +93,42 @@ class EventController extends Controller
             $event = Event::find($id);
             if($event == null) throw new \Exception('Cannot find event');
             $event->cancel();
+
+            return BF::result(true, ['event' => $event]);
+        } catch(\Exception $e) {
+            return BF::result(false, $e->getMessage());
+        }
+    }
+
+    public function approve($id) {
+        try {
+            $event = Event::find($id);
+            if($event == null) throw new \Exception('Cannot find event');
+            $event->approve();
+
+            return BF::result(true, ['event' => $event]);
+        } catch(\Exception $e) {
+            return BF::result(false, $e->getMessage());
+        }
+    }
+
+    public function reject($id) {
+        try {
+            $event = Event::find($id);
+            if($event == null) throw new \Exception('Cannot find event');
+            $event->reject();
+
+            return BF::result(true, ['event' => $event]);
+        } catch(\Exception $e) {
+            return BF::result(false, $e->getMessage());
+        }
+    }
+
+    public function pending($id) {
+        try {
+            $event = Event::find($id);
+            if($event == null) throw new \Exception('Cannot find event');
+            $event->pending();
 
             return BF::result(true, ['event' => $event]);
         } catch(\Exception $e) {

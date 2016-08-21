@@ -49,18 +49,62 @@ export function ajax (method, url, data, access_token) {
     if(data) data = JSON.stringify(data);
 
     return new Promise((resolve, reject) => {
+        // $.ajax({method, url, data, dataType: 'json',
+        //     headers: {
+        //         'Access-Token': access_token,
+        //         'Content-Type': 'application/json'
+        //     },
+        //     // custom
+        //     tryCount : 0,
+        //     retryLimit : 3
+        // }).done(response=>{
+        //     if(response.status == "error"){
+        //         reject(response.data.error);
+        //     }
+        //     resolve(response);
+        // }).fail((jqXHR, textStatus) => {
+        //
+        //     console.log('retry', jqXHR, this);
+        //     // retry
+        //     // if (textStatus == 'timeout' || jqXHR.status == 500) {
+        //     //     this.tryCount++;
+        //     //     if (this.tryCount <= this.retryLimit) {
+        //     //         //try again
+        //     //         $.ajax(this);
+        //     //         return;
+        //     //     }
+        //     //     return;
+        //     // } else {
+        //     //     //handle error
+        //     // }
+        //     reject(jqXHR);
+        // });
         $.ajax({method, url, data, dataType: 'json',
             headers: {
                 'Access-Token': access_token,
                 'Content-Type': 'application/json'
+            },
+            // custom
+            tryCount : 0,
+            retryLimit : 3,
+            success : function(response) {
+                if(response.status == "error"){
+                    reject(response.data.error);
+                }
+                resolve(response);
+            },
+            error : function(xhr, textStatus, errorThrown ) {
+                if (textStatus == 'timeout' || xhr.status == 500) {
+                    console.log('retry: xhr', textStatus, xhr);
+                    this.tryCount++;
+                    if (this.tryCount <= this.retryLimit) {
+                        //try again
+                        $.ajax(this);
+                    }
+                } else {
+                    reject(xhr);
+                }
             }
-        }).done(response=>{
-            if(response.status == "error"){
-                reject(response.data.error);
-            }
-            resolve(response);
-        }).fail(message=>{
-            reject(message);
         });
     });
 }

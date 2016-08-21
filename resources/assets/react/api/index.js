@@ -1,4 +1,6 @@
 import jwt from 'jsonwebtoken';
+require('es6-promise').polyfill();
+require('isomorphic-fetch');
 
 function baseUrl(endpoint) {
     let endpointStr = endpoint ? (endpoint.substr(0, 1) == '/' ? endpoint : '/' + endpoint) : '';

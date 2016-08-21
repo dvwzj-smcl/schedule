@@ -23,6 +23,9 @@ class Layout extends Component {
         this.toggleSidebar = this.toggleSidebar.bind(this);
         this.openConfirm = this.openConfirm.bind(this);
         this.openAlert = this.openAlert.bind(this);
+        this.state = {
+            showMainMenu: true
+        }
     }
 
     linkTo(pathname) {
@@ -52,20 +55,25 @@ class Layout extends Component {
         this.refs.alert.open(params);
     }
 
+    toggleMainMenu = () => {
+        this.setState({showMainMenu: !this.state.showMainMenu});
+    };
+
     render() {
         // console.log('render: layout', this.props.user);
+        let showMainMenu = this.state.showMainMenu;
         return (
-            <div id="layout">
+            <div id="layout" className={`${showMainMenu ? '' : 'no-menu'}`}>
                 <Confirm ref="confirm" />
                 <Alert ref="alert" />
-                <Drawer open={true} className="menu-wrapper">
+                <Drawer open={showMainMenu} className={`menu-wrapper ${showMainMenu ? '' : 'minimize'}`}>
                     <Toolbar className="side-nav-bar"><ToolbarTitle text="Navigation"/></Toolbar>
                     <MainMenu location={this.props.location} />
                 </Drawer>
                 <Paper className="top-nav-wrap" zDepth={1}>
                     <Toolbar className="top-nav-bar">
                         <ToolbarGroup firstChild={true}>
-                            <FlatButton className="icon-btn left-most" icon={<NavigationMenu />} />
+                            <FlatButton className="icon-btn left-most" icon={<NavigationMenu />} onTouchTap={this.toggleMainMenu} />
                             <IconButton iconClassName="muidocs-icon-custom-github" />
                         </ToolbarGroup>
                         <ToolbarGroup>
@@ -89,7 +97,7 @@ class Layout extends Component {
                         </ToolbarGroup>
                     </Toolbar>
                 </Paper>
-                <div>
+                <div className={`main-wrap`}>
                     {this.props.children}
                 </div>
             </div>

@@ -22,10 +22,15 @@ class LoginPage extends Component {
         this.onSubmit = this.onSubmit.bind(this);
     }
 
+    componentWillMount() {
+        // fix: wrong password no alert (for hashHistory)
+        this.context.router.push('/login');
+    }
+
     onSubmit = (data) => {
         console.log('data', data);
         this.props.actions.login(data.username, data.password).then((json)=>{
-            console.log('json', json);
+            console.log('json', json, this.props.user.error);
             if(this.props.actions.isAuthenticated()){
                 this.context.router.replace(this.props.routing.locationBeforeTransitions.query.ref || '/');
             }
@@ -36,7 +41,7 @@ class LoginPage extends Component {
         // console.log('render: login');
         let formTemplate = {
             data: {},
-            values: {username: 'sale1', password: 'asdfasdf'},
+            values: {username: 'organizer1', password: 'asdfasdf'},
             components: [
                 [{type: 'text', name: 'username', label: 'Username', required: true, hint: 'your username or email'}],
                 [{type: 'password', name: 'password', label: 'Password', required: true}]
@@ -44,9 +49,9 @@ class LoginPage extends Component {
         };
 
         return (
-            <Grid className="parent">
+            <Grid className="center">
                 <Alert open={this.props.user.error !== null} title="Login Failed" description={this.props.user.error} />
-                <Row className="child">
+                <Row className="center-inner">
                     <Col xs mdOffset={4} md={4}>
                         <Paper>
                             <AppBar
