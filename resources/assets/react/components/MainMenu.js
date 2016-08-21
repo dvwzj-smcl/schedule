@@ -35,15 +35,9 @@ const menus = [
         permissions : ['organize-schedules']
     },
     {
-        text: "Organize",
-        icon: <ActionPermContactCalendar />,
-        to: "/organize",
-        permissions : ['organize-schedules']
-    },
-    {
-        text: "Doctor Settings",
+        text: "Settings",
         icon: <ActionSettings />,
-        to: "/doctors/settings",
+        to: "/settings",
         permissions : ['organize-schedules']
     },
     {

@@ -16,6 +16,7 @@ import RequestPage from '../components/RequestPage';
 import ScheduleCalendar from '../components/schedule/ScheduleCalendar';
 import SchedulePage from '../components/schedule/SchedulePage';
 
+import SettingPage from '../components/schedule/SettingPage';
 import DoctorPage from '../components/schedule/DoctorPage';
 import DoctorSettingPage from '../components/schedule/DoctorSettingPage';
 import SlotPage from '../components/schedule/SlotPage';
@@ -51,8 +52,9 @@ export default function configureRoute(store){
             <Route path="schedules/:role" component={UserIsAuthenticated(SchedulePage)}>
                 <Route path="(:doctor_id)(/:date)(/:hides)" component={UserIsAuthenticated(ScheduleCalendar)} />
             </Route>
-            <Route path="doctors/settings" component={UserIsAuthenticated(DoctorPage)}>
-                <Route path=":doctor_id" component={UserIsAuthenticated(DoctorSettingPage)} />
+            <Route path="settings" component={UserIsAuthenticated(SettingPage)}>
+                <Route path="doctor/:doctor_id" component={UserIsAuthenticated(DoctorSettingPage)} />
+                <Route path="category/:doctor_id" component={UserIsAuthenticated(DoctorSettingPage)} />
             </Route>
             <Route path="*" component={UserIsAuthenticated(NotFoundPage)} />
         </Route>
