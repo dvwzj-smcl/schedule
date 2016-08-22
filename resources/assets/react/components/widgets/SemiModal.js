@@ -16,17 +16,20 @@ class SemiModal extends Component {
         };
     }
 
-    enableButton = () => {
+    onValid = () => {
+        console.log('/');
         if(this.state.canSubmit === true) return;
         this.setState({ canSubmit: true });
     };
 
-    disableButton = () => {
+    onInvalid = () => {
+        console.log('x');
         if(this.state.canSubmit === false) return;
         this.setState({ canSubmit: false });
     };
 
     // todo: delete this
+
     submitCallback = (data) => {
         if(this.props.submitCallback) {
             // Close the dialog only when the callback returns true
@@ -109,8 +112,8 @@ class SemiModal extends Component {
                     <SemiForm
                         ref="form"
                         noButton
-                        onValid={this.enableButton}
-                        onInvalid={this.disableButton}
+                        onValid={this.onValid}
+                        onInvalid={this.onInvalid}
                         onLoad={this.props.onLoad? this.onLoad : null}
                         onSubmit={this.props.onSubmit? this.onSubmit : null}
                         formTemplate={props.formTemplate}

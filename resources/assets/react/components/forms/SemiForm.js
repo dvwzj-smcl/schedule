@@ -17,8 +17,6 @@ class SemiForm extends Component {
             values: props.formTemplate.values ? props.formTemplate.values : {},
             data: props.formTemplate.data ? props.formTemplate.data : {}
         };
-        this.enableButton = this.enableButton.bind(this);
-        this.disableButton = this.disableButton.bind(this);
         this.notifyFormError = this.notifyFormError.bind(this);
         this.resetForm = this.resetForm.bind(this);
         this.submit = this.submit.bind(this);
@@ -40,21 +38,23 @@ class SemiForm extends Component {
         });
     };
 
-    enableButton() {
+    onInvalid = () => {
+        // console.log('/');
         if (this.state.canSubmit === true) return;
         // console.log('enable!');
         this.setState({
             canSubmit: true
         });
-    }
+    };
 
-    disableButton() {
+    onValid = () =>  {
+        // console.log('x');
         if (this.state.canSubmit === false) return;
         // console.log('disable!');
         this.setState({
             canSubmit: false
         });
-    }
+    };
 
     componentDidMount() {
         if (this.props.onLoad) {
@@ -252,8 +252,8 @@ class SemiForm extends Component {
             <SemiValidation.components.Form
                 className={`semiForm ${formClass}`}
                 onSubmit={this.onSubmit}
-                onInvalid={this.disableButton}
-                onValid={this.enableButton}
+                onInvalid={this.onInvalid}
+                onValid={this.onValid}
                 ref="form"
                 {...rest}
             >

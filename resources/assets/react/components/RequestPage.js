@@ -26,6 +26,7 @@ import 'jquery-ui/ui/widgets/droppable';
 import moment from 'moment';
 import 'fullcalendar';
 import 'fullcalendar/dist/lang-all';
+import SemiForm from './forms/SemiForm';
 
 // Forms
 import SelectField from 'material-ui/SelectField';
@@ -179,6 +180,27 @@ class RequestPage extends Component {
             </div>
         );
 
+        let formItems3 = (
+            <div>
+                <Row>
+                    <Col xs md={6}>
+                        <SemiValidation.components.TextField value="asdfsdf" hintText="Username" name="first_name" floatingLabelText="First (Optional)" fullWidth={true} floatingLabelFixed={true} validations={['required']} />
+                    </Col>
+                    <Col xs md={6}>
+                        <SemiValidation.components.TextField value="asdfasd" hintText="Username" name="last_name" floatingLabelText="Last (Optional)" fullWidth={true} floatingLabelFixed={true} validations={['required']} />
+                    </Col>
+                </Row>
+                <Row>
+                    <Col xs md={6}>
+                        <SemiValidation.components.TextField hintText="Password"  name="password" type="password" floatingLabelText="Passsword (Required)" fullWidth={true} floatingLabelFixed={true} validations={['required', 'password']} />
+                    </Col>
+                    <Col xs md={6}>
+                        <SemiValidation.components.TextField hintText="Password Confirm" name="passwordConfirm" type="password" floatingLabelText="Passsword (Required)" fullWidth={true} floatingLabelFixed={true} validations={['required', 'password']} />
+                    </Col>
+                </Row>
+            </div>
+        );
+
         const data = [
             {
                 name: 'John Smith',
@@ -212,6 +234,25 @@ class RequestPage extends Component {
             }
         ];
 
+        let formTemplate = {
+            // data: this.state.eventModal.data,
+            // values: this.state.eventModal.values,
+            // values: {first_name: 'Semi', last_name: 'colon', hn: '55123456', phone: '0871234567', contact: 'kickass.to'}, // default values
+            values: {first_name: 'Semi', last_name: 'Semi'}, // default values
+            settings: {},
+            // validators: {hn: {rule: '/^\d{6,7}$/', hint: 'Invalid HN'}},
+            components: [
+                [
+                    {type: 'password', name: 'password', label: 'Password*', required: true, validations: ['password']},
+                    {type: 'password', name: 'passwordConfirm', label: 'Confirm Password*', hint: 'Same as password', required: true, validations: ['password']}
+                ],
+                [
+                    {type: 'text', name: 'first_name', label: 'First Name*', required: true},
+                    {type: 'text', name: 'last_name', label: 'Last Name*', required: true}
+                ],
+            ]
+        };
+
         return (
             <div>
                 <PageHeading title="Request" description="description" />
@@ -221,9 +262,14 @@ class RequestPage extends Component {
                             <Panel title="Request">
                                 <div className="con-pad">
                                     <SemiValidation.components.Form ref="form" onSubmit={this.onSubmit}>
-                                        {formItems2}
+                                        {formItems3}
                                         <SemiValidation.components.RaisedButton label="Submit" type="submit" />
                                     </SemiValidation.components.Form>
+                                </div>
+                            </Panel>
+                            <Panel title="Request">
+                                <div className="con-pad">
+                                    <SemiForm formTemplate={formTemplate} />
                                 </div>
                             </Panel>
                             {/*<SemiDataTable settings={{
