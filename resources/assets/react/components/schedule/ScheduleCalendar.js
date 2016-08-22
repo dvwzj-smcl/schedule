@@ -124,10 +124,10 @@ class ScheduleCalendar extends Component {
             };
             this.setState({eventModal:{data, values}});
             this.refs.eventModal.open();
-        } else if(['cancel','reject','approve','pending'].indexOf(key)) {
+        } else if(['cancel','reject','approve','pending'].indexOf(key) !== -1) {
             this.context.dialog.confirm('Are you sure?', `${key.capitalize()} Appointment`, (confirm) => {
                 if(confirm) {
-                    this.context.ajax.call('get', `schedules/events/${event_id}/${key}`, null).then( response => {
+                    this.context.ajax.call('get', `schedules/events/${event_id}/status/${key}`, null).then( response => {
                         this.refreshCalendar();
                     }).catch( error => {
                         this.context.dialog.alert(error, 'Error');
@@ -184,6 +184,7 @@ class ScheduleCalendar extends Component {
         else if(calEvent.status == 'canceled') hide.push('cancel');
         else if(calEvent.status == 'pending') hide.push('pending');
         else if(calEvent.status == 'rejected') hide.push('reject');
+        console.log('hide', hide);
 
         this.refs.eventContextMenu.open(jsEvent.target, {hide});
     };

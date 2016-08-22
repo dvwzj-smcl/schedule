@@ -47,13 +47,14 @@ Route::group(['prefix' => 'api', 'middleware' => ['jwt.auth'/*,'permission'*/]],
         Route::get('doctors/{doctor_id}/slots', 'Schedule\ScheduleController@getDoctorSlots');
         Route::get('doctors/{doctor_id}/events/{date?}', 'Schedule\ScheduleController@getDoctorSlotsWithEvents');
         Route::get('organizer/{user_id}/events', 'Schedule\ScheduleController@getOrganizerEvents');
+
+        Route::get('tasks', 'Schedule\ScheduleController@getTasks');
+        Route::get('events-status', 'Schedule\ScheduleController@getEventsStatus');
         // todo: get category slot
         Route::resource('events', 'Schedule\EventController');
         
-        Route::get('events/{id}/approve', 'Schedule\EventController@approve');
-        Route::get('events/{id}/cancel', 'Schedule\EventController@cancel');
-        Route::get('events/{id}/reject', 'Schedule\EventController@reject');
-        Route::get('events/{id}/pending', 'Schedule\EventController@pending');
+        Route::get('events/{id}/status/{status}', 'Schedule\EventController@setStatus');
+        Route::get('events/{id}/confirm-status/{status}', 'Schedule\EventController@setConfirmStatus');
     });
     // slot ( create/update/delete/addevent )
     // doctor ( getSlot )

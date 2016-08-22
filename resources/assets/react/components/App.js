@@ -45,6 +45,9 @@ class App extends Component {
     }
 }
 
+// Test.prototype.test = function() {
+//     console.log('123456', 123456);
+// }
 // window.helper = helper;
 
 Date.prototype.getISODate = function() {
@@ -53,6 +56,24 @@ Date.prototype.getISODate = function() {
     let day = this.getDate();
     if(day < 10) day = '0'+day;
     return this.getFullYear()+'-'+month+'-'+day;
+};
+Date.prototype.getDateTimeStr = function() {
+    // date
+    let month = this.getMonth()+1;
+    if(month < 10) month = '0'+month;
+    let day = this.getDate();
+    if(day < 10) day = '0'+day;
+
+    // time
+    let hours = this.getHours();
+    let minutes = this.getMinutes();
+    let ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    minutes = minutes < 10 ? '0'+minutes : minutes;
+    let strTime = hours + ':' + minutes + '' + ampm;
+
+    return this.getFullYear()+'-'+month+'-'+day+' '+strTime;
 };
 Date.prototype.unix = function() {
     return this.getTime()/1000;

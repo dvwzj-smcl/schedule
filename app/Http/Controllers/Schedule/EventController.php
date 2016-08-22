@@ -88,11 +88,14 @@ class EventController extends Controller
 
     public function destroy($id) {}
 
-    public function cancel($id) {
+    public function setStatus($id, $status) {
         try {
             $event = Event::find($id);
             if($event == null) throw new \Exception('Cannot find event');
-            $event->cancel();
+            if($status == 'approve') $event->approve();
+            else if($status == 'pending') $event->pending();
+            else if($status == 'reject') $event->reject();
+            else if($status == 'cancel') $event->cancel();
 
             return BF::result(true, ['event' => $event]);
         } catch(\Exception $e) {
@@ -100,35 +103,14 @@ class EventController extends Controller
         }
     }
 
-    public function approve($id) {
+    public function setConfirmStatus($id, $status) {
         try {
             $event = Event::find($id);
             if($event == null) throw new \Exception('Cannot find event');
-            $event->approve();
-
-            return BF::result(true, ['event' => $event]);
-        } catch(\Exception $e) {
-            return BF::result(false, $e->getMessage());
-        }
-    }
-
-    public function reject($id) {
-        try {
-            $event = Event::find($id);
-            if($event == null) throw new \Exception('Cannot find event');
-            $event->reject();
-
-            return BF::result(true, ['event' => $event]);
-        } catch(\Exception $e) {
-            return BF::result(false, $e->getMessage());
-        }
-    }
-
-    public function pending($id) {
-        try {
-            $event = Event::find($id);
-            if($event == null) throw new \Exception('Cannot find event');
-            $event->pending();
+            if($status == 'called') $event->called();
+            else if($status == 'messaged') $event->messaged();
+            else if($status == 'called-confirmed') $event->calledConfirmed();
+            else if($status == 'messaged-confirmed') $event->messagedConfirmed();
 
             return BF::result(true, ['event' => $event]);
         } catch(\Exception $e) {

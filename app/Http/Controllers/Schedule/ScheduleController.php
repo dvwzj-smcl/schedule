@@ -48,6 +48,79 @@ class ScheduleController extends Controller
         return BF::result(true, $response, '[schedule] init');
     }
 
+    public function getTasks()
+    {
+        Carbon::setWeekStartsAt(Carbon::SUNDAY);
+        Carbon::setWeekEndsAt(Carbon::SATURDAY);
+        try {
+            $userId = BF::getUserId();
+            if(BF::hasRole('organizer')) {
+            } else if(BF::hasRole('sale')) {
+                $today = \Carbon\Carbon::now();
+                $callDay = (new \Carbon\Carbon())->addDay(7);
+                $messageDay = (new \Carbon\Carbon())->addDay(3);
+
+                $new = Event::where('start', '>', $messageDay)
+                    ->where('start', '<', $callDay)
+                    ->where('confirmed_at', null)
+                    ->where('sale_id', $userId)
+                    ->where('status', 'approved')
+                    ->orderBy('start', 'asc')
+                    ->with('customer', 'sub_category')->get();
+
+                $urgent = Event::where('start', '>', $today)
+                    ->where('start', '<', $messageDay)
+                    ->where('confirmed_at', null)
+                    ->where('sale_id', $userId)
+                    ->where('status', 'approved')
+                    ->orderBy('start', 'asc')
+                    ->with('customer', 'sub_category')->get();
+
+                return BF::result(true, ['new' => $new, 'urgent' => $urgent]);
+            }
+            return BF::result(true, ['tasks' => []]);
+        } catch (\Exception $e){
+            return BF::result(false, $e->getMessage());
+        }
+    }
+
+    public function getEventsStatus()
+    {
+        Carbon::setWeekStartsAt(Carbon::SUNDAY);
+        Carbon::setWeekEndsAt(Carbon::SATURDAY);
+        // todo: asdfdsfdsfds
+        try {
+            $userId = BF::getUserId();
+            if(BF::hasRole('organizer')) {
+            } else if(BF::hasRole('sale')) {
+                $today = \Carbon\Carbon::now();
+                $callDay = (new \Carbon\Carbon())->addDay(7);
+                $messageDay = (new \Carbon\Carbon())->addDay(3);
+
+                $new = Event::where('start', '>', $messageDay)
+                    ->where('start', '<', $callDay)
+                    ->where('confirmed_at', null)
+                    ->where('sale_id', $userId)
+                    ->where('status', 'approved')
+                    ->orderBy('start', 'asc')
+                    ->with('customer', 'sub_category')->get();
+
+                $urgent = Event::where('start', '>', $today)
+                    ->where('start', '<', $messageDay)
+                    ->where('confirmed_at', null)
+                    ->where('sale_id', $userId)
+                    ->where('status', 'approved')
+                    ->orderBy('start', 'asc')
+                    ->with('customer', 'sub_category')->get();
+
+                return BF::result(true, ['pending' => $new, 'rejected' => $urgent, 'canceled' => $urgent]);
+            }
+            return BF::result(true, ['tasks' => []]);
+        } catch (\Exception $e){
+            return BF::result(false, $e->getMessage());
+        }
+    }
+
     public function getOrganizerEvents()
     {
         Carbon::setWeekStartsAt(Carbon::SUNDAY);

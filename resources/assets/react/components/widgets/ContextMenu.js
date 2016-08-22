@@ -3,6 +3,20 @@ import React, { Component } from 'react';
 import Popover from 'material-ui/Popover';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem'
+import IconButton from 'material-ui/IconButton';
+import IconMenu from 'material-ui/IconMenu';
+import {grey400, darkBlack, lightBlack} from 'material-ui/styles/colors';
+import {NavigationMoreVert} from 'material-ui/svg-icons';
+
+const iconButtonElement = (
+    <IconButton
+        touch={true}
+        tooltip="more"
+        tooltipPosition="bottom-left"
+    >
+        <NavigationMoreVert color={grey400} />
+    </IconButton>
+);
 
 class ContextMenu extends Component {
     constructor(props, context) {
@@ -50,7 +64,7 @@ class ContextMenu extends Component {
     };
 
     render() {
-        let {data, ...rest} = this.props;
+        let {data, isIconMenu, ...rest} = this.props;
         let {hide} = this.state;
         let items = data? [] : null;
         if(typeof data === 'object') { // object or array only
@@ -58,6 +72,17 @@ class ContextMenu extends Component {
                 let id = data[i].id ? data[i].id : parseInt(i);
                 items.push(<MenuItem value={id} key={id} primaryText={data[i].name} style={{display: data[i]._hide ? 'none' : 'block'}} />);
             }
+        }
+        if(isIconMenu) {
+            return (
+                <IconMenu
+                    iconButtonElement={iconButtonElement}
+                    onItemTouchTap={this.onItemTouchTap}
+                    {...rest}
+                >
+                    {items}
+                </IconMenu>
+            );
         }
         return (
             <Popover

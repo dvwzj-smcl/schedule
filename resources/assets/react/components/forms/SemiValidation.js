@@ -23,7 +23,7 @@ import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import AutoComplete from 'material-ui/AutoComplete';
 import DatePicker from 'material-ui/DatePicker';
 import Subheader from 'material-ui/Subheader';
-// import moment from 'moment';
+import moment from 'moment';
 
 Object.assign(Validation.rules, {
     required: {

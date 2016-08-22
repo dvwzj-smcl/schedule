@@ -63,12 +63,12 @@ class ScheduleModuleSeeder extends Seeder
         $customer_count = 100;
         for ($id = 1; $id <= $customer_count; $id++) {
             $hn = 5500000+$id;
-            \App\Models\User\Customer::create(['first_name' => "Customer {$id}", 'last_name' => "Customer {$id}", 'hn'=>"{$hn}", 'phone'=>"020000000", 'contact'=>"htp://www.facebook.com/customer{$id}"]);
+            \App\Models\User\Customer::create(['first_name' => "Customer {$id}", 'last_name' => "Customer {$id}", 'hn'=>"{$hn}", 'phone'=>"020000000", 'contact'=>"http://www.facebook.com/customer{$id}"]);
         }
 
         // Generate sample slots
 
-        $current = \Carbon\Carbon::create(2016, 4, 1);
+        $current = \Carbon\Carbon::create(2016, 8, 20);
         $limit = \Carbon\Carbon::create(2016, 12, 31);
         while($current < $limit) {
             foreach($doctors as $id) {
@@ -76,7 +76,8 @@ class ScheduleModuleSeeder extends Seeder
                 $end = clone $current;
                 $slot = \App\Models\Calendar\Slot::create(['start' => $start->setTime(8, 0), 'end' => $end->setTime(12, 0), 'sc_doctor_id' => $id, 'created_by' => 1, 'sc_category_id' => 1]);
                 static::randomFillEvents($slot);
-                \App\Models\Calendar\Slot::create(['start' => $start->setTime(14, 0), 'end' => $end->setTime(15, 0), 'sc_doctor_id' => $id, 'created_by' => 1, 'sc_category_id' => 2]);
+                $slot = \App\Models\Calendar\Slot::create(['start' => $start->setTime(14, 0), 'end' => $end->setTime(15, 0), 'sc_doctor_id' => $id, 'created_by' => 1, 'sc_category_id' => 2]);
+                static::randomFillEvents($slot);
                 \App\Models\Calendar\Slot::create(['start' => $start->setTime(15, 0), 'end' => $end->setTime(17, 0), 'sc_doctor_id' => $id, 'created_by' => 1, 'sc_category_id' => 1]);
                 \App\Models\Calendar\Slot::create(['start' => $start->setTime(17, 0), 'end' => $end->setTime(20, 0), 'sc_doctor_id' => $id, 'created_by' => 1, 'sc_category_id' => 2]);
             }
@@ -90,34 +91,55 @@ class ScheduleModuleSeeder extends Seeder
         $maxId = count($subs) - 1;
         $time = $slot->start;
         $limit = $slot->end;
+        $today = \Carbon\Carbon::now();
+        $callDay = $today->copy()->addDay(7);
+        $messageDay = $today->copy()->addDay(3);
         while($time < $limit) {
             $sub = $subs[rand(0, $maxId)];
             $end = clone $time;
             $end->addMinute($sub['duration']);
             $reason = '';
             $status = static::getRandomStatus();
-            $confirm_status = '';
             if($status == 'approved') {
-                $confirm_status = static::getRandomConfirmStatus($time);
             } else if($status == 'rejected') {
                 if(rand(0, 100) < 50) $reason = 'reject reason';
             } else if($status == 'canceled') {
                 if(rand(0, 100) < 50) $reason = 'cancel reason';
             }
+            $contactStatus = ['called_at' => null, 'messaged_at' => null, 'confirmed_at' => null];
+            if($time < $callDay && $status == 'approved') {
+                if($time < $messageDay) {
+                    $contactStatus = [
+                        'called_at' => (rand(0,10) < 8) ? $today->copy()->addDays(-3) : null,
+                        'messaged_at' => (rand(0,10) < 8) ? $today->copy()->addDays(-1) : null,
+                        'confirmed_at' => (rand(0,10) < 3) ? $today->copy()->addDays(-2) : null,
+                    ];
+                } else {
+                    $contactStatus = [
+                        'called_at' => (rand(0,10) < 3) ? $today->copy()->addDays(-3) : null,
+                        'messaged_at' => (rand(0,10) < 3) ? $today->copy()->addDays(-1) : null,
+                        'confirmed_at' => (rand(0,10) < 1) ? $today->copy()->addDays(-2) : null,
+                    ];
+                }
+            }
             if($end > $limit) break;
             if(rand(0, 100) > 20) {
-                \App\Models\Calendar\Event::create(['start'=>$time, 'end'=>$end, 'sc_slot_id'=>$slot->id, 'sc_sub_category_id'=>$sub['sub_category_id'], 'sale_id'=>static::getRandomSaleId($slot), 'sc_customer_id'=>rand(1, \App\Models\User\Customer::count()), 
-                    'status'=>$status, 'confirm_status'=>$confirm_status]);
+                \App\Models\Calendar\Event::create(array_merge(
+                    ['start'=>$time, 'end'=>$end, 'sc_slot_id'=>$slot->id, 'sc_sub_category_id'=>$sub['sub_category_id'], 'sale_id'=>static::getRandomSaleId($slot), 'sc_customer_id'=>rand(1, \App\Models\User\Customer::count()), 'status'=>$status],
+                    $contactStatus
+                ));
             }
             $time->addMinute($sub['duration']);
         }
     }
 
     public function getRandomStatus() {
-        $status = ['approved', 'approved', 'rejected', 'canceled', 'pending'];
+        $status = ['rejected', 'canceled', 'pending'];
+        if(rand(0, 10) < 8) return 'approved';
         return $status[rand(0,count($status)-1)];
     }
-    
+
+    // old
     public function getRandomConfirmStatus($time) {
         $status = ['', ' done phoned', 'phoned', 'messaged', 'done messaged', 'failed'];
         $today = \Carbon\Carbon::now();

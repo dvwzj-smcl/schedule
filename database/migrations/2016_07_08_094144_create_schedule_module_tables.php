@@ -82,7 +82,9 @@ class CreateScheduleModuleTables extends Migration
              * messaged -> messaged done 20 21
              * no reply 3
             */
-            $table->string('confirm_status');
+            $table->dateTime('called_at')->nullable();
+            $table->dateTime('messaged_at')->nullable();
+            $table->dateTime('confirmed_at')->nullable();
             /*
              * approved
              * pending
@@ -93,7 +95,6 @@ class CreateScheduleModuleTables extends Migration
             $table->timestamps();
 
             $table->index('start');
-            $table->index('confirm_status');
             $table->index('status');
         });
     }

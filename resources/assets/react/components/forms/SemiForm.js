@@ -38,8 +38,7 @@ class SemiForm extends Component {
         });
     };
 
-    onInvalid = () => {
-        // console.log('/');
+    enableButton = () => {
         if (this.state.canSubmit === true) return;
         // console.log('enable!');
         this.setState({
@@ -47,8 +46,7 @@ class SemiForm extends Component {
         });
     };
 
-    onValid = () =>  {
-        // console.log('x');
+    disableButton = () => {
         if (this.state.canSubmit === false) return;
         // console.log('disable!');
         this.setState({
@@ -252,8 +250,8 @@ class SemiForm extends Component {
             <SemiValidation.components.Form
                 className={`semiForm ${formClass}`}
                 onSubmit={this.onSubmit}
-                onInvalid={this.onInvalid}
-                onValid={this.onValid}
+                onInvalid={this.disableButton}
+                onValid={this.enableButton}
                 ref="form"
                 {...rest}
             >
