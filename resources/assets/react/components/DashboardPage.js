@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as notificationActions from '../actions/notificationActions';
@@ -59,10 +59,13 @@ class HomePage extends Component {
     };
 
     initialized = () => {
-        let taskReady = this.props.actions.getScheduleTasks(false);
-        let eventsStatusReady = this.props.actions.getScheduleEventsStatus(false);
-        if(!taskReady) this.props.actions.getScheduleTasks();
-        if(!eventsStatusReady) this.props.actions.getScheduleEventsStatus();
+        /*
+         false: Not send API Call. return isLoaded(boolean)
+         true: Send API Call. return isLoaded(boolean)
+         none: Send API Call. return Promise
+          */
+        let taskReady = this.props.actions.getScheduleTasks(true);
+        let eventsStatusReady = this.props.actions.getScheduleEventsStatus(true);
         return taskReady && eventsStatusReady;
     };
 
@@ -238,6 +241,12 @@ class HomePage extends Component {
         );
     }
 }
+
+HomePage.contextTypes = {
+    router: PropTypes.object.isRequired,
+    ajax: PropTypes.object,
+    dialog: PropTypes.object
+};
 
 const mapStateToProps = ({user, notification}) => ({user, notification});
 const mapDispatchToProps = (dispatch) => ({actions: {

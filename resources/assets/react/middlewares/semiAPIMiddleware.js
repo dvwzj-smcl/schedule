@@ -23,6 +23,7 @@ export default function semiAPIMiddleware({ dispatch, getState }) {
     return next => action => {
         let {
             moduleName,
+            onSuccess,
             params,
             type,
             map,
@@ -34,6 +35,8 @@ export default function semiAPIMiddleware({ dispatch, getState }) {
             // Normal action: pass it on
             return next(action)
         }
+
+        console.log('action', action);
 
         let state = getState();
         let shouldCallApi = true, loaded = false;
@@ -54,7 +57,6 @@ export default function semiAPIMiddleware({ dispatch, getState }) {
 
         // If params === false it will get status instead of sending API call
         if(params === false) {
-            console.log('123', 123);
             return loaded;
         } else if (!shouldCallApi) {
             return;
@@ -83,13 +85,17 @@ export default function semiAPIMiddleware({ dispatch, getState }) {
 
         dispatch(Object.assign({}, payload, newData));
         
-        return callAPI().then(
+        let promise = callAPI().then(
             response => {
                 response.json().then( json => {
                     // console.log('** json', json);
                     let data = {};
                     setter(data, map, {data: json.data, loading: false, loaded: true});
                     // console.log('data', data);
+                    console.log('onSuccess', onSuccess);
+                    if(typeof onSuccess === 'function') {
+                        dispatch(onSuccess());
+                    }
                     dispatch(Object.assign({}, payload, {
                         data,
                         type: type
@@ -104,6 +110,12 @@ export default function semiAPIMiddleware({ dispatch, getState }) {
                     type: type
                 }));
             }
-        )
+        );
+        
+        if(params === true) {
+            return loaded;
+        } else {
+            return promise;
+        }
     }
 }
