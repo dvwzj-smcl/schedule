@@ -20,7 +20,7 @@ export function getScheduleEventsStatus(params) {
         type: NOTIFICATION_GET_SC_EVENTS_STATUS,
         moduleName: 'notification',
         map: 'scEventsStatus',
-        onSuccess: testAction,
+        // onSuccess: testAction,
         callAPI: `schedules/events-status` // function or string URL
     }
 }

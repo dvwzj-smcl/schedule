@@ -1,18 +1,28 @@
 import {
-    SCHEDULE_INIT_REQUEST,
-    SCHEDULE_INIT_FAILED,
-    SCHEDULE_INIT_SUCCESS
+    SCHEDULE_INIT
 } from '../constants/actionTypes';
 
-export function initSchedule() {
+// ----- Latest Version
+export function initSchedule(params) {
+    return {
+        params,
+        type: SCHEDULE_INIT,
+        moduleName: 'schedule',
+        shouldCallAPI: (state, isLoaded) => !isLoaded,
+        callAPI: `schedules/init`
+    }
+}
+
+// ----- Old Version
+/*export function initSchedule() {
     return {
         types: [SCHEDULE_INIT_REQUEST, SCHEDULE_INIT_SUCCESS, SCHEDULE_INIT_FAILED],
         shouldCallAPI: (state) => !state.schedule.init,
         callAPI: `schedules/init`
     }
-}
+}*/
 
-// --- Variation
+// ----- Old Version : Variations
 /*export function initSchedule(userId) {
     return {
         types: [SCHEDULE_INIT_REQUEST, SCHEDULE_INIT_SUCCESS, SCHEDULE_INIT_FAILED],
@@ -23,7 +33,7 @@ export function initSchedule() {
 }*/
 
 
-// --- Original
+// ----- Original
 /*function scheduleInit(data){
     return {type: SCHEDULE_INIT, data};
 }

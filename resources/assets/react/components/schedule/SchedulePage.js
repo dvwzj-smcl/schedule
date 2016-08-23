@@ -39,16 +39,15 @@ class SchedulePage extends Component {
     }
 
     componentDidMount() {
-        if(!this.initialized()) {
-            this.props.actions.init();
-        }
+        this.props.actions.init(true);
     }
 
     getChildContext() {
         return {
             eventColors: this.eventColors,
             hides: this.hides,
-            navigate: this.navigate
+            navigate: this.navigate,
+            initialized: this.initialized
         };
     }
 
@@ -75,7 +74,7 @@ class SchedulePage extends Component {
     };
 
     initialized = () => {
-        return this.props.schedule && this.props.schedule.init;
+        return this.props.actions.init(false);
     };
 
     onSubmit = (data) => {
@@ -95,7 +94,7 @@ class SchedulePage extends Component {
     };
 
     render() {
-        console.log('render: search*', this.props.schedule);
+        console.log('render: ScPage(parent)', this.props.schedule);
         if(!this.initialized()) return <Loading />;
         let props = this.props;
         let {doctors} = props.schedule.data;
@@ -142,7 +141,8 @@ SchedulePage.contextTypes = {
 SchedulePage.childContextTypes = {
     eventColors: PropTypes.object,
     hides: PropTypes.object,
-    navigate: PropTypes.func
+    navigate: PropTypes.func,
+    initialized: PropTypes.func
 };
 
 const mapStateToProps = ({user, schedule}) => ({user, schedule});

@@ -15,7 +15,6 @@ export default {
         // isSale: JSON.parse(sessionStorage.getItem('isSale'))
         // access_token: 'hack' // change here
     },
-    schedule: {},
     app: {
         sidebar: {
             expanded: true
