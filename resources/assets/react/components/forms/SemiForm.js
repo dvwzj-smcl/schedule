@@ -101,7 +101,7 @@ class SemiForm extends Component {
     }
 
     render() {
-        // console.log('render: form', this.state.ready);
+        console.log('render: form', this.state.ready);
         let props = this.props;
         let {
             children, formTemplate, noSubmitButton, submitLabel,
@@ -150,6 +150,17 @@ class SemiForm extends Component {
             for (let rowId in formTemplate.components) {
 
                 let row = formTemplate.components[rowId];
+                let settings = {};
+                // console.log('row', row);
+                if(!Array.isArray(row)) {
+                    settings = row.settings;
+                    row = row.items;
+                }
+
+                // process row settings
+                console.log('settings', settings);
+                if(settings.hide) continue;
+
                 let cols = [];
                 let md = Math.floor(12 / row.length); // equally width for now
                 for (let itemId in row) {
@@ -159,78 +170,82 @@ class SemiForm extends Component {
                         {name} = item,
                         value = values[name];
 
-                    let defaultValues = {
-                        required: false,
-                        disabled: false,
-                        fullWidth: true
-                    };
+                    // console.log('value', value, typeof value);
 
-                    // console.log('item', item);
-                    let vs = item.validations,
-                        validations = item.required ? ['required'] : ['optional'];
-                    if (vs) {
-                        for(let v of vs) {
-                            validations.push(v);
+                    let isComponent = typeof item.type === 'function';
+                    if(isComponent) {
+                        // console.log('item', item);
+                        component = item;
+                    } else {
+                        let defaultValues = {
+                            required: false,
+                            disabled: false,
+                            fullWidth: true
+                        };
+
+                        let vs = item.validations,
+                            validations = item.required ? ['required'] : ['optional'];
+                        if (vs) {
+                            for (let v of vs) {
+                                validations.push(v);
+                            }
                         }
-                    }
+                        let overrideValues = { // props with different names or need processing
+                            floatingLabelText: item.label, // todo: * and optional
+                            hintText: item.hint ? item.hint : '',
+                            value,
+                            validations
+                        };
 
-                    // console.log(name, 'validations', validations, item.required);
+                        let {type, ...rest} = Object.assign(defaultValues, item, overrideValues);
 
-                    let overrideValues = { // props with different names or need processing
-                        floatingLabelText: item.label, // todo: * and optional
-                        hintText: item.hint ? item.hint : '',
-                        value,
-                        validations
-                    };
-
-                    let {type, ...rest} = Object.assign(defaultValues, item, overrideValues);
-
-                    // console.log('rest', rest);
-
-                    switch (type) {
-                        case 'text':
-                            component = (
-                                <SemiValidation.components.TextField
-                                    {...rest}
-                                />
-                            );
-                            break;
-                        case 'password':
-                            component = (
-                                <SemiValidation.components.TextField
-                                    {...rest} type="password"
-                                />
-                            );
-                            break;
-                        case 'select':
-                            component = (
-                                <SemiValidation.components.SelectField
-                                    options={data[name]}
-                                    {...rest}
-                                />
-                            );
-                            break;
-                        case 'multiselect':
-                            component = (
-                                <SemiValidation.components.MultipleSelectField
-                                    options={data[name]}
-                                    {...rest}
-                                />
-                            );
-                            break;
-                        case 'date':
-                            component = (
-                                <SemiValidation.components.DatePicker
-                                    {...rest}
-                                />
-                            );
-                            break;
+                        switch (type) {
+                            case 'text':
+                                component = (
+                                    <SemiValidation.components.TextField
+                                        {...rest}
+                                    />
+                                );
+                                break;
+                            case 'password':
+                                component = (
+                                    <SemiValidation.components.TextField
+                                        {...rest} type="password"
+                                    />
+                                );
+                                break;
+                            case 'select':
+                                component = (
+                                    <SemiValidation.components.SelectField
+                                        options={data[name]}
+                                        {...rest}
+                                    />
+                                );
+                                break;
+                            case 'multiselect':
+                                component = (
+                                    <SemiValidation.components.MultipleSelectField
+                                        options={data[name]} floatingLabelFixed={true}
+                                        {...rest}
+                                    />
+                                );
+                                break;
+                            case 'empty':
+                                component = (null);
+                                break;
+                            case 'date':
+                                component = (
+                                    <SemiValidation.components.DatePicker
+                                        {...rest}
+                                    />
+                                );
+                                break;
+                        }
                     }
                     cols.push(<Col key={itemId} xs md={md}>{component}</Col>);
                 } // item
                 let rowComponent = (<Row key={rowId}>{cols}</Row>);
                 components.push(rowComponent);
-
             } // row
         }
 

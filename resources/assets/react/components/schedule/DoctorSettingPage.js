@@ -26,8 +26,16 @@ class SchedulePage extends Component {
         this.state = {};
     }
 
-    onSubmit = (data, ajax) => {
+    componentWillMount() {
+        this.props.actions.init(true);
+    }
 
+    initialized = () => {
+        return this.props.actions.init(false);
+    };
+    
+    onChange = (id) => {
+        this.context.navigate({id});
     };
 
     render() {
@@ -37,20 +45,25 @@ class SchedulePage extends Component {
         let props = this.props;
         let data = props.schedule.data;
         let state = this.state;
+        let doctor_id = props.params.id ? parseInt(props.params.id) : 0;
+        console.log('doctor_id', doctor_id);
         let formTemplate = {
-            data: {},
-            values: {username: 'sale1', password: 'asdfasdf'},
+            data: {doctor_id: data.doctors},
+            values: {doctor_id},
             components: [
-                [{type: 'text', name: 'username', label: 'Username', required: true, hint: 'your username or email'}],
-                [{type: 'text', name: 'password', label: 'Password', required: true}]
+                [{type: 'select', name: 'doctor_id', label: 'Doctor*', onChange: this.onChange}]
             ]
         };
         return (
-            <Panel title="Settings">
-                <div className="semicon">
-                    <SemiForm onSubmit={this.onSubmit} formTemplate={formTemplate} />
-                </div>
-            </Panel>
+            <Row>
+                <Col md={3}>
+                    <Panel>
+                        <div className="semicon">
+                            <SemiForm noButton compact formTemplate={formTemplate} />
+                        </div>
+                    </Panel>
+                </Col>
+            </Row>
         );
     }
 }
@@ -60,6 +73,7 @@ SchedulePage.contextTypes = {
     router: PropTypes.object,
     helper: PropTypes.object,
     ajax: PropTypes.object,
+    navigate: PropTypes.func,
     dialog: PropTypes.object
 };
 

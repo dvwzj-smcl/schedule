@@ -17,13 +17,13 @@ class SemiModal extends Component {
     }
 
     onValid = () => {
-        console.log('/');
+        // console.log('/');
         if(this.state.canSubmit === true) return;
         this.setState({ canSubmit: true });
     };
 
     onInvalid = () => {
-        console.log('x');
+        // console.log('x');
         if(this.state.canSubmit === false) return;
         this.setState({ canSubmit: false });
     };

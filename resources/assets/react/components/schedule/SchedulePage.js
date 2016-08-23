@@ -36,10 +36,10 @@ class SchedulePage extends Component {
     componentWillMount() {
         this.setValuesState(this.props.params);
         this.hides = this.parseHideParam(this.props.params.hides);
+        this.props.actions.init(true);
     }
 
     componentDidMount() {
-        this.props.actions.init(true);
     }
 
     getChildContext() {

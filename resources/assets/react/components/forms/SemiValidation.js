@@ -359,7 +359,7 @@ export class ValidationSelectField extends Validation.components.Select {
     handleChange(event, index, value){
         this.props._update(this, event, true, true, value);
         event.persist();
-        this.props.onChange && this.props.onChange(event, index, value);
+        this.props.onChange && this.props.onChange(value, index, event);
     }
     handleClear(){
         let value = this.props.value ? this.props.value : (this.props.multiple ? [] : null);

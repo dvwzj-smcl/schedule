@@ -53,13 +53,16 @@ class UserModal extends Component {
 
 
     handleOpenPassword(){
+        console.log('123', 123);
         this.setState({changePass: !this.state.changePass});
     }
 
     render() {
+        console.log('render: User Modal');
         let values = this.state.values;
         let editId = this.props.params.id;
         let data = this.state.data;
+        let isEdit = !!this.props.params.id;
         const {title,changePass} = this.state;
 
         let togglePass = (<Row style={{marginTop: 16}}>
@@ -73,6 +76,8 @@ class UserModal extends Component {
             </Col>
         </Row>);
 
+        console.log('changePass', changePass);
+
         let formTemplate = {
             data: {branch_id: data.branches, roles: data.roles},
             values: this.state.values,
@@ -81,10 +86,26 @@ class UserModal extends Component {
                     {type: 'text', name: 'username', label: 'Username*', required: true},
                     {type: 'text', name: 'email', label: 'Email*', required: true, validations: ['email']}
                 ],
-                [
-                    {type: 'password', name: 'password', label: 'Password*', required: true, validations: ['password']},
-                    {type: 'password', name: 'passwordConfirm', label: 'Confirm Password*', hint: 'Same as password', required: true, validations: ['password']}
-                ],
+                {
+                    settings: {hide: !isEdit},
+                    items: [
+                        (<Toggle
+                            name="changePass"
+                            label="Change Password"
+                            style={{marginTop: 24, marginBottom: 8}}
+                            labelPosition="right"
+                            toggled={changePass}
+                            onToggle={this.handleOpenPassword}
+                        />)
+                    ]
+                },
+                {
+                    settings: {hide: isEdit && !changePass},
+                    items: [
+                        {type: 'password', name: 'password', label: 'Password*', required: true, validations: ['password']},
+                        {type: 'password', name: 'passwordConfirm', label: 'Confirm Password*', hint: 'Same as password', required: true, validations: ['password']}
+                    ]
+                },
                 [
                     {type: 'text', name: 'name', label: 'Full Name*', required: true},
                     {type: 'select', name: 'branch_id', label: 'Branch*'}

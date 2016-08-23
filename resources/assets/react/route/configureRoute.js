@@ -54,9 +54,7 @@ export default function configureRoute(store){
             <Route path="schedules/:role" component={UserIsAuthenticated(SchedulePage)}>
                 <Route path="(:doctor_id)(/:date)(/:hides)" component={UserIsAuthenticated(ScheduleCalendar)} />
             </Route>
-            <Route path="settings" component={UserIsAuthenticated(SettingPage)}>
-                <Route path="doctor/:doctor_id" component={UserIsAuthenticated(DoctorSettingPage)} />
-                <Route path="category/:doctor_id" component={UserIsAuthenticated(DoctorSettingPage)} />
+            <Route path="settings(/:type)(/:id)" component={UserIsAuthenticated(SettingPage)}>
             </Route>
             <Route path="datatable" component={UserIsAuthenticated(DataTableDemo)} />
             <Route path="*" component={UserIsAuthenticated(NotFoundPage)} />
@@ -67,6 +65,10 @@ export default function configureRoute(store){
             <IndexRoute component={HomePage} />
             <Route path="/calendar" component={CalendarPage} onEnter={connect(UserIsAuthenticated.onEnter)}/>
             <Route path="*" component={HomePage} />
+            <Route path="settings" component={UserIsAuthenticated(SettingPage)}>
+                <Route path="doctors(/:doctor_id)" component={UserIsAuthenticated(DoctorSettingPage)} />
+                <Route path="categories/:category_id" component={UserIsAuthenticated(DoctorSettingPage)} />
+            </Route>
         </Route>
     );
 

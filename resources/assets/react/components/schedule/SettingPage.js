@@ -5,7 +5,7 @@ import {Grid, Row, Col} from 'react-flexbox-grid';
 import Panel from '../widgets/Panel';
 import PageHeading from '../widgets/PageHeading';
 import Loading from '../widgets/Loading';
-
+import {Tabs, Tab} from 'material-ui/Tabs';
 import {List, ListItem} from 'material-ui/List';
 import {ContentInbox, ActionGrade, ContentSend, ContentDrafts, ActionInfo, ActionCancel} from 'material-ui/svg-icons';
 import {ActionHome, ActionEvent, ActionEventSeat, ContentSave} from 'material-ui/svg-icons';
@@ -17,40 +17,36 @@ import * as scheduleActions from '../../actions/scheduleActions';
 
 // Forms
 import SemiForm from '../forms/SemiForm';
+import DoctorSettingPage from './DoctorSettingPage';
 
 class SettingPage extends Component {
     constructor(props, context) {
         super(props, context);
-        this.setValuesState(props.params);
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setValuesState(nextProps.params);
     }
 
     componentDidMount() {
-        if(!this.initialized()) {
-            this.props.actions.init();
-        }
+        this.props.actions.init(true);
     }
 
-    setValuesState = (params) => {
-        let {doctor_id, date} = params;
-        this.state = {
-            values: {
-                doctor_id: doctor_id ? parseInt(doctor_id) : 1,
-                date: date ? new Date(date) : new Date()
-                // date2: date ? new Date(date).toString() : new Date().toString(),
-            }
-        }
-    };
+    getChildContext() {
+        return {
+            navigate: this.navigate
+        };
+    }
 
     initialized = () => {
-        return this.props.schedule && this.props.schedule.init;
+        return this.props.actions.init(false);
     };
 
-    onSubmit = (data) => {
-        this.context.router.push(`/schedules/${data.doctor_id}/${date.getISODate()}`);
+    navigate = (params) => {
+        // not quite useful
+        params = Object.assign({
+            type: 'doctors'
+        }, this.props.params, params);
+        this.context.router.push(`/settings/${params.type}${params.id ? '/'+params.id : ''}`);
     };
 
     render() {
@@ -58,31 +54,22 @@ class SettingPage extends Component {
         if(!this.initialized()) return <Loading />;
         let props = this.props;
         let {doctors} = props.schedule.data;
-
-        let formTemplate = {
-            data: {doctor_id: doctors},
-            values: this.state.values,
-            components: [
-                [{type: 'select', name: 'doctor_id', label: 'Doctor*', required: true}]
-                // [{type: 'text', name: 'date2', label: 'Date', required: true}]
-            ]
-        };
-
+        let params = props.params;
         return (
             <div>
                 <PageHeading title="Settings" description="Set colors and durations" />
                 <Grid fluid className="content-wrap">
                     <Row>
-                        <Col xs md={3}>
-                            <Panel>
-                                <List>
-                                    <ListItem primaryText="Categories" leftIcon={<ContentInbox />} />
-                                    <ListItem primaryText="Doctors" leftIcon={<ContentInbox />} />
-                                </List>
-                            </Panel>
-                        </Col>
-                        <Col md={9}>
-                            {props.children}
+                        <Col xs md={12}>
+                            <Tabs>
+                                <Tab label="Doctors" >
+                                    {params.type !== 'doctors' ? null :
+                                        <DoctorSettingPage params={params} />
+                                    }
+                                </Tab>
+                                <Tab label="Categories" >
+                                </Tab>
+                            </Tabs>
                         </Col>
                     </Row>
                 </Grid>
@@ -96,7 +83,11 @@ SettingPage.contextTypes = {
     router: PropTypes.object.isRequired,
     ajax: PropTypes.object,
     helper: PropTypes.object,
-    dialog: PropTypes.object
+    dialog: PropTypes.object,
+    initialized: PropTypes.func
+};
+SettingPage.childContextTypes = {
+    navigate: PropTypes.func
 };
 
 const mapStateToProps = ({user, schedule}) => ({user, schedule});

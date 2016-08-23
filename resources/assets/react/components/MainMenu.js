@@ -37,7 +37,7 @@ const menus = [
     {
         text: "Settings",
         icon: <ActionSettings />,
-        to: "/settings",
+        to: "/settings/doctors",
         permissions : ['organize-schedules']
     },
     {
