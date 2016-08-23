@@ -228,8 +228,8 @@ export class ValidationForm extends Validation.components.Form {
             isUsed: isUsed || checkbox || componentState.isUsed || event.type === 'blur',
             isChecked: !componentState.isChecked
         });
-        this._validate();
-        if(Object.keys(this.state.errors).length==0){
+        let errors = this._validate();
+        if(Object.keys(errors).length==0){
             this.props.onValid && this.props.onValid();
         }else{
             this.props.onInvalid && this.props.onInvalid();
@@ -667,7 +667,7 @@ export class ValidationColorPicker extends Component {
             openModal: false
         });
         this.props._update(this, event, true, true, this.state.color.hex);
-        this.props.onChange && this.props.onChange(event, index, this.state.color.hex);
+        this.props.onChange && this.props.onChange(this.state.color.hex, event);
         this.refs.node.input.value = this.state.color.hex;
     };
     handleClear(){

@@ -23,7 +23,11 @@ import {HardwareKeyboardArrowRight, HardwareKeyboardArrowLeft} from 'material-ui
 class SchedulePage extends Component {
     constructor(props, context) {
         super(props, context);
-        this.state = {};
+        this.state = {
+            category: null,
+            sub_category: null,
+            color: null
+        };
     }
 
     componentWillMount() {
@@ -34,8 +38,28 @@ class SchedulePage extends Component {
         return this.props.actions.init(false);
     };
     
-    onChange = (id) => {
+    onDoctorChange = (id) => {
         this.context.navigate({id});
+    };
+    onCategoryChange = (id) => {
+        let categories = this.props.schedule.data.categories;
+        let category = null;
+        for(let i in categories){
+            if(categories[i].id==id) category = categories[i];
+        }
+        this.setState({category});
+    };
+    onSubCategoryChange = (id) => {
+        let categories = this.state.category.sub_categories;
+        let sub_category = null;
+        for(let i in categories){
+            if(categories[i].id==id) sub_category = categories[i];
+        }
+        console.log('sub', sub_category);
+        this.setState({sub_category});
+    };
+    onColorChange = (color) => {
+        console.log(color);
     };
 
     render() {
@@ -51,7 +75,26 @@ class SchedulePage extends Component {
             data: {doctor_id: data.doctors},
             values: {doctor_id},
             components: [
-                [{type: 'select', name: 'doctor_id', label: 'Doctor*', onChange: this.onChange}]
+                [{type: 'select', name: 'doctor_id', label: 'Doctor*', onChange: this.onDoctorChange}]
+            ]
+        };
+        let formTemplate2 = {
+            data: {category_id: data.categories},
+            values: {},
+            components: [
+                [{type: 'select', name: 'category_id', label: 'Category*', onChange: this.onCategoryChange}]
+            ]
+        };
+        let formTemplate3 = {
+            data: {sub_category_id: this.state.category ? this.state.category.sub_categories : []},
+            values: {},
+            components: [
+                [{type: 'select', name: 'sub_category_id', label: 'Sub Category*', onChange: this.onSubCategoryChange}]
+            ]
+        };
+        let formTemplate4 = {
+            components: [
+                [{type: 'color', name: 'color', hintText: 'Color*', onChange: this.onColorChange, floatingLabelText: "Color (Required)", floatingLabelFixed: true, validations:['required']}]
             ]
         };
         return (
@@ -60,6 +103,27 @@ class SchedulePage extends Component {
                     <Panel>
                         <div className="semicon">
                             <SemiForm noButton compact formTemplate={formTemplate} />
+                        </div>
+                    </Panel>
+                </Col>
+                <Col md={3} style={{display: doctor_id?'block':'none'}}>
+                    <Panel>
+                        <div className="semicon">
+                            <SemiForm noButton compact formTemplate={formTemplate2} />
+                        </div>
+                    </Panel>
+                </Col>
+                <Col md={3} style={{display: this.state.category?'block':'none'}}>
+                    <Panel>
+                        <div className="semicon">
+                            <SemiForm noButton compact formTemplate={formTemplate3} />
+                        </div>
+                    </Panel>
+                </Col>
+                <Col md={3} style={{display: this.state.sub_category?'block':'none'}}>
+                    <Panel>
+                        <div className="semicon">
+                            <SemiForm compact formTemplate={formTemplate4} />
                         </div>
                     </Panel>
                 </Col>

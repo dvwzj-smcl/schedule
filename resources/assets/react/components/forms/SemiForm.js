@@ -39,6 +39,7 @@ class SemiForm extends Component {
     };
 
     enableButton = () => {
+        console.log('valid');
         if (this.state.canSubmit === true) return;
         // console.log('enable!');
         this.setState({
@@ -47,6 +48,7 @@ class SemiForm extends Component {
     };
 
     disableButton = () => {
+        console.log('invalid');
         if (this.state.canSubmit === false) return;
         // console.log('disable!');
         this.setState({
@@ -232,6 +234,13 @@ class SemiForm extends Component {
                                 break;
                             case 'empty':
                                 component = (null);
+                                break;
+                            case 'color':
+                                component = (
+                                    <SemiValidation.components.ColorPicker
+                                        {...rest}
+                                        />
+                                );
                                 break;
                             case 'date':
                                 component = (
