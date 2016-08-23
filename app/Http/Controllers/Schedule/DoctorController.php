@@ -14,9 +14,10 @@ class DoctorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(['doctors'=>\App\Models\User\Doctor::with('user')->get()],200, array(), JSON_PRETTY_PRINT);
+        $doctors = \App\Models\User\Doctor::with('user')->paginate($request->get('limit', 10));
+        return response()->json(['doctors'=>$doctors],200, array(), JSON_PRETTY_PRINT);
     }
 
     /**

@@ -50,6 +50,12 @@ const menus = [
         text: "Users",
         icon: <SocialPerson />,
         to: "/users"
+    },
+    {
+        text: "DataTableDemo",
+        icon: <ActionPermContactCalendar />,
+        to: "/datatable",
+        permissions : ['organize-schedules']
     }
 ];
 

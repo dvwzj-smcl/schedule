@@ -24,6 +24,8 @@ import SlotPage from '../components/schedule/SlotPage';
 import UserPage from '../components/user/UserPage';
 import UserModal from '../components/user/UserModal';
 
+import DataTableDemo from '../components/DataTableDemo';
+
 const UserIsAuthenticated = UserAuthWrapper({
     authSelector: state => state.user, // how to get the user state
     authenticatingSelector: state => state.user.authenticating, // for async session loading.
@@ -56,6 +58,7 @@ export default function configureRoute(store){
                 <Route path="doctor/:doctor_id" component={UserIsAuthenticated(DoctorSettingPage)} />
                 <Route path="category/:doctor_id" component={UserIsAuthenticated(DoctorSettingPage)} />
             </Route>
+            <Route path="datatable" component={UserIsAuthenticated(DataTableDemo)} />
             <Route path="*" component={UserIsAuthenticated(NotFoundPage)} />
         </Route>
     ):(

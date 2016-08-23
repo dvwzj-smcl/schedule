@@ -12,10 +12,16 @@ import PageHeading from '../widgets/PageHeading';
 
 import DataTable from '../widgets/DataTable';
 
+import SemiDataTable from '../widgets/SemiDataTable';
+import {TableRowColumn} from 'material-ui/Table';
+import IconButton from 'material-ui/IconButton';
+
 import {ContentAdd,ContentCreate, ActionAutorenew,ActionDelete} from 'material-ui/svg-icons';
 import RaisedButton from 'material-ui/RaisedButton';
 import SemiButton from '../widgets/SemiButton';
 import {fullWhite} from 'material-ui/styles/colors';
+
+import api from '../../api';
 // import IconButton from 'material-ui/IconButton';
 // import {Table, TableBody, TableFooter, TableHeader, TableHeaderColumn, TableRow, TableRowColumn}
 //     from 'material-ui/Table';
@@ -57,6 +63,7 @@ class UserPage extends Component {
             ]
         };
         this.reloadPage = this.reloadPage.bind(this);
+        this.editUser = this.editUser.bind(this);
     }
 
     componentWillMount(){
@@ -64,10 +71,6 @@ class UserPage extends Component {
     }
 
     componentDidMount(){
-        // console.log('componentDidMount');
-        let access_token = this.props.user.access_token;
-        if (typeof access_token !== "undefined" )
-            this.refs['db'].getWrappedInstance().getData();
     }
 
     componentWillReceiveProps(nextProps){
@@ -78,9 +81,10 @@ class UserPage extends Component {
     }
 
     reloadPage(){
-        // console.log('[UserPage] (reloadPage)');
-        this.refs['db'].getWrappedInstance().getData();
-        this.refs['db'].getWrappedInstance().resetForm();
+    }
+
+    editUser(user_id){
+        this.context.router.push("/users"+'/'+user_id)
     }
 
     render() {
@@ -100,20 +104,68 @@ class UserPage extends Component {
                                             semiType="add"
                                             label="Add New"
                                             link="/users/create"
-                                        />
+                                            />
                                         <SemiButton
                                             semiType="refresh"
                                             label="Reload"
                                             onClick={this.reloadPage}
-                                        />
+                                            />
                                     </div>
                                 </div>
-                                <DataTable
+                                <SemiDataTable
                                     ref="db"
-                                    dataColumn={this.state.dataTableColumn}
-                                    dataUrl={'/users'}
-                                    clientPath={'/users'}
-                                />
+                                    settings={{
+                                        table:{
+                                            selectable: false
+                                        },
+                                        header:{
+                                            displaySelectAll: false,
+                                            enableSelectAll: false,
+                                            adjustForCheckbox: false
+                                        },
+                                        body:{
+                                            displayRowCheckbox: false
+                                        },
+                                        fields:[
+                                            {
+                                                title: "ID",
+                                                key: "id",
+                                                sortable: true
+                                            },
+                                            {
+                                                title: "Email",
+                                                tooltip: "Email (tooltip)",
+                                                key: "email"
+                                            },
+                                            {
+                                                title: "Role",
+                                                key: "role_name"
+                                            },
+                                            {
+                                                title: "Actions",
+                                                key: 'action',
+                                                custom: (row,index,tbDataProps)=>{
+                                                    return tbDataProps.editable ? (
+                                                        <div>
+                                                            <IconButton backgroundColor="#F00" onClick={this.editUser.bind(null, row.id)} >
+                                                                <ContentCreate />
+                                                            </IconButton>
+                                                            <IconButton>
+                                                                <ActionDelete />
+                                                            </IconButton>
+                                                        </div>
+                                                    ) : null;
+                                                }
+                                            }
+                                        ],
+                                        order: [{"column":"id","dir":"DESC"}],
+                                        limit: 4
+                                    }}
+                                    pagination={true}
+                                    dataSourceResult="data"
+                                    dataSourceMap={{data: "tbData", total: "recordsTotal"}}
+                                    dataSource={api.baseUrl("users")}
+                                    />
                             </Panel>
                         </Col>
                     </Row>
