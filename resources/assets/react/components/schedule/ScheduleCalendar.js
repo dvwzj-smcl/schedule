@@ -87,22 +87,18 @@ class ScheduleCalendar extends Component {
     init = () => {
         return new Promise( resolve => {
             let me = this;
-            if(me.refs.calendar && me.initialized()) {
+            if(me.refs.calendar && me.context.initialized()) {
                 this.doctors = this.props.schedule.data.doctors;
                 resolve(me.refs.calendar);
             } else {
                 let interval = setInterval(function(){
-                    if(me.refs.calendar && me.initialized()) {
+                    if(me.refs.calendar && me.context.initialized()) {
                         clearInterval(interval);
                         resolve(me.refs.calendar);
                     }
                 }, 500);
             }
         });
-    };
-
-    initialized = () => {
-        return this.props.schedule && this.props.schedule.init;
     };
     
     refreshCalendar = () => {
@@ -299,11 +295,9 @@ class ScheduleCalendar extends Component {
     };
 
     render() {
-        console.log('render: calendar', this.state);
+        console.log('render: calendar');
 
         let props = this.props;
-        let params = props.params;
-        let data = props.schedule.data;
         let state = this.state;
         
         // Context Menu
@@ -397,6 +391,7 @@ ScheduleCalendar.contextTypes = {
     hides: PropTypes.object,
     eventColors: PropTypes.object,
     navigate: PropTypes.func,
+    initialized: PropTypes.func,
     dialog: PropTypes.object
 };
 

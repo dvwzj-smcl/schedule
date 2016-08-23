@@ -18,10 +18,6 @@ class ScheduleFilter extends Component {
         this.eventColors = context.eventColors;
     }
 
-    initialized = () => {
-        return this.props.schedule && this.props.schedule.init;
-    };
-
     onSubmit = (data) => {
         console.log('data', data);
         let date = data.date ? (typeof data.date === 'string') ? data.date : data.date.getISODate() : new Date();
@@ -41,7 +37,7 @@ class ScheduleFilter extends Component {
     };
 
     render() {
-        if(!this.initialized()) return <Loading />;
+        if(!this.context.initialized()) return <Loading />;
         let colors = this.eventColors;
         let hides = this.context.hides;
         let isOrganizer = this.props.params.role == 'organizer';
@@ -69,7 +65,8 @@ ScheduleFilter.propTypes = {};
 ScheduleFilter.contextTypes = {
     eventColors: PropTypes.object,
     hides: PropTypes.object,
-    navigate: PropTypes.func
+    navigate: PropTypes.func,
+    initialized: PropTypes.func
 };
 
 export default ScheduleFilter;

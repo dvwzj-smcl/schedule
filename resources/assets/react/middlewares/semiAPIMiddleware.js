@@ -1,5 +1,10 @@
 import api from '../api';
 
+/*
+ -- Deep set object --
+ Why don't just use Object.assign ?
+ Because The structure and depth are unknown
+  */
 const setter = (obj, propString, value) => {
     if (!propString)
         return obj;
@@ -22,6 +27,7 @@ const setter = (obj, propString, value) => {
 export default function semiAPIMiddleware({ dispatch, getState }) {
     return next => action => {
         let {
+            shouldCallAPI,
             moduleName,
             onSuccess,
             params,
@@ -30,35 +36,44 @@ export default function semiAPIMiddleware({ dispatch, getState }) {
             callAPI, // string or function(fetch)
             payload = {}
         } = action;
+
         
         if (!(typeof type === 'string' && callAPI)) {
             // Normal action: pass it on
             return next(action)
         }
 
-        console.log('action', action);
-
         let state = getState();
-        let shouldCallApi = true, loaded = false;
+        let shouldCallApiFlag = true, loaded = false;
+
+        // console.log('type', action.type);
 
         // should Call API ?
         if(map) {
             let maps = map.split('.');
             if(maps.length == 1){
-                console.log('state[moduleName][maps[0]]', moduleName);
-                if(state[moduleName] && state[moduleName][maps[0]] && state[moduleName][maps[0]].loading) shouldCallApi = false;
+                if(state[moduleName] && state[moduleName][maps[0]] && state[moduleName][maps[0]].loading) shouldCallApiFlag = false;
                 if(state[moduleName] && state[moduleName][maps[0]] && state[moduleName][maps[0]].loaded) loaded = true;
             }
             // todo: another length (getter)
         } else {
-            if(state[moduleName] && state[moduleName].loading) shouldCallApi = false;
+            if(state[moduleName] && state[moduleName].loading) shouldCallApiFlag = false;
             if(state[moduleName] && state[moduleName].loaded) loaded = true;
         }
+        if(shouldCallApiFlag === true && shouldCallAPI) {
+            if (typeof shouldCallAPI !== 'function') {
+                throw new Error('Expected shouldCallAPI to be a function.')
+            }
+            shouldCallApiFlag = shouldCallAPI(state, loaded);
+        }
+
+
+        // console.log('loaded', loaded, 'shouldCallApiFlag', shouldCallApiFlag);
 
         // If params === false it will get status instead of sending API call
         if(params === false) {
             return loaded;
-        } else if (!shouldCallApi) {
+        } else if (!shouldCallApiFlag) {
             return;
         }
 
@@ -78,20 +93,21 @@ export default function semiAPIMiddleware({ dispatch, getState }) {
             throw new Error('Expected fetch to be a function.')
         }
 
-        
+        // Set loading flag and send API call
         let newData = {type};
-        setter(newData, map, {loading: true});
-        // console.log('asdf', newData);
-
+        if(map) setter(newData, map, {loading: true});
+        else newData = {type, loading: true};
         dispatch(Object.assign({}, payload, newData));
+
+        // console.log('***params', params, 'loaded', loaded, 'shouldCallApiFlag', shouldCallApiFlag);
         
         let promise = callAPI().then(
             response => {
                 response.json().then( json => {
                     // console.log('** json', json);
                     let data = {};
-                    setter(data, map, {data: json.data, loading: false, loaded: true});
-                    // console.log('data', data);
+                    if(map) setter(data, map, {data: json.data, loading: false, loaded: true});
+                    else data = {data: json.data, loading: false, loaded: true};
                     console.log('onSuccess', onSuccess);
                     if(typeof onSuccess === 'function') {
                         dispatch(onSuccess());
