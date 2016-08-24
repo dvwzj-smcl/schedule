@@ -5,24 +5,19 @@ import {Grid, Row, Col} from 'react-flexbox-grid';
 import Panel from '../widgets/Panel';
 import PageHeading from '../widgets/PageHeading';
 import Loading from '../widgets/Loading';
+import Calendar from '../widgets/Calendar';
 import {List, ListItem} from 'material-ui/List';
-import {ActionPermIdentity, ActionInfo} from 'material-ui/svg-icons';
 import * as scheduleActions from '../../actions/scheduleActions';
+import helper from '../../libs/helper';
 import SemiForm from '../forms/SemiForm';
+import FloatingActionButton from 'material-ui/FloatingActionButton';
 import ScheduleFilter from './ScheduleFilter';
 import ScheduleEventList from './ScheduleEventList';
-// import Paper from 'material-ui/Paper';
+import Paper from 'material-ui/Paper';
 import Checkbox from 'material-ui/Checkbox';
-// import FlatButton from 'material-ui/FlatButton';
+import FlatButton from 'material-ui/FlatButton';
+import {ActionPermIdentity, ActionInfo, HardwareKeyboardArrowRight, HardwareKeyboardArrowLeft} from 'material-ui/svg-icons';
 
-// const colorList = (
-//     <div>
-//         <Checkbox name="approved" label="Approved" checked={true} iconStyle={{fill: colors['approved']}} labelStyle={{color: colors['approved']}} />
-//         <Checkbox name="approved" label="Approved" checked={true} iconStyle={{fill: colors['approved']}} labelStyle={{color: colors['approved']}} />
-//         <Checkbox name="approved" label="Approved" checked={true} iconStyle={{fill: colors['approved']}} labelStyle={{color: colors['approved']}} />
-//         <Checkbox name="approved" label="Approved" checked={true} iconStyle={{fill: colors['approved']}} labelStyle={{color: colors['approved']}} />
-//     </div>
-// );
 
 class SlotPage extends Component {
     constructor(props, context) {
@@ -39,14 +34,14 @@ class SlotPage extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setValuesState(nextProps.params);
-        this.hides = this.parseHideParam(nextProps.params.hides);
+        this.refreshPage(nextProps);
     }
 
     componentWillMount() {
-        this.setValuesState(this.props.params);
-        this.hides = this.parseHideParam(this.props.params.hides);
-        this.props.actions.init(true);
+        let props = this.props;
+        props.actions.init(true);
+        this.setValuesState(props.params);
+        this.refreshPage();
     }
 
     componentDidMount() {
@@ -61,14 +56,21 @@ class SlotPage extends Component {
         };
     }
 
-    parseHideParam = hides => {
-        if(!hides) hides = '';
-        return {
-            other: hides.has('o'),
-            approved: hides.has('a'),
-            pending: hides.has('p'),
-            rejected: hides.has('r'),
-            canceled: hides.has('c')
+    refreshPage = nextProps => {
+        let props = nextProps ? nextProps : this.props;
+        let params = props.params;
+        let paramChanged = nextProps && helper.isParamChanged(this.props.params, nextProps.params);
+        this.setValuesState(props.params);
+        if(!nextProps || paramChanged) {
+            this.init().then(() => {
+                // --- Calendar
+                if(nextProps) {
+                    this.init().then(calendar => {
+                        calendar.gotoDate(nextProps.params.date);
+                    });
+                    if (params.doctor_id != nextProps.params.doctor_id) this.refreshCalendar();
+                }
+            });
         }
     };
 
@@ -79,6 +81,23 @@ class SlotPage extends Component {
                 doctor_id: doctor_id ? parseInt(doctor_id) : 1,
                 date: date ? new Date(date) : new Date()
                 // date2: date ? new Date(date).toString() : new Date().toString(),
+            }
+        });
+    };
+
+    init = () => {
+        return new Promise( resolve => {
+            let me = this;
+            if(me.refs.calendar && me.initialized()) {
+                this.doctors = this.props.schedule.data.doctors;
+                resolve(me.refs.calendar);
+            } else {
+                let interval = setInterval(function(){
+                    if(me.refs.calendar && me.initialized()) {
+                        clearInterval(interval);
+                        resolve(me.refs.calendar);
+                    }
+                }, 500);
             }
         });
     };
@@ -94,20 +113,78 @@ class SlotPage extends Component {
     };
 
     navigate = (params) => {
-        if(this.props.params.hides === undefined && params.hides === undefined) params.hides = ''; // fix hides undefined
-        // console.log('this.props.params', this.props.params);
         params = Object.assign({
-            role: 'sale', doctor_id: 1, date: (new Date()).getISODate(), hides: ''
+            doctor_id: 1, date: (new Date()).getISODate()
         }, this.props.params, params);
-        // console.log('param-2', params);
-        this.context.router.push(`/schedules/${params.role}/${params.doctor_id}/${params.date}/${params.hides}`);
+        this.context.router.push(`/slots/${params.doctor_id}/${params.date}`);
     };
+
+    // ----- Calendar Functions
+
+    refreshCalendar = () => {
+        console.log('refresh');
+        this.init().then(calendar=> { // refresh
+            calendar.refresh(this.fetchEventSource);
+        });
+    };
+
+    fetchEventSource = (start, end, timezone, callback) => {
+        // fix: override FC's start/end
+        let params = 'start='+start.unix()+'&end='+end.unix();
+        let props = this.props;
+        let me = this;
+        me.loading = true;
+        me.context.ajax.call('get', `schedules/doctors/${props.params.doctor_id}/events?${params}`).then( response => {
+            me.init().then( () => {
+                let {slots} = response.data;
+                let doctors = me.props.schedule.data.doctors;
+                console.log('slot', slots);
+                me.user = me.props.user;
+                for(let i in slots) {
+                    let slot = slots[i];
+                    let doctor_id = slot.sc_doctor_id;
+                    let cat_id = slot.sc_category_id;
+                    slot.index = i; // array index
+                    slot.color = doctors[doctor_id].categories[cat_id].color;
+                }
+                callback(slots);
+                me.loading = false;
+            });
+        }).catch( error => {
+            console.log('error: fetchEventSource', error);
+            me.loading = false;
+        });
+    };
+
+    nextWeek = (isNext) => {
+        let current = new Date(this.props.params.date);
+        if(isNext) {
+            let nextWeek = new Date(current.getTime() + 7 * 24 * 60 * 60 * 1000);
+            this.navigate({date: nextWeek.getISODate()});
+        } else {
+            let prevWeek = new Date(current.getTime() - 7 * 24 * 60 * 60 * 1000);
+            this.navigate({date: prevWeek.getISODate()});
+        }
+    };
+
+    eventResize = (calEvent) => {
+    };
+    eventDrop = (calEvent) => {
+    };
+    eventClick = (calEvent) => {
+    };
+    select = (a, b, jsEvent, view) => {
+    };
+
 
     render() {
         console.log('render: ScPage(parent)', this.props.schedule);
         if(!this.initialized()) return <Loading />;
         let props = this.props;
-        let {doctors} = props.schedule.data;
+        let {doctors, categories} = props.schedule.data;
+        let {doctor_id, date} = props.params;
+
+        // --- Forms
 
         let formTemplate = {
             data: {doctor_id: doctors},
@@ -116,6 +193,35 @@ class SlotPage extends Component {
                 [{type: 'select', name: 'doctor_id', label: 'Doctor*', required: true}],
                 [{type: 'date', name: 'date', label: 'Date', required: true}]
             ]
+        };
+
+        // --- Colors
+
+        if (props.schedule.data) {
+            let {doctors, categories} = props.schedule.data;
+            this.colorList = [];
+            if (doctor_id) {
+                for (let i in doctors[doctor_id].categories) {
+                    let {color, name}= categories[i];
+                    this.colorList.push(<Checkbox key={i} name={name} label={name} checked={true} iconStyle={{fill: color}} labelStyle={{color: color}}/>);
+                }
+            }
+        }
+
+        // --- Calendar
+
+        let calendarSettings = {
+            header: false,
+            droppable: true,
+            editable: true,
+            selectable: true,
+            slotDuration: '00:30:00',
+            defaultDate: props.params.date, // gotoDate on first load
+            eventClick: this.eventClick,
+            eventResize: this.eventResize,
+            eventDrop: this.eventDrop,
+            select: this.select,
+            events: this.fetchEventSource
         };
 
         return (
@@ -129,13 +235,33 @@ class SlotPage extends Component {
                                     <SemiForm submitLabel="GO" buttonRight compact onSubmit={this.onSubmit} formTemplate={formTemplate} />
                                 </div>
                             </Panel>
-                            <Panel title="Show" type="secondary">
-                                <div className="semicon">
-                                </div>
-                            </Panel>
+                            {!doctor_id ? null : (
+                                <Panel title="Show" type="secondary">
+                                    <div className="semicon">
+                                        {this.colorList}
+                                    </div>
+                                </Panel>
+                            )}
                         </Col>
                         <Col md={9}>
-                            {props.children}
+                            <Panel title="Schedule">
+                                <div className="semicon">
+                                    <div className="calendar-header">
+                                        <h2>{(new Date(this.props.params.date)).toDateString()}</h2>
+                                        <div className="button-group right" style={{zIndex: 999999}}>
+                                            <FloatingActionButton mini={true} className="button" onTouchTap={this.nextWeek.bind(this, false)}>
+                                                <HardwareKeyboardArrowLeft />
+                                            </FloatingActionButton>
+                                            <FloatingActionButton mini={true} className="button" onTouchTap={this.nextWeek.bind(this, true)}>
+                                                <HardwareKeyboardArrowRight />
+                                            </FloatingActionButton>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <Calendar {...calendarSettings} ref="calendar" />
+                                    </div>
+                                </div>
+                            </Panel>
                         </Col>
                     </Row>
                 </Grid>
