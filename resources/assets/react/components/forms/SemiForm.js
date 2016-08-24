@@ -152,9 +152,8 @@ class SemiForm extends Component {
                         {name} = item,
                         value = values[name];
 
-                    // console.log('value', value, typeof value);
-
-                    let isComponent = typeof item.type === 'function';
+                    //console.log('**value', value, item);
+                    let isComponent = typeof item.type === 'function' || item.props;
                     if(isComponent) {
                         // console.log('item', item);
                         component = item;

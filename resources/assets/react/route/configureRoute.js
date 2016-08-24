@@ -12,6 +12,7 @@ import HomePage from '../components/HomePage';
 import CalendarPage from '../components/CalendarPage';
 
 import RequestPage from '../components/RequestPage';
+import CustomerPage from '../components/CustomerPage';
 
 import ScheduleCalendar from '../components/schedule/ScheduleCalendar';
 import SchedulePage from '../components/schedule/SchedulePage';
@@ -51,6 +52,7 @@ export default function configureRoute(store){
             </Route>
             <Route path="slots(/:doctor_id)(/:date)" component={UserIsAuthenticated(SlotPage)} />
             <Route path="request" component={UserIsAuthenticated(RequestPage)} />
+            <Route path="customer" component={UserIsAuthenticated(CustomerPage)} />
             <Route path="schedules/:role" component={UserIsAuthenticated(SchedulePage)}>
                 <Route path="(:doctor_id)(/:date)(/:hides)" component={UserIsAuthenticated(ScheduleCalendar)} />
             </Route>

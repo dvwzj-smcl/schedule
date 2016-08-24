@@ -87,18 +87,19 @@ class SemiDataTable extends Component {
                 columns.push(propColumns[i]);
             }
             let params = {
-                start: encodeURIComponent(JSON.stringify(page - 1)),
+                start: encodeURIComponent(JSON.stringify((page-1)*(this.props.settings.limit || 10))),
                 length: encodeURIComponent(JSON.stringify(this.props.settings.limit || 10)),
                 order: JSON.stringify(order),
                 columns: JSON.stringify(columns)
             };
             this.ajax('get', this.props.dataSource, params, (res)=>{
                 let r = this.props.dataSourceResult;
-                resolve({
-                    data: res[r] ? res[r][this.props.dataSourceMap.data ? this.props.dataSourceMap.data : 'data'] : [],
-                    total: res[r] ? res[r][this.props.dataSourceMap.total ? this.props.dataSourceMap.total : 'total'] : 0,
+                let data = {
+                    data: res[r] ? res[r][this.props.dataSourceMap&&this.props.dataSourceMap.data ? this.props.dataSourceMap.data : 'data'] : [],
+                    total: res[r] ? res[r][this.props.dataSourceMap&&this.props.dataSourceMap.total ? this.props.dataSourceMap.total : 'total'] : 0,
                     canEdit: res[r] ? res[r].canEdit : false
-                });
+                };
+                resolve(data);
             },(err)=>{
                 reject(err);
             });
@@ -119,9 +120,14 @@ class SemiDataTable extends Component {
             */
             this.handleAjaxData(page);
         }
+        //console.log('call', );
+        //this.context.router.push({pathname: this.props.location.pathname, query:{page}});
     }
     sort(field){
         console.log(field);
+    }
+    goToPage(page){
+        this.handleChangePage(page);
     }
     render() {
         console.log('render', this.state);
@@ -172,7 +178,7 @@ class SemiDataTable extends Component {
                         <TableRow>
                             {fields.map((field, i)=> {
                                 return (
-                                    <TableHeaderColumn key={i} tooltip={field.tooltip||field.title}>
+                                    <TableHeaderColumn key={i} tooltip={field.tooltip||field.title} style={field.style}>
                                         <div onClick={this.sort.bind(null,field)}>
                                             {field.title}
                                         </div>
@@ -188,7 +194,7 @@ class SemiDataTable extends Component {
                             <TableRow key={index} selected={row.selected}>
                                 {fields.map((field, i)=> {
                                     return (
-                                        <TableRowColumn key={i}>{row[field.key]}</TableRowColumn>
+                                        <TableRowColumn key={i} style={field.style}>{row[field.key]}</TableRowColumn>
                                     )
                                 })}
                             </TableRow>
@@ -204,5 +210,7 @@ class SemiDataTable extends Component {
 }
 
 SemiDataTable.propTypes = {};
-
+SemiDataTable.contextTypes = {
+    router: PropTypes.object.isRequired
+};
 export default SemiDataTable;

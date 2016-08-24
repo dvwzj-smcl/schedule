@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
-import {ActionHome, ActionEvent, ActionEventSeat, ActionPermContactCalendar, SocialPerson, ActionSettings, ActionDashboard} from 'material-ui/svg-icons';
+import {ActionHome, ActionEvent, ActionEventSeat, ActionPermContactCalendar, SocialPerson, ActionSettings, ActionDashboard, ActionAccessibility } from 'material-ui/svg-icons';
 // shift+shift and svg-icons\index to search for the name
 // see: https://www.materialui.co/icons, https://design.google.com/icons/
 
@@ -47,9 +47,9 @@ const menus = [
         permissions : ['organize-schedules']
     },
     {
-        text: "Request",
-        icon: <ActionPermContactCalendar />,
-        to: "/request",
+        text: "Customer",
+        icon: <ActionAccessibility />,
+        to: "/customer",
         permissions : ['organize-schedules']
     },
     {

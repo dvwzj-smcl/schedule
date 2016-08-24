@@ -48,6 +48,8 @@ Route::group(['prefix' => 'api', 'middleware' => ['jwt.auth'/*,'permission'*/]],
         Route::get('doctors/{doctor_id}/events/{date?}', 'Schedule\ScheduleController@getDoctorSlotsWithEvents');
         Route::get('organizer/{user_id}/events', 'Schedule\ScheduleController@getOrganizerEvents');
 
+        Route::get('customers', 'Schedule\ScheduleController@getCustomers');
+
         Route::get('tasks', 'Schedule\ScheduleController@getTasks');
         Route::get('events-status', 'Schedule\ScheduleController@getEventsStatus');
         // todo: get category slot

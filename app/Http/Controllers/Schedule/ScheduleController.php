@@ -260,4 +260,41 @@ class ScheduleController extends Controller
         }, $slots->toArray());
         return BF::result(true, ['slots' => $slots], '[schedule] get slot');
     }
+
+    public function getCustomers(){
+        $cols = [
+            'id',
+            'first_name',
+            'last_name',
+            'hn',
+            'phone',
+            'contact'
+        ];
+        $sql = Customer::select($cols);
+        if (Input::has('order')) {
+            foreach (json_decode(Input::get('order')) as $order) {
+                $sql->orderBy($order->column, $order->dir);
+            }
+        }
+        if (Input::has('columns')) {
+            foreach (json_decode(Input::get('columns')) as $col) {
+                $column = $col->data;
+                $val = $col->search;
+                if (in_array($column, $cols) && ($val != '')) {
+                    $sql->where($column, 'LIKE', '%' . $val . '%');
+                }
+            }
+        }
+
+        try {
+            $count = $sql->count();
+            $data = $sql->skip(Input::get('start'))->take(Input::get('length'))->get();
+            $result = BF::dataTable($data, $count, $count, false);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return BF::result(false, $e->getMessage());
+        }
+
+        return BF::result(true, $result, '[schedule] get customers');
+
+    }
 }
