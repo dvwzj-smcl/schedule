@@ -70,7 +70,6 @@ class Calendar extends Component {
             minTime: '06:00',
             maxTime: '21:00',
             allDaySlot: false,
-            slotDuration: '00:10:00',
             editable: true,
             selectable: true,
             droppable: true,

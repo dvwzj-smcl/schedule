@@ -39,7 +39,7 @@ class SemiForm extends Component {
     };
 
     enableButton = () => {
-        console.log('valid');
+        // console.log('valid');
         if (this.state.canSubmit === true) return;
         // console.log('enable!');
         this.setState({
@@ -48,7 +48,7 @@ class SemiForm extends Component {
     };
 
     disableButton = () => {
-        console.log('invalid');
+        // console.log('invalid');
         if (this.state.canSubmit === false) return;
         // console.log('disable!');
         this.setState({
@@ -103,7 +103,7 @@ class SemiForm extends Component {
     }
 
     render() {
-        console.log('render: form', this.state.ready);
+        // console.log('render: form', this.state.ready);
         let props = this.props;
         let {
             children, formTemplate, noSubmitButton, submitLabel,
@@ -140,7 +140,7 @@ class SemiForm extends Component {
                 }
 
                 // process row settings
-                console.log('settings', settings);
+                // console.log('settings', settings);
                 if(settings.hide) continue;
 
                 let cols = [];

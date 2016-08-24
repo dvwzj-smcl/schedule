@@ -4,22 +4,34 @@ import { routerActions } from 'react-router-redux';
 import { UserAuthWrapper } from 'redux-auth-wrapper';
 
 import App from '../components/App';
-import HomePage from '../components/HomePage';
-import CalendarPage from '../components/CalendarPage';
-import OrganizerPage from '../components/OrganizerPage';
-import RequestPage from '../components/RequestPage';
-import SchedulePage from '../components/SchedulePage';
 import LoginPage from '../components/LoginPage';
 import NotFoundPage from '../components/NotFoundPage';
+import DashboardPage from '../components/DashboardPage';
+
+import HomePage from '../components/HomePage';
+import CalendarPage from '../components/CalendarPage';
+
+import RequestPage from '../components/RequestPage';
+
+import ScheduleCalendar from '../components/schedule/ScheduleCalendar';
+import SchedulePage from '../components/schedule/SchedulePage';
+
+import SettingPage from '../components/schedule/SettingPage';
+import DoctorPage from '../components/schedule/DoctorPage';
+import DoctorSettingPage from '../components/schedule/DoctorSettingPage';
+import SlotPage from '../components/schedule/SlotPage';
+
 import UserPage from '../components/user/UserPage';
 import UserModal from '../components/user/UserModal';
 
+import DataTableDemo from '../components/DataTableDemo';
 
 const UserIsAuthenticated = UserAuthWrapper({
     authSelector: state => state.user, // how to get the user state
     authenticatingSelector: state => state.user.authenticating, // for async session loading.
     LoadingComponent: LoginPage, // how to get the user state
-    predicate: auth => auth.authenticating!==true,
+    failureRedirectPath: '/#/login',
+    predicate: auth => auth.authenticating!==true && !auth.error,
     redirectAction: routerActions.replace, // the redux action to dispatch for redirect
     wrapperDisplayName: 'UserIsAuthenticated' // a nice name for this auth check
 });
@@ -31,15 +43,20 @@ export default function configureRoute(store){
     const useLogin = true; // true - to normally have to log in - change here
     return (useLogin) ? (
         <Route path="/" component={App}>
-            <IndexRoute component={UserIsAuthenticated(HomePage)} />
+            <IndexRoute component={UserIsAuthenticated(DashboardPage)} />
             <Route path="login" component={LoginPage} />
             <Route path="users" component={UserIsAuthenticated(UserPage)}>
                 <Route path="create" component={UserIsAuthenticated(UserModal)} />
                 <Route path=":id" component={UserIsAuthenticated(UserModal)} />
             </Route>
-            <Route path="organizer" component={UserIsAuthenticated(OrganizerPage)} />
+            <Route path="slots(/:doctor_id)(/:date)" component={UserIsAuthenticated(SlotPage)} />
             <Route path="request" component={UserIsAuthenticated(RequestPage)} />
-            <Route path="schedules" component={UserIsAuthenticated(SchedulePage)} />
+            <Route path="schedules/:role" component={UserIsAuthenticated(SchedulePage)}>
+                <Route path="(:doctor_id)(/:date)(/:hides)" component={UserIsAuthenticated(ScheduleCalendar)} />
+            </Route>
+            <Route path="settings(/:type)(/:id)" component={UserIsAuthenticated(SettingPage)}>
+            </Route>
+            <Route path="datatable" component={UserIsAuthenticated(DataTableDemo)} />
             <Route path="*" component={UserIsAuthenticated(NotFoundPage)} />
         </Route>
     ):(
@@ -48,6 +65,10 @@ export default function configureRoute(store){
             <IndexRoute component={HomePage} />
             <Route path="/calendar" component={CalendarPage} onEnter={connect(UserIsAuthenticated.onEnter)}/>
             <Route path="*" component={HomePage} />
+            <Route path="settings" component={UserIsAuthenticated(SettingPage)}>
+                <Route path="doctors(/:doctor_id)" component={UserIsAuthenticated(DoctorSettingPage)} />
+                <Route path="categories/:category_id" component={UserIsAuthenticated(DoctorSettingPage)} />
+            </Route>
         </Route>
     );
 

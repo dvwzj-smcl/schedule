@@ -2,32 +2,15 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import {Grid, Row, Col} from 'react-flexbox-grid';
 import Panel from '../widgets/Panel';
-import PageHeading from '../widgets/PageHeading';
-import Loading from '../widgets/Loading';
-
 import {List, ListItem} from 'material-ui/List';
 import {ContentInbox, ActionGrade, ContentSend, ContentDrafts, ActionInfo, ActionCancel} from 'material-ui/svg-icons';
 import {ActionHome, ActionEvent, ActionEventSeat, ContentSave} from 'material-ui/svg-icons';
-// import Paper from 'material-ui/Paper';
-// import FlatButton from 'material-ui/FlatButton';
-
-
-// Forms
-import SemiSelect from '../forms/SemiSelect';
-import SemiDate from '../forms/SemiDate';
-import FormGenerator from '../forms/FormGenerator';
-import SemiText from '../forms/SemiText';
-import SemiForm from '../forms/SemiForm';
 import Calendar from '../widgets/Calendar';
 import SemiModal from '../widgets/SemiModal';
-import SemiButton from '../widgets/SemiButton';
 import ContextMenu from '../widgets/ContextMenu';
 import $ from 'jquery';
-
 import FloatingActionButton from 'material-ui/FloatingActionButton';
-import ContentAdd from 'material-ui/svg-icons/content/add';
 import {HardwareKeyboardArrowRight, HardwareKeyboardArrowLeft} from 'material-ui/svg-icons';
-
 import helper from '../../libs/helper';
 
 class ScheduleCalendar extends Component {
@@ -203,10 +186,6 @@ class ScheduleCalendar extends Component {
         }
     };
 
-    onCalendarViewChange = (startDate) => {
-        // do nothing now
-    };
-
     eventRender = (event, element) => { // trick: passing event data to background event
         $(element).data(event);
     };
@@ -351,11 +330,11 @@ class ScheduleCalendar extends Component {
             droppable: false,
             editable: false,
             selectable: false,
+            slotDuration: '00:10:00',
             defaultDate: props.params.date, // gotoDate on first load
             eventClick: this.eventClick,
             eventRender: this.eventRender,
             dayClick: this.dayClick,
-            onViewChange: this.onCalendarViewChange,
             events: this.fetchEventSource
         };
 
