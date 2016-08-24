@@ -16,7 +16,8 @@ use Firebase\JWT\JWT;
 use App\Models\User\User;
 use Carbon\Carbon;
 
-header('Access-Control-Allow-Origin:  http://localhost:3000');
+header('Access-Control-Allow-Origin:  *');
+//header('Access-Control-Allow-Origin:  http://schedule.mspinfo.net');
 header('Access-Control-Allow-Methods:  POST, GET, OPTIONS, PUT, PATCH, DELETE');
 header('Access-Control-Allow-Headers:  Content-Type, Authorization, Access-Token');
 
@@ -30,29 +31,35 @@ Route::group(['prefix' => 'api', 'middleware' => []], function () {
     Route::post('auth', 'User\AuthController@Login');
 });
 
-//--- Route ที่มีการเช็ค auth user
-//Route::group(['prefix' => 'api', 'middleware' => ['jwt.auth','permission']], function () {
-//    Route::controller('auth', 'User\AuthController');
-//    Route::resource('user', 'User\UserController');
-//    Route::resource('branch', 'User\BranchController');
-//    Route::resource('permission', 'User\PermissionController');
-//    Route::resource('role', 'User\RoleController');
-//
-//});
-Route::group(['prefix' => 'api', 'middleware' => []], function () {
-    // todo : เติม s ทุกอันด้วยครับ
+Route::group(['prefix' => 'api', 'middleware' => ['jwt.auth'/*,'permission'*/]], function () {
+    // todo : branch
     Route::controller('auth', 'User\AuthController');
     Route::resource('users', 'User\UserController');
-
     Route::controller('branches', 'User\BranchController');
     Route::resource('branches', 'User\BranchController');
-
     Route::controller('roles', 'User\RoleController');
     Route::resource('roles', 'User\RoleController');
-
     Route::resource('permissions', 'User\PermissionController');
-    Route::controller('schedules', 'Schedule\ScheduleController');
-   
+
+    // schedules
+    Route::group(['prefix'=>'schedules'], function() {
+        Route::get('init', 'Schedule\ScheduleController@init');
+        Route::get('doctors/{doctor_id}/slots', 'Schedule\ScheduleController@getDoctorSlots');
+        Route::get('doctors/{doctor_id}/events/{date?}', 'Schedule\ScheduleController@getDoctorSlotsWithEvents');
+        Route::get('organizer/{user_id}/events', 'Schedule\ScheduleController@getOrganizerEvents');
+
+        Route::get('tasks', 'Schedule\ScheduleController@getTasks');
+        Route::get('events-status', 'Schedule\ScheduleController@getEventsStatus');
+        // todo: get category slot
+        Route::resource('events', 'Schedule\EventController');
+        
+        Route::get('events/{id}/status/{status}', 'Schedule\EventController@setStatus');
+        Route::get('events/{id}/confirm-status/{status}', 'Schedule\EventController@setConfirmStatus');
+    });
+    // slot ( create/update/delete/addevent )
+    // doctor ( getSlot )
+    // request ( accept/denied/delete/update )
+
 
 });
 /**
@@ -77,10 +84,11 @@ Route::group(['prefix'=>'api'], function(){
     Route::group(['prefix'=>'calendar'], function(){
         Route::resource('/', 'Schedule\CalendarController');
         Route::get('doctors/{doctor_id}/slot', 'Schedule\DoctorController@doctorSlot');
+        Route::get('doctors/search', 'Schedule\DoctorController@search');
         Route::resource('doctors', 'Schedule\DoctorController');
         Route::resource('categories', 'Schedule\CategoryController');
         Route::resource('slots', 'Schedule\SlotController');
-        Route::resource('requests', 'Schedule\RequestController');
+//        Route::resource('requests', 'Schedule\RequestController');
     });
 
     /*

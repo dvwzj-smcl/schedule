@@ -17,6 +17,7 @@ import Paper from 'material-ui/Paper';
 import Checkbox from 'material-ui/Checkbox';
 import FlatButton from 'material-ui/FlatButton';
 import {ActionPermIdentity, ActionInfo, HardwareKeyboardArrowRight, HardwareKeyboardArrowLeft} from 'material-ui/svg-icons';
+import ContextMenu from '../widgets/ContextMenu';
 
 
 class SlotPage extends Component {
@@ -110,6 +111,20 @@ class SlotPage extends Component {
         console.log('data', data);
         let date = data.date ? (typeof data.date === 'string') ? data.date : data.date.getISODate() : new Date();
         this.navigate({date, doctor_id: data.doctor_id})
+    };
+    
+    onContextMenuSelect = (key) => {
+        if(key == 'delete') {
+            this.context.dialog.confirm('Are you sure?', `${key.capitalize()} Appointment`, (confirm) => {
+                if(confirm) {
+                    this.context.ajax.call('get', `schedules/events/${event_id}/status/${key}`, null).then( response => {
+                        this.refreshCalendar();
+                    }).catch( error => {
+                        this.context.dialog.alert(error, 'Error');
+                    });
+                }
+            });
+        }
     };
 
     navigate = (params) => {
@@ -244,24 +259,26 @@ class SlotPage extends Component {
                             )}
                         </Col>
                         <Col md={9}>
-                            <Panel title="Schedule">
-                                <div className="semicon">
-                                    <div className="calendar-header">
-                                        <h2>{(new Date(this.props.params.date)).toDateString()}</h2>
-                                        <div className="button-group right" style={{zIndex: 999999}}>
-                                            <FloatingActionButton mini={true} className="button" onTouchTap={this.nextWeek.bind(this, false)}>
-                                                <HardwareKeyboardArrowLeft />
-                                            </FloatingActionButton>
-                                            <FloatingActionButton mini={true} className="button" onTouchTap={this.nextWeek.bind(this, true)}>
-                                                <HardwareKeyboardArrowRight />
-                                            </FloatingActionButton>
+                            {!doctor_id ? null : (
+                                <Panel title="Schedule">
+                                    <div className="semicon">
+                                        <div className="calendar-header">
+                                            <h2>{(new Date(this.props.params.date)).toDateString()}</h2>
+                                            <div className="button-group right" style={{zIndex: 999999}}>
+                                                <FloatingActionButton mini={true} className="button" onTouchTap={this.nextWeek.bind(this, false)}>
+                                                    <HardwareKeyboardArrowLeft />
+                                                </FloatingActionButton>
+                                                <FloatingActionButton mini={true} className="button" onTouchTap={this.nextWeek.bind(this, true)}>
+                                                    <HardwareKeyboardArrowRight />
+                                                </FloatingActionButton>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <Calendar {...calendarSettings} ref="calendar" />
                                         </div>
                                     </div>
-                                    <div>
-                                        <Calendar {...calendarSettings} ref="calendar" />
-                                    </div>
-                                </div>
-                            </Panel>
+                                </Panel>
+                            )}
                         </Col>
                     </Row>
                 </Grid>

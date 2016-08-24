@@ -42,7 +42,7 @@ class LoginPage extends Component {
     };
     
     render() {
-        console.log('render: login', this.props.user, this.props.user.error !== null);
+        // console.log('render: login', this.props.user, this.props.user.error !== null);
         let formTemplate = {
             data: {},
             // values: {username: 'organizer1', password: 'asdfasdf'},
