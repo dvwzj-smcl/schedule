@@ -8,6 +8,7 @@ import Loading from '../widgets/Loading';
 import {List, ListItem} from 'material-ui/List';
 import {ContentInbox, ActionGrade, ContentSend, ContentDrafts, ActionInfo, ActionCancel} from 'material-ui/svg-icons';
 import {ActionHome, ActionEvent, ActionEventSeat, ContentSave} from 'material-ui/svg-icons';
+import Divider from 'material-ui/Divider';
 
 // import Paper from 'material-ui/Paper';
 // import Divider from 'material-ui/Divider';
@@ -17,6 +18,8 @@ import * as scheduleActions from '../../actions/scheduleActions';
 
 // Forms
 import SemiForm from '../forms/SemiForm';
+import SemiDataTable from '../widgets/SemiDataTable';
+import TextField from 'material-ui/TextField';
 
 import {HardwareKeyboardArrowRight, HardwareKeyboardArrowLeft} from 'material-ui/svg-icons';
 
@@ -49,7 +52,11 @@ class SchedulePage extends Component {
         }
         this.setState({category});
     };
-    onSubCategoryChange = (id) => {
+    onColorChange = (color) => {
+        console.log(color);
+    };
+    onSubCategoryChange = (sub_categories) => {
+        /*
         let categories = this.state.category.sub_categories;
         let sub_category = null;
         for(let i in categories){
@@ -57,10 +64,15 @@ class SchedulePage extends Component {
         }
         console.log('sub', sub_category);
         this.setState({sub_category});
+        */
+        console.log(sub_categories);
     };
-    onColorChange = (color) => {
-        console.log(color);
-    };
+    saveColor(data){
+        console.log(data);
+    }
+    saveSubCategory(data){
+        console.log(data);
+    }
 
     render() {
         // console.log('render: sc page', this.state);
@@ -68,6 +80,7 @@ class SchedulePage extends Component {
 
         let props = this.props;
         let data = props.schedule.data;
+        console.log(data);
         let state = this.state;
         let doctor_id = props.params.id ? parseInt(props.params.id) : 0;
         console.log('doctor_id', doctor_id);
@@ -80,23 +93,19 @@ class SchedulePage extends Component {
         };
         let formTemplate2 = {
             data: {category_id: data.categories},
-            values: {},
             components: [
                 [{type: 'select', name: 'category_id', label: 'Category*', onChange: this.onCategoryChange}]
             ]
         };
+        let color = this.state.category ? this.state.category.color : null;
         let formTemplate3 = {
-            data: {sub_category_id: this.state.category ? this.state.category.sub_categories : []},
-            values: {},
-            components: [
-                [{type: 'select', name: 'sub_category_id', label: 'Sub Category*', onChange: this.onSubCategoryChange}]
-            ]
-        };
-        let formTemplate4 = {
+            values: {color},
             components: [
                 [{type: 'color', name: 'color', hintText: 'Color*', onChange: this.onColorChange, floatingLabelText: "Color (Required)", floatingLabelFixed: true, validations:['required']}]
             ]
         };
+        let dataSource = this.state.category ? this.state.category.sub_categories : [];
+        console.log('dataSource', dataSource);
         return (
             <Row>
                 <Col md={3}>
@@ -105,10 +114,8 @@ class SchedulePage extends Component {
                             <SemiForm noButton compact formTemplate={formTemplate} />
                         </div>
                     </Panel>
-                </Col>
-                <Col md={3} style={{display: doctor_id?'block':'none'}}>
                     <Panel>
-                        <div className="semicon">
+                        <div className="semicon" style={{display: doctor_id?'block':'none'}}>
                             <SemiForm noButton compact formTemplate={formTemplate2} />
                         </div>
                     </Panel>
@@ -116,14 +123,47 @@ class SchedulePage extends Component {
                 <Col md={3} style={{display: this.state.category?'block':'none'}}>
                     <Panel>
                         <div className="semicon">
-                            <SemiForm noButton compact formTemplate={formTemplate3} />
+                            <SemiForm compact submitLabel="Save" formTemplate={formTemplate3} onSubmit={this.saveColor} />
                         </div>
                     </Panel>
                 </Col>
-                <Col md={3} style={{display: this.state.sub_category?'block':'none'}}>
+                <Col md={6} style={{display: this.state.category?'block':'none'}}>
                     <Panel>
                         <div className="semicon">
-                            <SemiForm compact formTemplate={formTemplate4} />
+                            <form>
+                                <SemiDataTable
+                                    settings={{
+                                        table:{
+                                            selectable: false,
+                                            multiSelectable: false
+                                        },
+                                        header:{
+                                            displaySelectAll: false,
+                                            enableSelectAll: false,
+                                            adjustForCheckbox: false
+                                        },
+                                        body:{
+                                            displayRowCheckbox: false
+                                        },
+                                        fields:[
+                                            {
+                                                title: "Name",
+                                                key: "name"
+                                            },
+                                            {
+                                                title: "Duration",
+                                                key: "duration",
+                                                custom: (row, index, tbProps)=>{
+                                                    return (
+                                                        <TextField name="durations[]" value={row.duration} readonly underlineShow={false} />
+                                                    );
+                                                }
+                                            }
+                                        ],
+                                        limit: false
+                                    }}
+                                    dataSource={dataSource} />
+                            </form>
                         </div>
                     </Panel>
                 </Col>

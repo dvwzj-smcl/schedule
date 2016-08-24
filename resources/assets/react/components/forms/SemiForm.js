@@ -110,28 +110,7 @@ class SemiForm extends Component {
             hasReset, noButton, buttonRight, compact, // attributes
             onSubmit, // attributes
             ...rest} = props;
-        let resetBtn = hasReset && !noButton ? (
-            <SemiValidation.components.RaisedButton
-                label="Reset"
-                type="button"
-                style={{marginTop: 24, marginLeft: 16}}
-                onClick={this.resetForm}
-            />
-        ) : null;
 
-        let submitBtn = noSubmitButton || props.noButton ? null : (
-            <SemiValidation.components.RaisedButton
-                formNoValidate
-                secondary={true}
-                style={{marginTop: 24, marginLeft: buttonRight? 16:0}}
-                type="submit"
-                label={submitLabel || 'Submit'}
-                disabled={!this.state.canSubmit}
-            />);
-
-        let formClass = `${buttonRight ? 'btn-right' : ''} ${compact ? 'compact' : ''}`;
-
-        let buttons = buttonRight ? (<div className="btn-wrap">{resetBtn}{submitBtn}</div>) : <div className="btn-wrap">{submitBtn}{resetBtn}</div>;
 
         /**
          *
@@ -140,6 +119,7 @@ class SemiForm extends Component {
          */
 
         let components = [];
+        let no_required = true;
         if(formTemplate) {
             let values = this.state.values;
             let data = this.state.data;
@@ -192,6 +172,9 @@ class SemiForm extends Component {
                                 validations.push(v);
                             }
                         }
+                        if(validations.indexOf('required')>=0){
+                            no_required = false;
+                        }
                         let overrideValues = { // props with different names or need processing
                             floatingLabelText: item.label, // todo: * and optional
                             hintText: item.hint ? item.hint : '',
@@ -236,6 +219,7 @@ class SemiForm extends Component {
                                 component = (null);
                                 break;
                             case 'color':
+                                console.log('color:rest', rest);
                                 component = (
                                     <SemiValidation.components.ColorPicker
                                         {...rest}
@@ -247,6 +231,13 @@ class SemiForm extends Component {
                                     <SemiValidation.components.DatePicker
                                         {...rest}
                                     />
+                                );
+                                break;
+                            case 'checkbox':
+                                component = (
+                                    <SemiValidation.components.Checkbox
+                                        {...rest}
+                                        />
                                 );
                                 break;
                         }
@@ -263,6 +254,29 @@ class SemiForm extends Component {
          * End Form Generator Section ------------------
          *
          */
+
+        let resetBtn = hasReset && !noButton ? (
+            <SemiValidation.components.RaisedButton
+                label="Reset"
+                type="button"
+                style={{marginTop: 24, marginLeft: 16}}
+                onClick={this.resetForm}
+                />
+        ) : null;
+
+        let submitBtn = noSubmitButton || props.noButton ? null : (
+            <SemiValidation.components.RaisedButton
+                formNoValidate
+                secondary={true}
+                style={{marginTop: 24, marginLeft: buttonRight? 16:0}}
+                type="submit"
+                label={submitLabel || 'Submit'}
+                disabled={no_required ? false : !this.state.canSubmit}
+                />);
+
+        let formClass = `${buttonRight ? 'btn-right' : ''} ${compact ? 'compact' : ''}`;
+
+        let buttons = buttonRight ? (<div className="btn-wrap">{resetBtn}{submitBtn}</div>) : <div className="btn-wrap">{submitBtn}{resetBtn}</div>;
 
         let formItems = (this.state.ready) ?
             // (formTemplate) ? <FormGenerator formTemplate={formTemplate}/> : children : <Loading inline/>;

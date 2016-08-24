@@ -49,11 +49,14 @@ class SemiDataTable extends Component {
             this.handleChangePage(this.state.page);
         //}, 1000);
     }
-    shouldComponentUpdate(nextProps, nextState){
+    componentDidUpdate(){
+        //
+    }
+    //shouldComponentUpdate(nextProps, nextState){
         //console.log(nextState.page!==this.state.page, nextState.data!==this.state.data, nextState.total!==this.state.total, nextState.loading!==this.state.loading);
         //console.log(nextState.page!==this.state.page || nextState.data!==this.state.data || nextState.total!==this.state.total || nextState.loading!==this.state.loading);
-        return nextState.page!==this.state.page || nextState.data!==this.state.data || nextState.total!==this.state.total || nextState.loading!==this.state.loading;
-    }
+        //return nextState.page!==this.state.page || nextState.data!==this.state.data || nextState.total!==this.state.total || nextState.loading!==this.state.loading;
+    //}
     ajax(method, url, data, success, error){
         //data = JSON.stringify(data);
         $.ajax({
@@ -124,15 +127,15 @@ class SemiDataTable extends Component {
         console.log('render', this.state);
         let {table,header,body,fields,limit} = this.props.settings;
         limit = limit || 10;
-        const offset = (this.state.page-1)*limit;
-        let data = this.state.data;
-        let total = this.state.total;
+        const offset = limit==false ? 0 : (this.state.page-1)*limit;
+        let data = typeof this.props.dataSource=='object' ? this.props.dataSource : this.state.data;
+        let total = typeof this.props.dataSource=='object' ? this.props.dataSource.length : this.state.total;
         if(!fields || fields.length==0){
             fields = [];
             for(let i in data) for(let j in data[i]) if(fields.indexOf(j)==-1) fields.push(j);
         }
         let pages = [];
-        let max_page = Math.ceil(total/limit);
+        let max_page = limit==false ? 1 : Math.ceil(total/limit);
         for(let i=1;i<=max_page;i++){
             pages.push(i);
         }
@@ -149,7 +152,7 @@ class SemiDataTable extends Component {
             }
             return obj;
         });
-        if(typeof this.props.data=='object') {
+        if(typeof this.props.dataSource=='object' && limit!=false) {
             rows = rows.slice(offset,offset+limit);
         }
         return (
@@ -159,11 +162,13 @@ class SemiDataTable extends Component {
                     <TableHeader
                         {...header}
                         >
+                        {/*
                         <TableRow>
                             <TableHeaderColumn colSpan={Object.keys(fields).length} tooltip="Super Header" style={{textAlign: 'center'}}>
                                 Super Header
                             </TableHeaderColumn>
                         </TableRow>
+                        */}
                         <TableRow>
                             {fields.map((field, i)=> {
                                 return (

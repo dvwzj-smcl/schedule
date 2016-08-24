@@ -441,7 +441,7 @@ export class ValidationRadio extends ValidationSelectField {
     handleChange(event, value){
         this.props._update(this, event, true, true, value);
         event.persist();
-        this.props.onChange && this.props.onChange(event, index, value);
+        this.props.onChange && this.props.onChange(value, event);
     }
     handleCheck(value, event, isInputChecked){
         let input = this.props.states[this.props.name];
@@ -454,7 +454,7 @@ export class ValidationRadio extends ValidationSelectField {
         }
         this.props._update(this, event, true, true, values);
         event.persist();
-        this.props.onChange && this.props.onChange(event, index, values);
+        this.props.onChange && this.props.onChange(values, event, index);
 
     }
     render(){
