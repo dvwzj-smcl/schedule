@@ -218,7 +218,6 @@ class SemiForm extends Component {
                                 component = (null);
                                 break;
                             case 'color':
-                                console.log('color:rest', rest);
                                 component = (
                                     <SemiValidation.components.ColorPicker
                                         {...rest}

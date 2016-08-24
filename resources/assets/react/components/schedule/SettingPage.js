@@ -55,6 +55,8 @@ class SettingPage extends Component {
         let props = this.props;
         let {doctors} = props.schedule.data;
         let params = props.params;
+        let settingType = 'doctors';
+        // todo: dynamic
         console.log(props.schedule.data);
         return (
             <div>
@@ -64,11 +66,10 @@ class SettingPage extends Component {
                         <Col xs md={12}>
                             <Tabs>
                                 <Tab label="Doctors" >
-                                    {params.type !== 'doctors' ? null :
-                                        <DoctorSettingPage params={params} />
-                                    }
+                                    {settingType == 'doctors' ? this.props.children : null}
                                 </Tab>
                                 <Tab label="Categories" >
+                                    {settingType == 'categories' ? this.props.children : null}
                                 </Tab>
                             </Tabs>
                         </Col>

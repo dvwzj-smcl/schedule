@@ -130,7 +130,7 @@ class SemiDataTable extends Component {
         this.handleChangePage(page);
     }
     render() {
-        console.log('render', this.state);
+        // console.log('render', this.state);
         let {table,header,body,fields,limit} = this.props.settings;
         limit = limit || 10;
         const offset = limit==false ? 0 : (this.state.page-1)*limit;

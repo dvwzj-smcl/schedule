@@ -22,7 +22,7 @@ class ScheduleController extends Controller
     public function init()
     {
         // todo: remove commented code
-        $doctors = Doctor::with('user')->get()->keyBy('id');
+        $doctors = Doctor::currentBranch()->with('user')->get()->keyBy('id');
         $categories = Category::with('sub_categories')->get()->keyBy('id');
 
         // lookup for SubCategory name (1)

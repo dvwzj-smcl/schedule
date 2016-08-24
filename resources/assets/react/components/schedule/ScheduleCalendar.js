@@ -47,23 +47,7 @@ class ScheduleCalendar extends Component {
     }
 
     componentDidMount() {
-        this.init().then( calendar => {
-            // Lookup for Brighter Background Colors
-            let doctors = this.props.schedule.data.doctors;
-            let colors = {};
-            for(let doctor_id in doctors) {
-                let doctor = doctors[doctor_id];
-                for(let category_id in doctor.categories) {
-                    let category = doctor.categories[category_id];
-                    if(!colors[doctor_id]) colors[doctor_id] = {};
-                    colors[doctor_id][category_id] = {
-                        color: category.color,
-                        bgColor: this.increaseBrightness(category.color, 50)
-                    }
-                }
-            }
-            this.colors = colors;
-        });
+        this.init();
     }
 
     // avoid refs.calendar && this.props.schedule.data undefined
@@ -71,12 +55,14 @@ class ScheduleCalendar extends Component {
         return new Promise( resolve => {
             let me = this;
             if(me.refs.calendar && me.context.initialized()) {
+                this.initColors();
                 this.doctors = this.props.schedule.data.doctors;
                 resolve(me.refs.calendar);
             } else {
                 let interval = setInterval(function(){
                     if(me.refs.calendar && me.context.initialized()) {
                         clearInterval(interval);
+                        this.initColors();
                         resolve(me.refs.calendar);
                     }
                 }, 500);
@@ -84,6 +70,26 @@ class ScheduleCalendar extends Component {
         });
     };
     
+    initColors = () => {
+        // Lookup for Brighter Background Colors
+        let doctors = this.props.schedule.data.doctors;
+        let colors = {};
+        for(let doctor_id in doctors) {
+            let doctor = doctors[doctor_id];
+            console.log('doctor_id', doctor_id);
+            for(let category_id in doctor.categories) {
+                let category = doctor.categories[category_id];
+                if(!colors[doctor_id]) colors[doctor_id] = {};
+                colors[doctor_id][category_id] = {
+                    color: category.color,
+                    bgColor: this.increaseBrightness(category.color, 50)
+                }
+            }
+        }
+        this.colors = colors;
+        console.log('init color');
+    };
+
     refreshCalendar = () => {
         console.log('refresh');
         this.init().then(calendar=> { // refresh
@@ -239,6 +245,7 @@ class ScheduleCalendar extends Component {
                     slot.index = i; // array index
                     // if(slot.is_full) slot.rendering = 'background';
                     slot.rendering = 'background';
+                    console.log('3', me.colors);
                     slot.color = me.colors[doctor_id][cat_id].bgColor;
                 }
 

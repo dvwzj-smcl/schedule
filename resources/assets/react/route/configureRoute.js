@@ -12,12 +12,13 @@ import HomePage from '../components/HomePage';
 import CalendarPage from '../components/CalendarPage';
 
 import RequestPage from '../components/RequestPage';
-import CustomerPage from '../components/CustomerPage';
+
 
 import ScheduleCalendar from '../components/schedule/ScheduleCalendar';
 import SchedulePage from '../components/schedule/SchedulePage';
 
 import SettingPage from '../components/schedule/SettingPage';
+import CustomerPage from '../components/CustomerPage';
 import DoctorPage from '../components/schedule/DoctorPage';
 import DoctorSettingPage from '../components/schedule/DoctorSettingPage';
 import SlotPage from '../components/schedule/SlotPage';
@@ -52,11 +53,13 @@ export default function configureRoute(store){
             </Route>
             <Route path="slots(/:doctor_id)(/:date)" component={UserIsAuthenticated(SlotPage)} />
             <Route path="request" component={UserIsAuthenticated(RequestPage)} />
-            <Route path="customer" component={UserIsAuthenticated(CustomerPage)} />
             <Route path="schedules/:role" component={UserIsAuthenticated(SchedulePage)}>
                 <Route path="(:doctor_id)(/:date)(/:hides)" component={UserIsAuthenticated(ScheduleCalendar)} />
             </Route>
-            <Route path="settings(/:type)(/:id)" component={UserIsAuthenticated(SettingPage)}>
+            <Route path="settings" component={UserIsAuthenticated(SettingPage)}>
+                <Route path="doctors(/:doctor_id)(/:category_id)" component={UserIsAuthenticated(DoctorSettingPage)} />
+            </Route>
+            <Route path="customers(/:page_id)" component={UserIsAuthenticated(CustomerPage)}>
             </Route>
             <Route path="datatable" component={UserIsAuthenticated(DataTableDemo)} />
             <Route path="*" component={UserIsAuthenticated(NotFoundPage)} />
@@ -73,5 +76,7 @@ export default function configureRoute(store){
             </Route>
         </Route>
     );
+
+    console.log('asdf', asdf);
 
 }

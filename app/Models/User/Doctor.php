@@ -13,7 +13,8 @@ class Doctor extends Model
         'data' => 'array',
     ];
 
-    protected static function boot() {
+    protected static function boot()
+    {
         parent::boot();
 //        static::addglobalscope('branch', function(Builder $builder) {
 //            $builder->join('users', function ($join) {
@@ -23,16 +24,32 @@ class Doctor extends Model
 //        });
     }
 
-    public function user(){
+    public function scopeCurrentBranch($query)
+    {
+        return $query->
+        join('users', function ($join) {
+            $join->on('users.id', '=', 'sc_doctors.user_id')
+                ->where('users.branch_id', '=', \BF::getbranchid());
+        })->select('');
+    }
+
+    public function user()
+    {
         return $this->belongsTo('App\Models\User\User');
     }
-    public function categories(){
+
+    public function categories()
+    {
         return $this->hasMany('App\Models\Calendar\DoctorCategory', 'sc_doctor_id');
     }
-    public function sub_categories(){
+
+    public function sub_categories()
+    {
         return $this->hasMany('App\Models\Calendar\DoctorSubCategory', 'sc_doctor_id');
     }
-    public function slots(){
+
+    public function slots()
+    {
         return $this->hasMany('App\Models\Calendar\Slot', 'sc_doctor_id', 'id');
     }
 }

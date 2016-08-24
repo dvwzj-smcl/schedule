@@ -47,9 +47,9 @@ const menus = [
         permissions : ['organize-schedules']
     },
     {
-        text: "Customer",
+        text: "Customers",
         icon: <ActionAccessibility />,
-        to: "/customer",
+        to: "/customers",
         permissions : ['organize-schedules']
     },
     {

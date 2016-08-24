@@ -37,10 +37,10 @@ class CustomerPage extends Component {
         }
         return (
             <div>
-                <PageHeading title="Customer" description="description" />
+                <PageHeading title="Customer" description="Edit customer info and find customers' appointments" />
                 <Grid fluid className="content-wrap">
                     <Row>
-                        <Col md={9}>
+                        <Col md={12}>
                             <Panel title="Customer">
                                 <div className="con-pad">
                                     <SemiDataTable
@@ -88,8 +88,6 @@ class CustomerPage extends Component {
                                         />
                                 </div>
                             </Panel>
-                        </Col>
-                        <Col md={3}>
                         </Col>
                     </Row>
                 </Grid>
