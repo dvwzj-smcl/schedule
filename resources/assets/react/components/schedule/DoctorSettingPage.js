@@ -5,12 +5,10 @@ import {Grid, Row, Col} from 'react-flexbox-grid';
 import Panel from '../widgets/Panel';
 import Loading from '../widgets/Loading';
 import {List, ListItem} from 'material-ui/List';
-import {ContentInbox, ActionGrade, ContentSend, ContentDrafts, ActionInfo, ActionCancel} from 'material-ui/svg-icons';
+import IconButton from 'material-ui/IconButton';
+import {ContentCreate, ContentInbox, ActionGrade, ContentSend, ContentDrafts, ActionInfo, ActionCancel, ActionDelete} from 'material-ui/svg-icons';
 import {ActionHome, ActionEvent, ActionEventSeat, ContentSave} from 'material-ui/svg-icons';
-import Divider from 'material-ui/Divider';
-
 import * as scheduleActions from '../../actions/scheduleActions';
-// Forms
 import SemiForm from '../forms/SemiForm';
 import SemiDataTable from '../widgets/SemiDataTable';
 import TextField from 'material-ui/TextField';
@@ -56,6 +54,10 @@ class SchedulePage extends Component {
         console.log(data);
     }
 
+    editSubcategory = (params) => {
+
+    };
+
     render() {
         console.log('render: doctor setting page', this.state);
         if(!this.initialized()) return <Loading />;
@@ -94,8 +96,13 @@ class SchedulePage extends Component {
             };
         }
 
-        console.log('***', data.doctors[doctor_id].categories[category_id]);
-        let dataSource = category_id ? data.doctors[doctor_id].categories[category_id].sub_categories : [];
+        // console.log('***', data.doctors[doctor_id].categories[category_id]);
+        let subcategoriesObj =  category_id ? data.doctors[doctor_id].categories[category_id].sub_categories : {};
+        let dataSource = [];
+        for(let i in subcategoriesObj) {
+            let item = subcategoriesObj[i];
+            dataSource.push(item);
+        }
         console.log('dataSource', dataSource);
         console.log('doctor_id', !doctor_id);
         return (
@@ -153,16 +160,16 @@ class SchedulePage extends Component {
                                                         key: 'action',
                                                         custom: (row,index,tbDataProps)=>{
                                                         console.log('row,index,tbDataProps',row,index,tbDataProps);
-                                                            return tbDataProps.editable ? (
+                                                            return (
                                                                 <div>
-                                                                    <IconButton backgroundColor="#F00" onClick={this.editUser.bind(null, row.id)} >
+                                                                    <IconButton backgroundColor="#F00" onClick={this.editSubcategory.bind(this, row)} >
                                                                         <ContentCreate />
                                                                     </IconButton>
                                                                     <IconButton>
                                                                         <ActionDelete />
                                                                     </IconButton>
                                                                 </div>
-                                                            ) : null;
+                                                            );
                                                         }
                                                     }
                                                 ],
