@@ -19,8 +19,9 @@ class SemiButton extends Component{
 
     render() {
         let props = this.props;
+        let {semiType, ...rest} = props;
         let params = {};
-        switch(props.semiType) {
+        switch(semiType) {
             case 'add':
                 params.icon = <ContentAdd color={fullWhite} />;
                 params.backgroundColor = "#a4c639";
@@ -43,9 +44,9 @@ class SemiButton extends Component{
         return (<RaisedButton labelPosition="before"
                              type="button"
                              className="button rightMargin"
-                             onClick={this.linkTo}
+                             onTouchTap={this.linkTo}
                              {...params}
-                             {...this.props} />);
+                             {...rest} />);
     }
 }
 

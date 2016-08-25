@@ -40,12 +40,6 @@ const menus = [
         to: "/settings/doctors",
         permissions : ['organize-schedules']
     },
-    // {
-    //     text: "Request",
-    //     icon: <ActionPermContactCalendar />,
-    //     to: "/request",
-    //     permissions : ['organize-schedules']
-    // },
     {
         text: "Customers",
         icon: <ActionAccessibility />,
@@ -57,12 +51,18 @@ const menus = [
         icon: <SocialPerson />,
         to: "/users"
     },
-    // {
-    //     text: "DataTableDemo",
-    //     icon: <ActionPermContactCalendar />,
-    //     to: "/datatable",
-    //     permissions : ['organize-schedules']
-    // }
+    {
+        text: "Request",
+        icon: <ActionPermContactCalendar />,
+        to: "/request",
+        permissions : ['organize-schedules']
+    },
+    {
+        text: "DataTableDemo",
+        icon: <ActionPermContactCalendar />,
+        to: "/datatable",
+        permissions : ['organize-schedules']
+    }
 ];
 
 const menuFilter = (menu, permissions) => {

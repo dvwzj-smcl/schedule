@@ -11,6 +11,8 @@ import {ActionHome, ActionEvent, ActionEventSeat, ContentSave} from 'material-ui
 import * as scheduleActions from '../../actions/scheduleActions';
 import SemiForm from '../forms/SemiForm';
 import SemiDataTable from '../widgets/SemiDataTable';
+import SemiButton from '../widgets/SemiButton';
+import SemiModal from '../widgets/SemiModal';
 import TextField from 'material-ui/TextField';
 
 import {HardwareKeyboardArrowRight, HardwareKeyboardArrowLeft} from 'material-ui/svg-icons';
@@ -18,6 +20,9 @@ import {HardwareKeyboardArrowRight, HardwareKeyboardArrowLeft} from 'material-ui
 class SchedulePage extends Component {
     constructor(props, context) {
         super(props, context);
+        this.state = {
+            subcategory: {values: {}}
+        }
     }
 
     componentWillMount() {
@@ -50,12 +55,12 @@ class SchedulePage extends Component {
         console.log(data);
     }
 
-    saveSubCategory(data){
-        console.log(data);
+    saveSubcategory(data){
+        console.log('save', data);
     }
 
     editSubcategory = (params) => {
-
+        this.refs.subcategoryModal.open();
     };
 
     render() {
@@ -96,15 +101,32 @@ class SchedulePage extends Component {
             };
         }
 
-        // console.log('***', data.doctors[doctor_id].categories[category_id]);
         let subcategoriesObj =  category_id ? data.doctors[doctor_id].categories[category_id].sub_categories : {};
         let dataSource = [];
         for(let i in subcategoriesObj) {
             let item = subcategoriesObj[i];
             dataSource.push(item);
         }
-        console.log('dataSource', dataSource);
-        console.log('doctor_id', !doctor_id);
+
+        // --- Modal
+        let subcategoryModal = null;
+        if(category_id) {
+            let formTemplate = {
+                data: {},
+                values: this.state.subcategory.values,
+                settings: {},
+                components: [
+                    [
+                        {type: 'text', name: 'Enabled', label: 'First Name*', required: true}, // todo toggle
+                        {type: 'text', name: 'duration', label: 'Last Name*', required: true} // todo: integer only input
+                    ]
+                ]
+            };
+            subcategoryModal = (
+                <SemiModal onSubmit={this.saveSubcategory} ref="subcategoryModal" formTemplate={formTemplate} />
+            );
+        }
+
         return (
             <Row>
                 <Col md={3}>
@@ -116,6 +138,7 @@ class SchedulePage extends Component {
                 </Col>
                 {!category_id ? null : (
                     <Col md={9}>
+                        {subcategoryModal}
                         <Row>
                             <Col md={4}>
                                 <Panel title="Info" type="secondary">
@@ -147,6 +170,10 @@ class SchedulePage extends Component {
                                                         key: "name"
                                                     },
                                                     {
+                                                        title: "Enabled",
+                                                        key: "enable"
+                                                    },
+                                                    {
                                                         title: "Duration",
                                                         key: "duration",
                                                         custom: (row, index, tbProps)=>{
@@ -162,11 +189,8 @@ class SchedulePage extends Component {
                                                         console.log('row,index,tbDataProps',row,index,tbDataProps);
                                                             return (
                                                                 <div>
-                                                                    <IconButton backgroundColor="#F00" onClick={this.editSubcategory.bind(this, row)} >
+                                                                    <IconButton onClick={this.editSubcategory.bind(this, row)} >
                                                                         <ContentCreate />
-                                                                    </IconButton>
-                                                                    <IconButton>
-                                                                        <ActionDelete />
                                                                     </IconButton>
                                                                 </div>
                                                             );

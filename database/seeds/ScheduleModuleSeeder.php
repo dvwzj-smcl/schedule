@@ -33,6 +33,7 @@ class ScheduleModuleSeeder extends Seeder
         $category_data = \App\Models\Calendar\Category::get();
 
         $users = \App\Models\User\User::with('roles')->get();
+        // Generate JSON data
         foreach($users as $user) {
             if($user->hasRole('doctor')) {
                 $data = ['categories'=>[]];
@@ -43,6 +44,7 @@ class ScheduleModuleSeeder extends Seeder
                             'category_id' => $cat->id,
                             'sub_category_id' => $sub->id,
                             'duration' => $sub->duration,
+                            'enable' => true,
                         ];
                     }
                     $data['categories'][$cat->id] = [
