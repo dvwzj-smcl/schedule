@@ -186,7 +186,7 @@ class SchedulePage extends Component {
                                                         title: "Actions",
                                                         key: 'action',
                                                         custom: (row,index,tbDataProps)=>{
-                                                        console.log('row,index,tbDataProps',row,index,tbDataProps);
+                                                        // console.log('row,index,tbDataProps',row,index,tbDataProps);
                                                             return (
                                                                 <div>
                                                                     <IconButton onClick={this.editSubcategory.bind(this, row)} >
