@@ -15,6 +15,11 @@ import FloatingActionButton from 'material-ui/FloatingActionButton';
 import TextField from 'material-ui/TextField';
 import Toggle from 'material-ui/Toggle';
 
+import IconButton from 'material-ui/IconButton';
+import VerticalAlignBottomIcon from 'material-ui/svg-icons/editor/vertical-align-bottom';
+import VerticalAlignTopIcon from 'material-ui/svg-icons/editor/vertical-align-top';
+import SortIcon from 'material-ui/svg-icons/content/sort';
+
 import UltimatePaginationMaterialUi from 'react-ultimate-pagination-material-ui';
 
 const styles = {
@@ -31,12 +36,12 @@ const styles = {
 class SemiDataTable extends Component {
     constructor(props, context) {
         super(props, context);
+        let page = parseInt(props.location ? props.location.query.page || 1 : 1);
         this.state = {
-            page: 1,
+            page,
             data: [],
             total: 0,
-            editable: false,
-            loading: false
+            editable: false
         };
         this.loaded = false;
         this.handleChangePage = this.handleChangePage.bind(this);
@@ -46,7 +51,8 @@ class SemiDataTable extends Component {
         //var loading = setInterval(()=>{
             //console.log('loaded', this.loaded);
             //if(this.loaded) clearInterval(loading);
-            this.handleChangePage(this.state.page);
+            let page = parseInt(this.props.location ? this.props.location.query.page || 1 : this.state.page);
+            this.handleChangePage(page);
         //}, 1000);
     }
     componentDidUpdate(){
@@ -73,13 +79,12 @@ class SemiDataTable extends Component {
             if(error) error(message);
         });
     }
-    handleAjaxData(page, callback){
+    handleAjaxData(page, options){
         let p = new Promise((resolve, reject)=>{
-            this.setState({loading: true});
             let order = [];
             let columns = [];
-            let propOrder = (this.props.settings.order||[]);
-            let propColumns = (this.props.settings.columns||[]);
+            let propOrder = (options ? options.order : this.props.settings.order || []);
+            let propColumns = (options ? options.columns : this.props.settings.columns||[]);
             for(let i in propOrder){
                 order.push(propOrder[i]);
             }
@@ -105,12 +110,16 @@ class SemiDataTable extends Component {
             });
         });
         p.then((result)=>{
-            this.setState({page, data: result.data, total: result.total, editable: result.canEdit, loading: false, loaded: true});
+            this.setState({page, data: result.data, total: result.total, editable: result.canEdit});
+            let order = options&&options.order ? options.order.map((field)=>[field.column,field.dir].join(':')).join(',') : null;
+            let query = order ? {page, order} : {page};
+            this.context.router.push({pathname: this.props.path || this.props.location.pathname, query});
         });
     }
-    handleChangePage(page){
+    handleChangePage(page, options){
         if(this.state.dataType=='object') {
             this.setState({page});
+            this.context.router.push({pathname: this.props.path || this.props.location.pathname, query:{page}});
         }else{
             /*
             this.setState({loading: true});
@@ -118,18 +127,54 @@ class SemiDataTable extends Component {
                 this.setState({page, data, total, loading: false});
             });
             */
-            this.handleAjaxData(page);
+            let defaultOptions = {
+                order: this.props.location.query.order ? this.props.location.query.order.split(',').map((field)=>{
+                    let f = field.split(':');
+                    return {
+                        column: f[0],
+                        dir: f[1]
+                    }
+                }) : null
+            };
+
+            options = Object.assign(defaultOptions, options);
+
+            this.handleAjaxData(page, options);
         }
         //console.log('call', );
-        //this.context.router.push({pathname: this.props.location.pathname, query:{page}});
+
     }
     sort(field){
-        console.log(field);
+        if(field.sortable) {
+            let key = typeof field.key == 'object' ? field.key.map((k)=>k+':asc').join(',') : field.key+':asc';
+            let re = new RegExp(key, 'gi');
+            let dir = (this.props.location.query.order&&this.props.location.query.order.match(re) ? 'desc' : 'asc') || 'asc';
+            //let order = [field.key, dir].join(':');
+            //this.context.router.push({pathname: this.props.path || this.props.location.pathname, query:{page:1, order}});
+            let options = {
+                order: typeof field.key == 'object' ? field.key.map((k)=>{return {column: k, dir}}) : [{column: field.key, dir}]
+            };
+            this.handleChangePage(1, options);
+        }
     }
     goToPage(page){
         this.handleChangePage(page);
     }
     render() {
+        let order = this.props.location.query.order ? (options=>{
+            return {
+                column: options.map((f)=>f.column),
+                dir: options.map((f)=>f.dir).reduce((a,b)=>b)
+            }
+        })(
+            this.props.location.query.order.split(',').map((field)=>{
+                let f = field.split(':');
+                return {
+                    column: f[0],
+                    dir: f[1]
+                }
+            })
+        ) : null;
         // console.log('render', this.state);
         let {table,header,body,fields,limit} = this.props.settings;
         limit = limit || 10;
@@ -177,10 +222,22 @@ class SemiDataTable extends Component {
                         */}
                         <TableRow>
                             {fields.map((field, i)=> {
+                                let sortable = JSON.stringify(order&&order.column)==JSON.stringify(field.key) || order&&order.column==field.key;
                                 return (
-                                    <TableHeaderColumn key={i} tooltip={field.tooltip||field.title} style={field.style}>
-                                        <div onClick={this.sort.bind(null,field)}>
-                                            {field.title}
+                                    <TableHeaderColumn key={i} tooltip={
+                                    (field.tooltip||field.title)
+                                    +
+                                    (
+                                    field.sortable ? ' (' + (sortable ? ('Sorted: ' + (order.dir.match(/asc/gi) ? 'ASC':'DESC')) : 'Sortable') +')' : ''
+                                    )} style={field.style}>
+                                        <div onTouchTap={this.sort.bind(null,field)}>
+                                            <FlatButton
+                                                disabled={true}
+                                                label={field.title}
+                                                labelPosition="before"
+                                                style={{cursor: field.sortable ? 'pointer' : 'default' }}
+                                                icon={field.sortable ? (sortable ? (order.dir.match(/asc/gi) ? <VerticalAlignTopIcon /> : <VerticalAlignBottomIcon /> ) : <SortIcon />) : null}
+                                                />
                                         </div>
                                     </TableHeaderColumn>
                                 )
