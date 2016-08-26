@@ -12,6 +12,7 @@ import SemiModal from '../widgets/SemiModal';
 
 class CustomerInfo extends Component {
     constructor(props, context) {
+        console.log('modal:constructor', context);
         super(props, context);
     }
 
@@ -22,11 +23,7 @@ class CustomerInfo extends Component {
     }
 
     render() {
-        return (
-            <div>
-                Modal
-            </div>
-        );
+        return null;
     }
 }
 

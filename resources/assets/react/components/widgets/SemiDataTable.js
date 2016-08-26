@@ -113,13 +113,13 @@ class SemiDataTable extends Component {
             this.setState({page, data: result.data, total: result.total, editable: result.canEdit});
             let order = options&&options.order ? options.order.map((field)=>[field.column,field.dir].join(':')).join(',') : null;
             let query = order ? {page, order} : {page};
-            this.context.router.push({pathname: this.props.path || this.props.location.pathname, query});
+            this.context.router.push({pathname: this.props.path || this.props.location&&this.props.location.pathname, query});
         });
     }
     handleChangePage(page, options){
-        if(this.state.dataType=='object') {
+        if(typeof this.props.dataSource=='object') {
             this.setState({page});
-            this.context.router.push({pathname: this.props.path || this.props.location.pathname, query:{page}});
+            this.context.router.push({pathname: this.props.path || this.props.location&&this.props.location.pathname, query:{page}});
         }else{
             /*
             this.setState({loading: true});
@@ -128,7 +128,7 @@ class SemiDataTable extends Component {
             });
             */
             let defaultOptions = {
-                order: this.props.location.query.order ? this.props.location.query.order.split(',').map((field)=>{
+                order: this.props.location&&this.props.location.query.order ? this.props.location.query.order.split(',').map((field)=>{
                     let f = field.split(':');
                     return {
                         column: f[0],
@@ -161,19 +161,19 @@ class SemiDataTable extends Component {
         this.handleChangePage(page);
     }
     render() {
-        let order = this.props.location.query.order ? (options=>{
+        let order = this.props.location&&this.props.location.query.order ? (options=>{
             return {
                 column: options.map((f)=>f.column),
                 dir: options.map((f)=>f.dir).reduce((a,b)=>b)
             }
         })(
-            this.props.location.query.order.split(',').map((field)=>{
+            this.props.location ? this.props.location.query.order.split(',').map((field)=>{
                 let f = field.split(':');
                 return {
                     column: f[0],
                     dir: f[1]
                 }
-            })
+            }) : []
         ) : null;
         // console.log('render', this.state);
         let {table,header,body,fields,limit} = this.props.settings;

@@ -13,7 +13,11 @@ import SemiModal from '../widgets/SemiModal';
 class CustomerPage extends Component {
     constructor(props, context) {
         super(props, context);
+        this.state = {
+            customer: null
+        };
         this.showModal = this.showModal.bind(this);
+        this.handleModalClose = this.handleModalClose.bind(this);
     }
 
     componentDidMount() {
@@ -25,10 +29,66 @@ class CustomerPage extends Component {
     showModal(customer){
         //this.context.modal
         //this.refs.modal.open();
+        this.setState({customer});
         this.context.router.push({pathname: `customers/${customer.id}`});
+        this.refs.modal.open();
+    }
+    handleModalClose(){
+        this.setState({customer: null});
+        //let {query} = this.props.location;
+        //this.context.router.push({pathname: `customers`, query});
+        this.context.router.goBack();
     }
 
     render() {
+        let {customer} = this.state;
+        let mapKeys = {
+            first_name: 'First Name',
+            last_name: 'Last Name',
+            hn: 'HN',
+            phone: 'Phone',
+            contact: 'Contact'
+        };
+        let customerProfile = customer ? Object.keys(customer).map((i)=>{
+            return {
+                field: mapKeys[i],
+                value: customer[i]
+            }
+        }).filter((row)=>row.field) : null;
+        let modal = customer ? (
+            <SemiDataTable
+                settings={{
+                    table:{
+                        selectable: false
+                    },
+                    header:{
+                        displaySelectAll: false,
+                        enableSelectAll: false,
+                        adjustForCheckbox: false
+                    },
+                    body:{
+                        displayRowCheckbox: false
+                    },
+                    fields:[
+                        {
+                            title: 'Field',
+                            key: 'field',
+                            style: {width: '20%'}
+                        },
+                        {
+                            title: 'Value',
+                            key: 'value'
+                        }
+                    ]
+                }}
+                path={`customers/${customer.id}`}
+                dataSource={customerProfile} />
+        ) : null;
+        let formTemplate = {
+            components: [
+                [modal]
+            ]
+        };
         return (
             <div>
                 <PageHeading title="Customer" description="Edit customer info and find customers' appointments" />
@@ -91,7 +151,7 @@ class CustomerPage extends Component {
                                         />
                                 </div>
                             </Panel>
-                            {this.props.children}
+                            <SemiModal ref="modal" onClose={this.handleModalClose} formTemplate={formTemplate} />
                         </Col>
                     </Row>
                 </Grid>
