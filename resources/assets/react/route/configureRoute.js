@@ -19,8 +19,7 @@ import SchedulePage from '../components/schedule/SchedulePage';
 
 import SettingPage from '../components/schedule/SettingPage';
 
-import CustomerPage from '../components/customer/CustomerPage';
-import CustomerInfo from '../components/customer/CustomerInfo';
+import CustomerPage from '../components/CustomerPage';
 
 import DoctorPage from '../components/schedule/DoctorPage';
 import DoctorSettingPage from '../components/schedule/DoctorSettingPage';
@@ -62,8 +61,7 @@ export default function configureRoute(store){
             <Route path="settings" component={UserIsAuthenticated(SettingPage)}>
                 <Route path="doctors(/:doctor_id)(/:category_id)" component={UserIsAuthenticated(DoctorSettingPage)} />
             </Route>
-            <Route path="customers" component={UserIsAuthenticated(CustomerPage)}>
-                <Route path=":customer_id" component={UserIsAuthenticated(CustomerInfo)} />
+            <Route path="customers(/:customer_id)" component={UserIsAuthenticated(CustomerPage)}>
             </Route>
             <Route path="datatable" component={UserIsAuthenticated(DataTableDemo)} />
             <Route path="*" component={UserIsAuthenticated(NotFoundPage)} />

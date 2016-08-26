@@ -52,7 +52,7 @@ class SemiDataTable extends Component {
             //console.log('loaded', this.loaded);
             //if(this.loaded) clearInterval(loading);
             let page = parseInt(this.props.location ? this.props.location.query.page || 1 : this.state.page);
-            this.handleChangePage(page);
+            this.props.pagination&&this.handleChangePage(page);
         //}, 1000);
     }
     componentDidUpdate(){
