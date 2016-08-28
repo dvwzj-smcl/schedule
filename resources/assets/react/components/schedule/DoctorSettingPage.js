@@ -52,17 +52,22 @@ class SchedulePage extends Component {
     };
 
     saveColor = (data) => {
-        console.log(data);
-    };
-
-    saveSubcategory = (data) => {
-        console.log('save', data);
-        return;
-        this.context.ajax.call('put', `schedules/save-subcategories/${data.id}`, null).then(response => {
+        console.log('save color', data);
+        this.context.ajax.call('put', `schedules/doctors/${this.props.params.doctor_id}`, null).then(response => {
             this.props.actions.init();
         }).catch(error => {
             this.context.dialog.alert(error, 'Error');
         });
+    };
+
+    saveSubcategory = (data) => {
+        console.log('save', data);
+        // todo: JSON
+        // this.context.ajax.call('put', `schedules/doctors/${this.props.params.doctor_id}`, null).then(response => {
+        //     this.props.actions.init();
+        // }).catch(error => {
+        //     this.context.dialog.alert(error, 'Error');
+        // });
     };
 
     editSubcategory = (params) => {
@@ -123,29 +128,30 @@ class SchedulePage extends Component {
         let subcategoriesObj =  category_id ? data.doctors[doctor_id].categories[category_id].sub_categories : {};
         
         // --- Subcategory Settings
-        
+
         let components = [];
         let values = [];
         // todo: move to helper
         for(let i in subcategoriesObj) {
             let item = subcategoriesObj[i];
             let {name, category_id, sub_category_id, duration, enable} = item;
-            values[`enable-${i}`] = enable;
-            values[`duration-${i}`] = duration;
-            values[`category_id-${i}`] = category_id;
-            values[`sub_category_id-${i}`] = sub_category_id;
+            values[`enable-${sub_category_id}`] = enable;
+            values[`duration-${sub_category_id}`] = duration;
+            values[`category_id-${sub_category_id}`] = category_id;
+            values[`sub_category_id-${sub_category_id}`] = sub_category_id;
             components.push([
                 {type: 'string', value: `${name}`, required: true},
-                {type: 'text', label: 'Enable', name: `enable-${i}`, required: true},
-                {type: 'text', label: 'Duration', name: `duration-${i}`, required: true},
-                {type: 'hidden', name: `category_id-${i}`},
-                {type: 'hidden', name: `sub_category_id-${i}`}
+                {type: 'text', label: 'Enable', name: `enable-${sub_category_id}`, required: true},
+                {type: 'text', label: 'Duration', name: `duration-${sub_category_id}`, required: true},
+                {type: 'hidden', name: `category_id-${sub_category_id}`},
+                {type: 'hidden', name: `sub_category_id-${sub_category_id}`}
             ]);
         }
-        let formTemplate = {
+        let subcategoryForm = {
             values: values,
             components: components
         };
+        console.log('subcategoryForm', subcategoryForm);
 
         return (
             <Row>
@@ -178,7 +184,7 @@ class SchedulePage extends Component {
                             {!category_id ? null : (
                                 <Panel title="Subcategories" type="secondary">
                                     <div className="semicon">
-                                        <SemiForm buttonRight formTemplate={formTemplate} onSubmit={this.saveSubcategory}/>
+                                        <SemiForm buttonRight formTemplate={subcategoryForm} onSubmit={this.saveSubcategory}/>
                                     </div>
                                 </Panel>
                             )}

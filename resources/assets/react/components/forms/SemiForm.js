@@ -135,7 +135,7 @@ class SemiForm extends Component {
 
                 let row = formTemplate.components[rowId];
                 let settings = {};
-                console.log('row', row);
+                // console.log('row', row);
                 if(!Array.isArray(row)) {
                     settings = row.settings;
                     row = row.items;
@@ -203,6 +203,15 @@ class SemiForm extends Component {
                                     <SemiValidation.components.TextField
                                         {...rest}
                                     />
+                                );
+                                break;
+                            case 'hidden':
+                                component = (
+                                    <div style={{display: 'none'}}>
+                                        <SemiValidation.components.TextField
+                                            {...rest} type="hidden"
+                                        />
+                                    </div>
                                 );
                                 break;
                             case 'password':

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Schedule;
 use App\Models\Calendar\SubCategory;
 use App\Models\User\Doctor;
 use Illuminate\Http\Request;
-
+use BF;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
@@ -24,8 +24,8 @@ class SubcategoryController extends Controller
         try {
             $data = [
                 'name' => $request->get('name'),
-                'duration' => $request->get('doctor_id'),
-                'sc_category_id' => $request->get('category_id'),
+                'duration' => $request->get('duration'),
+                'sc_category_id' => $request->get('sc_category_id'),
             ];
             $sub = SubCategory::create($data);
             return BF::result(true, ['subcategory' => $sub]);
@@ -72,11 +72,10 @@ class SubcategoryController extends Controller
     {
         try {
             $doctor = Doctor::find($doctor_id);
+            // todo: parse JSON
             if($doctor == null) throw new \Exception('Doctor not found!');
             $doctor->update($request->all());
             return BF::result(true, ['subcategory' => $doctor]);
-        } catch (\Illuminate\Database\QueryException $e){
-            return BF::result(false, 'Cannot delete this subcategory. There are appointments with this subcategory.');
         } catch (\Exception $e){
             return BF::result(false, $e->getMessage());
         }

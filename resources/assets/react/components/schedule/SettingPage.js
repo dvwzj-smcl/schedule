@@ -40,7 +40,7 @@ class SettingPage extends Component {
     };
 
     render() {
-        console.log('render: setting page');
+        // console.log('render: setting page');
         if(!this.initialized()) return <Loading />;
         let props = this.props;
         let {doctors} = props.schedule.data;

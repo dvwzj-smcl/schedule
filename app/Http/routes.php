@@ -66,6 +66,7 @@ Route::group(['prefix' => 'api', 'middleware' => ['jwt.auth'/*,'permission'*/]],
         
         // Settings
         Route::resource('subcategories', 'Schedule\SubcategoryController');
+        Route::resource('doctors', 'Schedule\DoctorController');
         Route::resource('save-subcategories', 'Schedule\SubcategoryController@saveSubcategories');
     });
 });

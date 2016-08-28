@@ -8,7 +8,7 @@ export function initSchedule(params) {
         params,
         type: SCHEDULE_INIT,
         moduleName: 'schedule',
-        shouldCallAPI: (state, isLoaded) => !isLoaded,
+        // shouldCallAPI: (state, isLoaded) => !isLoaded,
         callAPI: `schedules/init`
     }
 }

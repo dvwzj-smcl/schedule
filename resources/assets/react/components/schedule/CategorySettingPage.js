@@ -56,6 +56,15 @@ class CategorySettingPage extends Component {
 
     saveSubcategory = (data) => {
         console.log('save', data);
+        let method = data.id ? 'put' : 'post';
+        let param = data.id ? `/${data.id}` : '';
+        if(!data.id) data.sc_category_id = this.props.params.category_id;
+        this.context.ajax.call(method, `schedules/subcategories${param}`, data).then(response => {
+            console.log('response', response);
+            this.props.actions.init();
+        }).catch(error => {
+            this.context.dialog.alert(error, 'Error');
+        });
     };
 
     editSubcategory = (values) => {
@@ -63,7 +72,8 @@ class CategorySettingPage extends Component {
         this.refs.subcategoryModal.open();
     };
 
-    createCubcategory = () => {
+    createSubcategory = () => {
+        this.setState({subcategory:{values:{}}});
         this.refs.subcategoryModal.open();
     };
 
@@ -94,7 +104,7 @@ class CategorySettingPage extends Component {
         let selectForm = {
             data: {doctor_id: data.doctors, category_id: data.categories},
             values: {category_id},
-            components: [[{type: 'select', name: 'category_id', label: 'Doctor*', onChange: this.onCategoryChange}]]
+            components: [[{type: 'select', name: 'category_id', label: 'Category*', onChange: this.onCategoryChange}]]
         };
 
         // --- Category Settings
@@ -121,6 +131,7 @@ class CategorySettingPage extends Component {
 
         // --- Subcategory Modal
 
+        // console.log('this.state.subcategory.values', this.state.subcategory.values);
         let subcategoryForm = null;
         if (category_id) {
             let color = data.categories[category_id].color;
@@ -130,7 +141,8 @@ class CategorySettingPage extends Component {
                 components: [
                     [
                         {type: 'text', name: 'name', label: 'Name*', required: true},
-                        {type: 'text', name: 'duration', label: 'Duration*', required: true}
+                        {type: 'text', name: 'duration', label: 'Duration*', required: true},
+                        {type: 'hidden', name: 'id'}
                     ]
                 ]
             };
@@ -163,7 +175,7 @@ class CategorySettingPage extends Component {
                                             <SemiButton
                                                 semiType="add"
                                                 label="Add New"
-                                                onTouchTap={this.createCubcategory}
+                                                onTouchTap={this.createSubcategory}
                                             />
                                         </div>
                                         <SemiDataTable
@@ -198,7 +210,7 @@ class CategorySettingPage extends Component {
                                                         title: "Actions",
                                                         key: 'action',
                                                         custom: (row,index,tbDataProps)=>{
-                                                        console.log('row,index,tbDataProps',row,index,tbDataProps);
+                                                        // console.log('row,index,tbDataProps',row,index,tbDataProps);
                                                             return (
                                                                 <div>
                                                                     <IconButton backgroundColor="#F00" onClick={this.editSubcategory.bind(this, row)} >
