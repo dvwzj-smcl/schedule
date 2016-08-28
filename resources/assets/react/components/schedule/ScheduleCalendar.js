@@ -38,9 +38,8 @@ class ScheduleCalendar extends Component {
             if(params.doctor_id != nextParams.doctor_id || params.hides != nextParams.hides) this.refreshCalendar();
         }
     }
-    
+
     componentWillMount() {
-        console.log('*cal', this.context.hides);
     }
 
     componentDidUpdate() {
@@ -69,14 +68,13 @@ class ScheduleCalendar extends Component {
             }
         });
     };
-    
+
     initColors = () => {
         // Lookup for Brighter Background Colors
         let doctors = this.props.schedule.data.doctors;
         let colors = {};
         for(let doctor_id in doctors) {
             let doctor = doctors[doctor_id];
-            console.log('doctor_id', doctor_id);
             for(let category_id in doctor.categories) {
                 let category = doctor.categories[category_id];
                 if(!colors[doctor_id]) colors[doctor_id] = {};
@@ -87,11 +85,9 @@ class ScheduleCalendar extends Component {
             }
         }
         this.colors = colors;
-        console.log('init color');
     };
 
     refreshCalendar = () => {
-        console.log('refresh');
         this.init().then(calendar=> { // refresh
             calendar.refresh(this.fetchEventSource);
         });
@@ -146,12 +142,39 @@ class ScheduleCalendar extends Component {
                 contact: data.contact
             }
         };
+
+        console.log('values*', values);
         let method = this.state.eventModal.data.isEdit ? 'put' : 'post';
         let url = this.state.eventModal.data.isEdit ? `schedules/events/${values.event_id}` : `schedules/events`;
+
+        // Using modal's ajax for loading... on Submit Button
         return ajax.call(method, url, req).then( response => {
             console.log('response', response);
             this.refs.eventModal.close();
             this.refreshCalendar();
+        }).catch( error => {
+            if(error.indexOf('overlap') !== -1) {
+                this.context.dialog.confirm('Do you want to send it as a request instead?', `Time overlap with another event`, (confirm) => {
+                    this.refs.eventModal.close();
+                    if(confirm) {
+                        this.req = req;
+                        this.refs.requestModal.open();
+                    }
+                });
+            } else {
+                throw error;
+            }
+        });
+    };
+
+    onRequestSubmit = (data, ajax) => {
+        let req = this.req;
+        req['requested'] = true;
+        this.context.ajax.call('post', `schedules/events`, req).then( response => {
+            this.refs.requestModal.close();
+            this.refreshCalendar();
+        }).catch( error => {
+            this.context.dialog.alert(error, 'Error');
         });
     };
 
@@ -161,7 +184,9 @@ class ScheduleCalendar extends Component {
         // console.log('calEvent.sale_id', calEvent, jsEvent);
         console.log('calEvent.status', calEvent.status);
         if(!calEvent.self && !this.isOrganizer) return;
+
         this.calEvent = calEvent; // pass value without using state
+        // or pass to argument 2 of context menu
 
         // hide context menu items
         let hide = [];
@@ -171,7 +196,7 @@ class ScheduleCalendar extends Component {
         else if(calEvent.status == 'rejected') hide.push('reject');
         console.log('hide', hide);
 
-        this.refs.eventContextMenu.open(jsEvent.target, {hide});
+        this.refs.eventContextMenu.open(jsEvent.target, calEvent, {hide});
     };
 
     dayClick = (date, jsEvent) => {
@@ -190,10 +215,6 @@ class ScheduleCalendar extends Component {
             this.setState({eventModal:{data, values}});
             this.refs.eventModal.open({sc_category_id, id});
         }
-    };
-
-    eventRender = (event, element) => { // trick: passing event data to background event
-        $(element).data(event);
     };
 
     increaseBrightness = (hex, percent) => {
@@ -245,7 +266,6 @@ class ScheduleCalendar extends Component {
                     slot.index = i; // array index
                     // if(slot.is_full) slot.rendering = 'background';
                     slot.rendering = 'background';
-                    console.log('3', me.colors);
                     slot.color = me.colors[doctor_id][cat_id].bgColor;
                 }
 
@@ -285,7 +305,7 @@ class ScheduleCalendar extends Component {
 
         let props = this.props;
         let state = this.state;
-        
+
         // Context Menu
         let eventActions = [
             {id: 'cancel', name: 'Cancel'},
@@ -294,7 +314,7 @@ class ScheduleCalendar extends Component {
             {id: 'edit', name: 'Edit'}
         ];
         if(!this.isOrganizer) eventActions.splice(1,2);
-        
+
         // Create/Edit Form
         let formTemplate = {
             data: this.state.eventModal.data,
@@ -321,10 +341,24 @@ class ScheduleCalendar extends Component {
             ]
         };
 
+        // Create/Edit Form
+        let requestForm = {
+            settings: {},
+            components: [
+                [
+                    {type: 'text', name: 'reason', label: 'Reason*', multiLine:true, required: true}
+                ]
+            ]
+        };
+
         let eventModal = (
             <SemiModal onSubmit={this.onAddEventSubmit} ref="eventModal" formTemplate={formTemplate} />
         );
-        
+
+        let requestModal = (
+            <SemiModal onSubmit={this.onRequestSubmit} ref="requestModal" formTemplate={requestForm} />
+        );
+
         let eventPopover = (
             <ContextMenu ref="eventContextMenu" onSelect={this.onContextMenuSelect} data={eventActions} />
         );
@@ -340,7 +374,6 @@ class ScheduleCalendar extends Component {
             slotDuration: '00:10:00',
             defaultDate: props.params.date, // gotoDate on first load
             eventClick: this.eventClick,
-            eventRender: this.eventRender,
             dayClick: this.dayClick,
             events: this.fetchEventSource
         };
@@ -348,6 +381,7 @@ class ScheduleCalendar extends Component {
         return (
             <Panel title="Schedule">
                 {eventModal}
+                {requestModal}
                 {eventPopover}
                 <div className="semicon">
                     <div className="calendar-header">

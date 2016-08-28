@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom';
 import Loading from '../widgets/Loading';
 import SemiValidation from './SemiValidation';
 import {Grid, Row, Col} from 'react-flexbox-grid';
+import TextField from 'material-ui/TextField';
 
 class SemiForm extends Component {
     constructor(props, context) {
@@ -84,7 +85,8 @@ class SemiForm extends Component {
                 return promise.then(response => {
                     // todo: submit loading here...
                 }).catch(error => {
-                    this.context.dialog.alert(error, 'Error!');
+                    // I find it better not forcing alert on error.
+                    // this.context.dialog.alert(error, 'Error!');
                 });
             }
         }
@@ -133,7 +135,7 @@ class SemiForm extends Component {
 
                 let row = formTemplate.components[rowId];
                 let settings = {};
-                // console.log('row', row);
+                console.log('row', row);
                 if(!Array.isArray(row)) {
                     settings = row.settings;
                     row = row.items;
@@ -141,16 +143,23 @@ class SemiForm extends Component {
 
                 // process row settings
                 // console.log('settings', settings);
-                if(settings.hide) continue;
+                if(settings && settings.hide) continue;
 
                 let cols = [];
-                let md = Math.floor(12 / row.length); // equally width for now
+
+                // calculate col width
+                let hiddenCount = 0;
+                for (let itemId in row) {
+                    let item = row[itemId];
+                    if(row[itemId].type == 'hidden') hiddenCount++;
+                }
+                let md = Math.floor(12 / (row.length - hiddenCount)); // equally width for now
                 for (let itemId in row) {
 
                     let item = row[itemId],
                         component = null,
-                        {name} = item,
-                        value = values[name];
+                        {name} = item;
+                    let value = item.type == 'string' ? item.value : values[name];
 
                     //console.log('**value', value, item);
                     let isComponent = typeof item.type === 'function' || item.props;
@@ -184,6 +193,11 @@ class SemiForm extends Component {
                         let {type, ...rest} = Object.assign(defaultValues, item, overrideValues);
 
                         switch (type) {
+                            case 'string':
+                                component = (
+                                    <div className="form-string">{value}</div>
+                                );
+                                break;
                             case 'text':
                                 component = (
                                     <SemiValidation.components.TextField
@@ -221,7 +235,7 @@ class SemiForm extends Component {
                                 component = (
                                     <SemiValidation.components.ColorPicker
                                         {...rest}
-                                        />
+                                    />
                                 );
                                 break;
                             case 'date':

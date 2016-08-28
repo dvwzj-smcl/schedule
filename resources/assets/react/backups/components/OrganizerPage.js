@@ -2,10 +2,10 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {Grid, Row, Col} from 'react-flexbox-grid';
-import Panel from './widgets/Panel';
-import PageHeading from './widgets/PageHeading';
-import SemiModal from './widgets/SemiModal';
-import SemiSelect from './forms/SemiSelect';
+import Panel from './../../components/widgets/Panel';
+import PageHeading from './../../components/widgets/PageHeading';
+import SemiModal from './../../components/widgets/SemiModal';
+import SemiSelect from './../../components/forms/SemiSelect';
 
 import {List, ListItem} from 'material-ui/List';
 import Paper from 'material-ui/Paper';
@@ -18,7 +18,7 @@ import FlatButton from 'material-ui/FlatButton';
 import api from '../api';
 
 import $ from 'jquery';
-import 'jquery-ui/themes/base/draggable.css';
+import '../../../../../node_modules/jquery-ui/themes/base/draggable.css';
 import 'jquery-ui/ui/widgets/draggable';
 import 'jquery-ui/ui/widgets/droppable';
 import moment from 'moment';

@@ -33,6 +33,7 @@ const setter = (obj, propString, value) => {
  */
 export function ajax (method, url, data, access_token) {
     url = api.baseUrl(url);
+    if(!data) data = {};
     if (typeof method === "undefined") {
         method = 'post';
         data._method = 'POST';

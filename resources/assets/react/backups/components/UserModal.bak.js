@@ -7,8 +7,8 @@ import Paper from 'material-ui/Paper';
 import { login, isAuthenticated, getError } from '../../actions/userActions';
 
 import Divider from 'material-ui/Divider';
-import SemiText from '../forms/SemiText';
-import SemiForm from '../forms/SemiForm';
+import SemiText from '../../components/forms/SemiText';
+import SemiForm from '../../components/forms/SemiForm';
 import ApiCall from '../../api/ApiCall';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';

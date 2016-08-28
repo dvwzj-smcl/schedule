@@ -46,26 +46,17 @@ class SlotController extends Controller
      */
     public function store(Request $request)
     {
-        $access_token = $request->header('access-token');
-        $user = JWT::decode($access_token, env('APP_KEY'), ['HS256']);
-        $organizer = \App\Models\User\Organizer::where('user_id', $user->id)->first();
-        $data = [
-            'created_by' => $organizer->id,
-            'sc_doctor_id' => $request->get('doctor_id'),
-            'sc_category_id' => $request->get('category_id'),
-            'start' => $request->get('start'),
-            'end' => $request->get('end')
-        ];
         try {
-            \App\Models\Calendar\Slot::create($data);
-            $slots = \App\Models\User\Doctor::with('slots.category')->find($request->get('doctor_id'))->slots;
-            $slots = array_map(function ($slot) {
-                $slot['title'] = $slot['category']['name'];
-                unset($slot['category']);
-                return $slot;
-            }, $slots->toArray());
-            return BF::result(true, ['slots' => $slots]);
-        }catch(\Exception $e){
+            $data = [
+                'created_by' => BF::getUserId(),
+                'sc_doctor_id' => $request->get('doctor_id'),
+                'sc_category_id' => $request->get('category_id'),
+                'start' => $request->get('start'),
+                'end' => $request->get('end')
+            ];
+            $slot = Slot::create($data);
+            return BF::result(true, ['slot' => $slot]);
+        } catch (\Exception $e){
             return BF::result(false, $e->getMessage());
         }
     }
@@ -102,14 +93,10 @@ class SlotController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            \App\Models\Calendar\Slot::find($id)->update($request->all());
-            $slots = \App\Models\User\Doctor::with('slots.category')->find($request->get('sc_doctor_id'))->slots;
-            $slots = array_map(function ($slot) {
-                $slot['title'] = $slot['category']['name'];
-                unset($slot['category']);
-                return $slot;
-            }, $slots->toArray());
-            return BF::result(true, ['slots' => $slots]);
+            $slot = Slot::find($id);
+            if($slot == null) throw new \Exception('Slot not found!');
+            $slot->update($request->all());
+            return BF::result(true, ['slot' => $slot]);
         }catch(\Exception $e){
             return BF::result(false, $e->getMessage());
         }
@@ -124,16 +111,13 @@ class SlotController extends Controller
     public function destroy($id)
     {
         try {
-            $slot = \App\Models\Calendar\Slot::find($id);
+            $slot = Slot::find($id);
+            if($slot == null) throw new \Exception('Slot not found!');
             $slot->delete();
-            $slots = \App\Models\User\Doctor::with('slots.category')->find($slot->sc_doctor_id)->slots;
-            $slots = array_map(function ($slot) {
-                $slot['title'] = $slot['category']['name'];
-                unset($slot['category']);
-                return $slot;
-            }, $slots->toArray());
-            return BF::result(true, ['slots' => $slots]);
-        }catch(\Exception $e){
+            return BF::result(true, ['slot' => $slot]);
+        } catch (\Illuminate\Database\QueryException $e){
+            return BF::result(false, 'Slot is not empty!');
+        } catch (\Exception $e){
             return BF::result(false, $e->getMessage());
         }
     }

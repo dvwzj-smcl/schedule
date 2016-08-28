@@ -31,32 +31,21 @@ class SettingPage extends Component {
         this.props.actions.init(true);
     }
 
-    getChildContext() {
-        return {
-            navigate: this.navigate
-        };
-    }
-
     initialized = () => {
         return this.props.actions.init(false);
     };
 
-    navigate = (params) => {
-        // not quite useful
-        params = Object.assign({
-            type: 'doctors'
-        }, this.props.params, params);
-        this.context.router.push(`/settings/${params.type}${params.id ? '/'+params.id : ''}`);
+    changeTab = (type) => {
+        this.context.router.push(`/settings/${type}`);
     };
 
     render() {
-        // console.log('render: search*', this.state.values);
+        console.log('render: setting page');
         if(!this.initialized()) return <Loading />;
         let props = this.props;
         let {doctors} = props.schedule.data;
         let params = props.params;
-        let settingType = 'doctors';
-        // todo: dynamic
+        let settingType = this.props.location.pathname.split('/')[2];
         console.log(props.schedule.data);
         return (
             <div>
@@ -64,11 +53,11 @@ class SettingPage extends Component {
                 <Grid fluid className="content-wrap">
                     <Row>
                         <Col xs md={12}>
-                            <Tabs>
-                                <Tab label="Doctors" >
+                            <Tabs value={settingType}>
+                                <Tab label="Doctors" value="doctors" onActive={this.changeTab.bind(this, 'doctors')}>
                                     {settingType == 'doctors' ? this.props.children : null}
                                 </Tab>
-                                <Tab label="Categories" >
+                                <Tab label="Categories" value="categories"  onActive={this.changeTab.bind(this, 'categories')}>
                                     {settingType == 'categories' ? this.props.children : null}
                                 </Tab>
                             </Tabs>
@@ -87,9 +76,6 @@ SettingPage.contextTypes = {
     helper: PropTypes.object,
     dialog: PropTypes.object,
     initialized: PropTypes.func
-};
-SettingPage.childContextTypes = {
-    navigate: PropTypes.func
 };
 
 const mapStateToProps = ({user, schedule}) => ({user, schedule});

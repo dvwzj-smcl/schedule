@@ -8,6 +8,7 @@ use App\Models\User\Doctor;
 use App\Models\User\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use BF;
 
 use App\Http\Requests;
 
@@ -15,6 +16,20 @@ class DebuggerController extends Controller
 {
     public function index()
     {
+        // --- START Slot Delete
+        try {
+            $slot = \App\Models\Calendar\Slot::find(109);
+            if($slot == null) throw new \Exception('Slot not found!');
+            $slot->delete();
+            return BF::result(true, ['slot' => $slot]);
+        } catch(\Illuminate\Database\QueryException $e){
+            return BF::result(false, $e->getMessage());
+        } catch(\Exception $e){
+            return BF::result(false, $e->getMessage());
+        }
+
+        // --- END  Slot Delete
+
         dd((new Carbon())->addDay(-1));
         $branch_id = 1;
         $sales = \App\Models\User\User::whereBranchId($branch_id)->sales()->get()->pluck('user_id');

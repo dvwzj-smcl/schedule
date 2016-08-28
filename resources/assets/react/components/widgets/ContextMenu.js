@@ -27,14 +27,14 @@ class ContextMenu extends Component {
     }
 
     // exposed function
-    open = (event, options) => {
+    open = (event, externalData, options) => {
         // original (event is form Material-UI's RaisedButton click)
         // This prevents ghost click.
         // event.preventDefault();
         // let target = event.currentTarget;
         let data = this.props.data;
         for(let i in data) data[i]._hide = false;
-        if(options.hide) {
+        if(options && options.hide) {
             for(let key of options.hide) {
                 let found = false;
                 for(let i in data) {
@@ -50,6 +50,7 @@ class ContextMenu extends Component {
         let target = event;
         this.setState({
             open: true,
+            externalData,
             anchorEl: target
         });
     };
@@ -58,8 +59,11 @@ class ContextMenu extends Component {
         this.setState({open: false});
     };
 
-    onItemTouchTap = (event, menuItem) => {
-        if(this.props.onSelect) this.props.onSelect(menuItem.key);
+    onItemTouchTap = (event, menuItem, ...rest) => {
+        console.log('menuItem, ...rest', menuItem, rest);
+        if(this.props.onSelect) {
+            this.props.onSelect(menuItem.key, this.state.externalData);
+        }
         this.setState({open: false});
     };
 

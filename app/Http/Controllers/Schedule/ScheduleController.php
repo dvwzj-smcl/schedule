@@ -19,11 +19,10 @@ use Input;
 
 class ScheduleController extends Controller
 {
+    // Initialize shared data, mostly lookup tables
     public function init()
     {
-        // todo: remove commented code
-//        $doctors = Doctor::currentBranch()->with('user')->get()->keyBy('id');
-        $doctors = Doctor::with('user')->get()->keyBy('id');
+        $doctors = Doctor::currentBranch()->with('user')->get()->keyBy('id');
         $categories = Category::with('sub_categories')->get()->keyBy('id');
 
         // lookup for SubCategory name (1)
@@ -31,7 +30,6 @@ class ScheduleController extends Controller
 
         foreach ($doctors as $doctor) {
             $data = json_decode($doctor->data);
-
             // attach SubCategory name (2)
             foreach ($data->categories as $category) {
                 foreach ($category->sub_categories as $sub) {
@@ -49,6 +47,7 @@ class ScheduleController extends Controller
         return BF::result(true, $response, '[schedule] init');
     }
 
+    // Dashboard's tasks
     public function getTasks()
     {
         Carbon::setWeekStartsAt(Carbon::SUNDAY);
@@ -60,7 +59,6 @@ class ScheduleController extends Controller
                 $today = \Carbon\Carbon::now();
                 $callDay = (new \Carbon\Carbon())->addDay(7);
                 $messageDay = (new \Carbon\Carbon())->addDay(3);
-
                 $new = Event::where('start', '>', $messageDay)
                     ->where('start', '<', $callDay)
                     ->where('confirmed_at', null)
@@ -68,7 +66,6 @@ class ScheduleController extends Controller
                     ->where('status', 'approved')
                     ->orderBy('start', 'asc')
                     ->with('customer', 'sub_category')->get();
-
                 $urgent = Event::where('start', '>', $today)
                     ->where('start', '<', $messageDay)
                     ->where('confirmed_at', null)
@@ -76,52 +73,45 @@ class ScheduleController extends Controller
                     ->where('status', 'approved')
                     ->orderBy('start', 'asc')
                     ->with('customer', 'sub_category')->get();
-
                 return BF::result(true, ['new' => $new, 'urgent' => $urgent]);
             }
-            return BF::result(true, ['tasks' => []]);
+            return BF::result(true, ['new' => [], 'urgent' => []]);
         } catch (\Exception $e){
             return BF::result(false, $e->getMessage());
         }
     }
 
+    // Dashboard's events
     public function getEventsStatus()
     {
         Carbon::setWeekStartsAt(Carbon::SUNDAY);
         Carbon::setWeekEndsAt(Carbon::SATURDAY);
-        // todo: asdfdsfdsfds
         try {
             $userId = BF::getUserId();
             if(BF::hasRole('organizer')) {
+                // todo: check branch too
             } else if(BF::hasRole('sale')) {
-                $today = \Carbon\Carbon::now();
-                $callDay = (new \Carbon\Carbon())->addDay(7);
-                $messageDay = (new \Carbon\Carbon())->addDay(3);
-
-                $new = Event::where('start', '>', $messageDay)
-                    ->where('start', '<', $callDay)
-                    ->where('confirmed_at', null)
-                    ->where('sale_id', $userId)
-                    ->where('status', 'approved')
+                $pending = Event::where('sale_id', $userId)
+                    ->where('status', 'pending')
                     ->orderBy('start', 'asc')
-                    ->with('customer', 'sub_category')->get();
-
-                $urgent = Event::where('start', '>', $today)
-                    ->where('start', '<', $messageDay)
-                    ->where('confirmed_at', null)
-                    ->where('sale_id', $userId)
-                    ->where('status', 'approved')
+                    ->with('customer', 'sub_category', 'slot')->get();
+                $rejected = Event::where('sale_id', $userId)
+                    ->where('status', 'rejected')
                     ->orderBy('start', 'asc')
-                    ->with('customer', 'sub_category')->get();
-
-                return BF::result(true, ['pending' => $new, 'rejected' => $urgent, 'canceled' => $urgent]);
+                    ->with('customer', 'sub_category', 'slot')->get();
+                $canceled = Event::where('sale_id', $userId)
+                    ->where('status', 'canceled')
+                    ->orderBy('start', 'asc')
+                    ->with('customer', 'sub_category', 'slot')->get();
+                return BF::result(true, ['pending' => $pending, 'rejected' => $rejected, 'canceled' => $canceled]);
             }
-            return BF::result(true, ['tasks' => []]);
+            return BF::result(true, ['pending' => [], 'rejected' => [], 'canceled' => []]);
         } catch (\Exception $e){
             return BF::result(false, $e->getMessage());
         }
     }
 
+    // Organizer's Schedule
     public function getOrganizerEvents()
     {
         Carbon::setWeekStartsAt(Carbon::SUNDAY);
@@ -151,6 +141,7 @@ class ScheduleController extends Controller
         }
     }
 
+    // Use getDoctorSlotsWithEvents instead for Doctor's Slot
     public function getDoctorSlots($doctor_id)
     {
         try {
@@ -178,6 +169,7 @@ class ScheduleController extends Controller
         }
     }
 
+    // Schedule Calendar
     public function getDoctorSlotsWithEvents($doctor_id, $dateParam = null)
     {
         try {

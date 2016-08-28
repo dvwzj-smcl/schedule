@@ -12,7 +12,7 @@ class UserModuleSeeder extends Seeder
     public function run()
     {
         \App\Models\User\Branch::create(['name' => 'สาขาสยามสแควร์','email' => 'info@masterpiececlinic.com','phone' => '026580531', 'fax' => '026580503','address' => '199/6,201 ถ.พระราม1 แขวงปทุมวัน เขตปทุมวัน กรุงเทพ 10330','desc' => 'สาขาแรก']);
-//        \App\Models\User\Branch::create(['name' => 'สาขาหาดใหญ่','email' => 'info@masterpiececlinic.com','phone' => '026580531', 'fax' => '026580503','address' => '199/6,201 ถ.พระราม1 แขวงปทุมวัน เขตปทุมวัน กรุงเทพ 10330','desc' => 'สาขาสอง']);
+        \App\Models\User\Branch::create(['name' => 'สาขาหาดใหญ่','email' => 'info@masterpiececlinic.com','phone' => '026580531', 'fax' => '026580503','address' => '199/6,201 ถ.พระราม1 แขวงปทุมวัน เขตปทุมวัน กรุงเทพ 10330','desc' => 'สาขาสอง']);
 
         $role_admin = \App\Models\User\Role::create(['name'=>'admin', 'display_name'=>'User Administrator', 'description'=>'User is allowed to manage and edit other users']);
         $role_doctor = \App\Models\User\Role::create(['name'=>'doctor', 'display_name'=>'User Doctor', 'description'=>'Just a doctor role']);

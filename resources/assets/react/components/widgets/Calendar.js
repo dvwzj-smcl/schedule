@@ -35,10 +35,19 @@ class Calendar extends Component {
         $('#calendar').fullCalendar('refetchEventSources', source);
     }
 
+    updateEvent(calEvent) {
+        $('#calendar').fullCalendar('updateEvent', Object.assign({}, calEvent, {start: calEvent.start._i, end: calEvent.end._i}));
+    }
+
     onViewChange = () => {
 
     };
-    
+
+    select = (a, b, jsEvent, view) => {
+        let anchor = $('#cal-anchor').css({top: jsEvent.pageY, left: jsEvent.pageX});
+        if(this.props.select) this.props.select(a, b, jsEvent, view, anchor[0]);
+    };
+
     getViewStartDate = () => {
         return this.viewStartDate;
     };
@@ -59,9 +68,13 @@ class Calendar extends Component {
     toDate = (date) => {
         return new Date(date.format('YYYY-MM-DD H:mm:ss'));
     };
+
+    eventRender = (event, element) => { // trick: passing event data to background event
+        $(element).data(event);
+    };
     
     componentDidMount() {
-        let props = this.props;
+        let {select, ...rest} = this.props;
         let settings = Object.assign({}, {
             lang: 'en',
             timezone: 'Asia/Bangkok',
@@ -78,8 +91,10 @@ class Calendar extends Component {
             forceEventDuration: true,
             events: [],
             defaultTimedEventDuration: '02:00:00',
-            viewRender: this.viewRender
-        }, props);
+            viewRender: this.viewRender,
+            select: this.select,
+            eventRender: this.eventRender
+        }, rest);
 
         $('#calendar').fullCalendar(settings);
 
@@ -93,7 +108,10 @@ class Calendar extends Component {
         // console.log('render: calendar');
         let state = this.state;
         return (
-            <div id="calendar"></div>
+            <div>
+                <div id="calendar"></div>
+                <div id="cal-anchor" style={{position: 'absolute'}}></div>
+            </div>
         );
     }
 }

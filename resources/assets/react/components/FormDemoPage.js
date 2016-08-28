@@ -63,7 +63,7 @@ Object.assign(Validation.rules, {
     }
 });
 
-class RequestPage extends Component {
+class FormDemoPage extends Component {
     constructor(props, context) {
         super(props, context);
         this.inputError = this.inputError.bind(this);
@@ -231,7 +231,7 @@ class RequestPage extends Component {
                             <Panel title="Request">
                                 <div className="con-pad">
                                     <SemiValidation.components.Form ref="form" onSubmit={this.onSubmit}>
-                                        {formItems3}
+                                        {formItems2}
                                         <SemiValidation.components.RaisedButton label="Submit" type="submit" />
                                     </SemiValidation.components.Form>
                                 </div>
@@ -278,8 +278,8 @@ class RequestPage extends Component {
     }
 }
 
-RequestPage.propTypes = {};
-RequestPage.contextTypes = {
+FormDemoPage.propTypes = {};
+FormDemoPage.contextTypes = {
     dialog: PropTypes.object.isRequired
 };
 
@@ -296,4 +296,4 @@ function mapDispatchToProps(dispatch) {
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(RequestPage);
+)(FormDemoPage);

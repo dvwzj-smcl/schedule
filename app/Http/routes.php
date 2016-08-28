@@ -32,7 +32,8 @@ Route::group(['prefix' => 'api', 'middleware' => []], function () {
 });
 
 Route::group(['prefix' => 'api', 'middleware' => ['jwt.auth'/*,'permission'*/]], function () {
-    // todo : branch
+    
+    // User Module
     Route::controller('auth', 'User\AuthController');
     Route::resource('users', 'User\UserController');
     Route::controller('branches', 'User\BranchController');
@@ -41,129 +42,30 @@ Route::group(['prefix' => 'api', 'middleware' => ['jwt.auth'/*,'permission'*/]],
     Route::resource('roles', 'User\RoleController');
     Route::resource('permissions', 'User\PermissionController');
 
-    // schedules
+    // Schedules Module
     Route::group(['prefix'=>'schedules'], function() {
         Route::get('init', 'Schedule\ScheduleController@init');
         Route::get('doctors/{doctor_id}/slots', 'Schedule\ScheduleController@getDoctorSlots');
         Route::get('doctors/{doctor_id}/events/{date?}', 'Schedule\ScheduleController@getDoctorSlotsWithEvents');
         Route::get('organizer/{user_id}/events', 'Schedule\ScheduleController@getOrganizerEvents');
-
+        
+        // Customer
         Route::get('customers', 'Schedule\ScheduleController@getCustomers');
 
+        // Dashboard
         Route::get('tasks', 'Schedule\ScheduleController@getTasks');
         Route::get('events-status', 'Schedule\ScheduleController@getEventsStatus');
-        // todo: get category slot
+
+        // Schedule
         Route::resource('events', 'Schedule\EventController');
-        
         Route::get('events/{id}/status/{status}', 'Schedule\EventController@setStatus');
         Route::get('events/{id}/confirm-status/{status}', 'Schedule\EventController@setConfirmStatus');
-    });
-    // slot ( create/update/delete/addevent )
-    // doctor ( getSlot )
-    // request ( accept/denied/delete/update )
 
-
-});
-/**
- * Phai's
- *
- * todo : move to ScheduleController
- */
-
-Route::group(['prefix'=>'api'], function(){
-    Route::get('/', function(){
-        return response('ready',200);
-    });
-    
-    /*
-    Route::get('test-auth/{username}/{password}', function($username, $password){
-        return response()->json([
-            'token' => JWT::encode(['username' => $username,'password' => $password], env('APP_KEY'))
-        ]);
-    });
-    */
-
-    Route::group(['prefix'=>'calendar'], function(){
-        Route::resource('/', 'Schedule\CalendarController');
-        Route::get('doctors/{doctor_id}/slot', 'Schedule\DoctorController@doctorSlot');
-        Route::get('doctors/search', 'Schedule\DoctorController@search');
-        Route::resource('doctors', 'Schedule\DoctorController');
-        Route::resource('categories', 'Schedule\CategoryController');
+        // Slot
         Route::resource('slots', 'Schedule\SlotController');
-//        Route::resource('requests', 'Schedule\RequestController');
+        
+        // Settings
+        Route::resource('subcategories', 'Schedule\SubcategoryController');
+        Route::resource('save-subcategories', 'Schedule\SubcategoryController@saveSubcategories');
     });
-
-    /*
-    Route::group(['prefix'=>'calendar'], function(){
-        Route::get('events/{year?}/{month?}', 'Schedule\CalendarController@events');
-        Route::get('events/{year?}/{month?}', function(Request $request,$year=null,$month=null){
-            if(is_null($year)){
-                $year = date('Y');
-            }
-            if(is_null($month)){
-                $month = date('m');
-            }
-            $date = Carbon::createFromDate($year, $month);
-            $start = $date->startOfMonth()->format('Y-m-d');
-            $end = $date->endOfMonth()->format('Y-m-d');
-            $slots = [];
-            $events = [];
-            //\DB::enableQueryLog();
-            foreach(\App\Models\Calendar\Slot::whereBetween(\DB::raw('substr(sc_slots.start,1,10)'), [$start, $end])->get() as $slot){
-                $response = $slot->response();
-                $events = array_merge($events, $response['events']);
-                $slots[] = $response['slot'];
-            }
-            return response()->json(['between'=>[$start,$end], 'events' => $events, 'slots'=>$slots],200, array(), JSON_PRETTY_PRINT);
-        });
-        Route::get('event/{event}', function(Request $request, \App\Models\Calendar\Event $event){
-            $event = $event
-                ->with('slot')
-                ->with('slot.doctor')
-                ->with('slot.organizer')
-                ->with('sub_category')
-                ->with('sub_category.category')
-                ->with('sale')
-                ->with('customer')
-                ->first();
-            return response()->json($event, 200, array(), JSON_PRETTY_PRINT);
-        })->where('event', '[0-9]+');
-        Route::get('event/{date?}', function(Request $request, $date=null){
-            if(is_null($date)){
-                $date = date('Y-m-d');
-            }
-            $slots = [];
-            $events = [];
-            foreach(\App\Models\Calendar\Slot::where('start', 'like', $date.'%')->get() as $slot){
-                $response = $slot->response();
-                $events = array_merge($events, $response['events']);
-                $slots[] = $response['slot'];
-            }
-            return response()->json(['events' => $events, 'slots'=>$slots],200, array(), JSON_PRETTY_PRINT);
-        })->where('date', '[0-9-]+');
-        Route::get('slot/{slot}', function(Request $request, \App\Models\Calendar\Slot $slot){
-            $response = $slot->response();
-            return response()->json($response['slot'],200, array(), JSON_PRETTY_PRINT);
-        });
-        Route::get('doctors', function(Request $request){
-            return response()->json(['doctors'=>\App\Models\User\Doctor::with('user')->get()],200, array(), JSON_PRETTY_PRINT);
-        });
-        Route::get('categories', function(Request $request){
-            return response()->json(['categories'=>\App\Models\Calendar\Category::all()],200, array(), JSON_PRETTY_PRINT);
-        });
-        Route::post('slot', function(Request $request){
-            return response()->json(['result'=>$request->all()],200, array(), JSON_PRETTY_PRINT);
-        });
-        Route::get('doctor/{doctor_id}/slot', function(Request $request, $doctor_id){
-            $slots = App\Models\Calendar\Slot::where('sc_doctor_id', $doctor_id)->with('category')->get();
-//            dd($slots);
-            $slots = array_map(function($slot){
-                $slot['title'] = $slot['category']['name'];
-                unset($slot['category']);
-                return $slot;
-            }, $slots->toArray());
-            return response()->json(['slots'=>$slots],200, array(), JSON_PRETTY_PRINT);
-        });
-    });
-    */
 });

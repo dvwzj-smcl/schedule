@@ -30,7 +30,7 @@ class CustomerPage extends Component {
         //this.context.modal
         //this.refs.modal.open();
         this.setState({customer});
-        this.context.router.push({pathname: `customers/${customer.id}`});
+        this.context.router.push({pathname: `/customers/${customer.id}`});
         this.refs.modal.open();
     }
     handleModalClose(){
@@ -55,7 +55,7 @@ class CustomerPage extends Component {
                 value: customer[i]
             }
         }).filter((row)=>row.field) : null;
-        let modal = customer ? (
+        let modalTable = customer ? (
             <SemiDataTable
                 settings={{
                     table:{
@@ -84,11 +84,6 @@ class CustomerPage extends Component {
                 path={`customers/${customer.id}`}
                 dataSource={customerProfile} />
         ) : null;
-        let formTemplate = {
-            components: [
-                [modal]
-            ]
-        };
         return (
             <div>
                 <PageHeading title="Customer" description="Edit customer info and find customers' appointments" />
@@ -151,7 +146,9 @@ class CustomerPage extends Component {
                                         />
                                 </div>
                             </Panel>
-                            <SemiModal ref="modal" onClose={this.handleModalClose} formTemplate={formTemplate} />
+                            <SemiModal ref="modal" onClose={this.handleModalClose}>
+                                {modalTable}
+                            </SemiModal>
                         </Col>
                     </Row>
                 </Grid>

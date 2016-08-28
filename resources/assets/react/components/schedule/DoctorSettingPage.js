@@ -51,13 +51,19 @@ class SchedulePage extends Component {
         this.navigate({category_id});
     };
 
-    saveColor(data){
+    saveColor = (data) => {
         console.log(data);
-    }
+    };
 
-    saveSubcategory(data){
+    saveSubcategory = (data) => {
         console.log('save', data);
-    }
+        return;
+        this.context.ajax.call('put', `schedules/save-subcategories/${data.id}`, null).then(response => {
+            this.props.actions.init();
+        }).catch(error => {
+            this.context.dialog.alert(error, 'Error');
+        });
+    };
 
     editSubcategory = (params) => {
         this.refs.subcategoryModal.open();
@@ -78,7 +84,7 @@ class SchedulePage extends Component {
         let selectComponents = [
             [{type: 'select', name: 'doctor_id', label: 'Doctor*', onChange: this.onDoctorChange}]
         ];
-        if(doctor_id) {
+        if (doctor_id) {
             category_id = category_id ? parseInt(category_id) : 0;
             selectComponents.push([{type: 'select', name: 'category_id', label: 'Category*', onChange: this.onCategoryChange}]);
         }
@@ -88,44 +94,58 @@ class SchedulePage extends Component {
             components: selectComponents
         };
 
+        // --- Doctor Settings
+
+        let doctorSettingForm = null;
+        if (doctor_id) {
+            let color = data.doctors[doctor_id].color;
+            doctorSettingForm = {
+                values: {color},
+                components: [
+                    [{type: 'color', name: 'color', label: 'Colors*', floatingLabelFixed: true, validations:['required']}]
+                ]
+            };
+        }
+        
         // --- Category Settings
 
         let categorySettingForm = null;
-        if(category_id) {
-            let color = data.categories[category_id].color;
+        if (category_id) {
+            let color = data.doctors[doctor_id].categories[category_id].color;
             categorySettingForm = {
                 values: {color},
                 components: [
-                    [{type: 'color', name: 'color', label: 'Colors*', hintText: 'Color*', floatingLabelText: 'Color (Required)', floatingLabelFixed: true, validations:['required']}]
+                    [{type: 'color', name: 'color', label: 'Colors*', floatingLabelFixed: true, validations:['required']}]
                 ]
             };
         }
 
         let subcategoriesObj =  category_id ? data.doctors[doctor_id].categories[category_id].sub_categories : {};
-        let dataSource = [];
+        
+        // --- Subcategory Settings
+        
+        let components = [];
+        let values = [];
+        // todo: move to helper
         for(let i in subcategoriesObj) {
             let item = subcategoriesObj[i];
-            dataSource.push(item);
+            let {name, category_id, sub_category_id, duration, enable} = item;
+            values[`enable-${i}`] = enable;
+            values[`duration-${i}`] = duration;
+            values[`category_id-${i}`] = category_id;
+            values[`sub_category_id-${i}`] = sub_category_id;
+            components.push([
+                {type: 'string', value: `${name}`, required: true},
+                {type: 'text', label: 'Enable', name: `enable-${i}`, required: true},
+                {type: 'text', label: 'Duration', name: `duration-${i}`, required: true},
+                {type: 'hidden', name: `category_id-${i}`},
+                {type: 'hidden', name: `sub_category_id-${i}`}
+            ]);
         }
-
-        // --- Modal
-        let subcategoryModal = null;
-        if(category_id) {
-            let formTemplate = {
-                data: {},
-                values: this.state.subcategory.values,
-                settings: {},
-                components: [
-                    [
-                        {type: 'text', name: 'Enabled', label: 'First Name*', required: true}, // todo toggle
-                        {type: 'text', name: 'duration', label: 'Last Name*', required: true} // todo: integer only input
-                    ]
-                ]
-            };
-            subcategoryModal = (
-                <SemiModal onSubmit={this.saveSubcategory} ref="subcategoryModal" formTemplate={formTemplate} />
-            );
-        }
+        let formTemplate = {
+            values: values,
+            components: components
+        };
 
         return (
             <Row>
@@ -136,76 +156,36 @@ class SchedulePage extends Component {
                         </div>
                     </Panel>
                 </Col>
-                {!category_id ? null : (
-                    <Col md={9}>
-                        {subcategoryModal}
-                        <Row>
-                            <Col md={4}>
-                                <Panel title="Info" type="secondary">
+
+                <Col md={9}>
+                {!doctor_id ? null : (
+                    <Row>
+                        <Col md={4}>
+                            <Panel title="Doctor" type="secondary">
+                                <div className="semicon">
+                                    <SemiForm buttonRight formTemplate={doctorSettingForm} onSubmit={this.saveColor} submitLabel="Save"/>
+                                </div>
+                            </Panel>
+                            {!category_id ? null : (
+                                <Panel title="Cagegory" type="secondary">
                                     <div className="semicon">
                                         <SemiForm buttonRight formTemplate={categorySettingForm} onSubmit={this.saveColor} submitLabel="Save"/>
                                     </div>
                                 </Panel>
-                            </Col>
-                            <Col md={8}>
+                            )}
+                        </Col>
+                        <Col md={8}>
+                            {!category_id ? null : (
                                 <Panel title="Subcategories" type="secondary">
                                     <div className="semicon">
-                                        <SemiDataTable
-                                        settings={{
-                                                table:{
-                                                    selectable: false,
-                                                    multiSelectable: false
-                                                },
-                                                header:{
-                                                    displaySelectAll: false,
-                                                    enableSelectAll: false,
-                                                    adjustForCheckbox: false
-                                                },
-                                                body:{
-                                                    displayRowCheckbox: false
-                                                },
-                                                fields:[
-                                                    {
-                                                        title: "Name",
-                                                        key: "name"
-                                                    },
-                                                    {
-                                                        title: "Enabled",
-                                                        key: "enable"
-                                                    },
-                                                    {
-                                                        title: "Duration",
-                                                        key: "duration",
-                                                        custom: (row, index, tbProps)=>{
-                                                            return (
-                                                                <TextField name="durations[]" value={row.duration} readonly underlineShow={false} />
-                                                            );
-                                                        }
-                                                    },
-                                                    {
-                                                        title: "Actions",
-                                                        key: 'action',
-                                                        custom: (row,index,tbDataProps)=>{
-                                                        // console.log('row,index,tbDataProps',row,index,tbDataProps);
-                                                            return (
-                                                                <div>
-                                                                    <IconButton onClick={this.editSubcategory.bind(this, row)} >
-                                                                        <ContentCreate />
-                                                                    </IconButton>
-                                                                </div>
-                                                            );
-                                                        }
-                                                    }
-                                                ],
-                                                limit: false
-                                            }}
-                                        dataSource={dataSource} />
+                                        <SemiForm buttonRight formTemplate={formTemplate} onSubmit={this.saveSubcategory}/>
                                     </div>
                                 </Panel>
-                            </Col>
-                        </Row>
-                    </Col>
+                            )}
+                        </Col>
+                    </Row>
                 )}
+                </Col>
             </Row>
         );
     }
@@ -216,7 +196,6 @@ SchedulePage.contextTypes = {
     router: PropTypes.object,
     helper: PropTypes.object,
     ajax: PropTypes.object,
-    navigate: PropTypes.func,
     dialog: PropTypes.object
 };
 

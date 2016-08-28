@@ -19,6 +19,10 @@ import FlatButton from 'material-ui/FlatButton';
 import {ActionPermIdentity, ActionInfo, HardwareKeyboardArrowRight, HardwareKeyboardArrowLeft} from 'material-ui/svg-icons';
 import ContextMenu from '../widgets/ContextMenu';
 
+// Context Menu
+const eventActions = [
+    {id: 'delete', name: 'Delete'}
+];
 
 class SlotPage extends Component {
     constructor(props, context) {
@@ -112,20 +116,6 @@ class SlotPage extends Component {
         let date = data.date ? (typeof data.date === 'string') ? data.date : data.date.getISODate() : new Date();
         this.navigate({date, doctor_id: data.doctor_id})
     };
-    
-    onContextMenuSelect = (key) => {
-        if(key == 'delete') {
-            this.context.dialog.confirm('Are you sure?', `${key.capitalize()} Appointment`, (confirm) => {
-                if(confirm) {
-                    this.context.ajax.call('get', `schedules/events/${event_id}/status/${key}`, null).then( response => {
-                        this.refreshCalendar();
-                    }).catch( error => {
-                        this.context.dialog.alert(error, 'Error');
-                    });
-                }
-            });
-        }
-    };
 
     navigate = (params) => {
         params = Object.assign({
@@ -140,6 +130,12 @@ class SlotPage extends Component {
         console.log('refresh');
         this.init().then(calendar=> { // refresh
             calendar.refresh(this.fetchEventSource);
+        });
+    };
+
+    undoCalendar = (calEvent) => {
+        this.init().then(calendar=> { // refresh
+            calendar.updateEvent(calEvent);
         });
     };
 
@@ -183,14 +179,63 @@ class SlotPage extends Component {
     };
 
     eventResize = (calEvent) => {
+        this.updateEvent(calEvent);
     };
     eventDrop = (calEvent) => {
+        this.updateEvent(calEvent);
     };
-    eventClick = (calEvent) => {
+    eventClick = (calEvent, jsEvent) => {
+        this.refs.eventContextMenu.open(jsEvent.target, calEvent);
     };
-    select = (a, b, jsEvent, view) => {
+    select = (a, b, jsEvent, view, anchor) => {
+        console.log('****', jsEvent.pageY);
+        let start = a.format('YYYY-MM-DD H:mm:ss');
+        let end = b.format('YYYY-MM-DD H:mm:ss');
+        this.refs.categoryContextMenu.open(anchor, {start, end});
+    };
+    updateEvent = (calEvent) => {
+        this.context.dialog.confirm('Are you sure you want to apply this change?', null, (confirm)=>{
+            if(confirm) {
+                let {start, end, sc_doctor_id, sc_organizer_id, sc_category_id, id} = calEvent;
+                let data = {start: start.format('YYYY-MM-DD H:mm:ss'), end: end.format('YYYY-MM-DD H:mm:ss'), sc_doctor_id, sc_organizer_id, sc_category_id};
+                this.context.ajax.call('put', `schedules/slots/${id}`, data).then( response => {
+                    this.refreshCalendar();
+                }).catch( error => {
+                    this.context.dialog.alert(error, 'Error');
+                });
+            }else{
+                this.undoCalendar(calEvent);
+            }
+        });
     };
 
+    onContextMenuSelect = (key, data) => {
+        console.log('key, data', key, data);
+        if(key === 'delete') {
+            this.context.dialog.confirm('Are you sure you want to delete?', null, (confirm)=>{
+                console.log(confirm);
+                if(confirm) {
+                    console.log('confirm');
+                    this.context.ajax.call('delete', `schedules/slots/${data.id}`, null).then( response => {
+                        this.refreshCalendar();
+                    }).catch( error => {
+                        this.context.dialog.alert(error, 'Error');
+                    });
+                }else{
+                    console.log('cancel');
+                }
+            });
+        }
+    };
+
+    onSelectCategory = (category_id, data) => {
+        let req = {doctor_id:this.props.params.doctor_id, category_id, start: data.start, end: data.end}
+        this.context.ajax.call('post', `schedules/slots`, req).then( response => {
+            this.refreshCalendar();
+        }).catch( error => {
+            this.context.dialog.alert(error, 'Error');
+        });
+    };
 
     render() {
         console.log('render: ScPage(parent)', this.props.schedule);
@@ -241,6 +286,8 @@ class SlotPage extends Component {
 
         return (
             <div>
+                <ContextMenu ref="eventContextMenu" onSelect={this.onContextMenuSelect} data={eventActions} />
+                <ContextMenu ref="categoryContextMenu" onSelect={this.onSelectCategory} data={categories} />
                 <PageHeading title="Schedule" description={formTemplate.values.date.toString()} />
                 <Grid fluid className="content-wrap">
                     <Row>

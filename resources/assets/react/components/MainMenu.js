@@ -52,9 +52,9 @@ const menus = [
         to: "/users"
     },
     {
-        text: "Request",
+        text: "FormDemo",
         icon: <ActionPermContactCalendar />,
-        to: "/request",
+        to: "/form",
         permissions : ['organize-schedules']
     },
     {

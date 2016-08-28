@@ -21,11 +21,15 @@ import ContextMenu from './widgets/ContextMenu';
 import MobileSheet  from './widgets/MobileSheet';
 // import {ContentInbox, ActionGrade, ContentSend, ContentDrafts, ActionInfo} from 'material-ui/svg-icons';
 
+const eventActions = [
+    {id: 'goto calendar', name: 'Goto Calendar'}
+];
+
 const callActions = [
-    {id: 'phoned', name: 'Phoned but not confirmed'},
+    {id: 'called', name: 'Called but not confirmed'},
     {id: 'messaged', name: 'Messaged but not confirmed'},
-    {id: 'phoned done', name: 'Phoned & Comfirmed'},
-    {id: 'messaged done', name: 'Messaged & Comfirmed'}
+    {id: 'called-confirmed', name: 'Called & Comfirmed'},
+    {id: 'messaged-confirmed', name: 'Messaged & Comfirmed'}
 ];
 
 class HomePage extends Component {
@@ -41,21 +45,36 @@ class HomePage extends Component {
     componentDidMount() {
     }
 
-    onTaskActionSelect = (key) => {
+    onTaskActionSelect = (data, key) => {
+        let event_id = data.id;
+        let message = '';
+        let {first_name, last_name} = data.customer;
         if(key == 'called') {
+            message = `You called ${first_name} ${last_name} but not confirmed`;
         } else if (key == 'messaged') {
+            message = `You messaged ${first_name} ${last_name} but not confirmed`;
         } else if (key == 'called-confirmed') {
+            message = `You called ${first_name} ${last_name} and confirmed`;
         } else if (key == 'messaged-confirmed') {
+            message = `You messaged ${first_name} ${last_name} and confirmed`;
         }
-        this.context.dialog.confirm('Are you sure?', `${key.capitalize()} Appointment`, (confirm) => {
+        this.context.dialog.confirm(message, 'Confirm Action', (confirm) => {
             if(confirm) {
                 this.context.ajax.call('get', `schedules/events/${event_id}/confirm-status/${key}`, null).then( response => {
-                    this.props.actions.getScheduleEventsStatus();
+                    this.props.actions.getScheduleTasks();
                 }).catch( error => {
                     this.context.dialog.alert(error, 'Error');
                 });
             }
         });
+    };
+
+    onEventActionSelect = (data) => {
+        console.log('data', data);
+        let date = (new Date(data.start)).getISODate();
+        let role = 'sale'; // todo
+        let doctor_id = data.slot.sc_doctor_id;
+        this.context.router.push(`/schedules/${role}/${doctor_id}/${date}`);
     };
 
     initialized = () => {
@@ -70,14 +89,8 @@ class HomePage extends Component {
     };
 
     render(){
-        // Contact Task
-        let callActions = [
-            {id: 'called', name: 'Called but not confirmed'},
-            {id: 'messaged', name: 'Messaged but not confirmed'},
-            {id: 'called-confirmed', name: 'Called & Comfirmed'},
-            {id: 'messaged-confirmed', name: 'Messaged & Comfirmed'}
-        ];
-        const rightIconMenu = <ContextMenu isIconMenu onSelect={this.onTaskActionSelect} data={callActions} />;
+        // console.log('render: dash', this.props.notification);
+
         let {user, notification} = this.props;
 
         let isTaskLoaded = this.props.actions.getScheduleTasks(false);
@@ -108,6 +121,7 @@ class HomePage extends Component {
                         } else {
                             leftAvatar = (<Avatar icon={<ContentAdd />} backgroundColor={deepOrange500}/>);
                         }
+                        const rightIconMenu = <ContextMenu isIconMenu onSelect={this.onTaskActionSelect.bind(this, task)} data={callActions} />;
                         taskLists[type].push((
                             <div key={i}>
                                 <ListItem
@@ -151,6 +165,7 @@ class HomePage extends Component {
                         } else {
                             leftAvatar = (<Avatar icon={<ContentAdd />} backgroundColor={deepOrange500}/>);
                         }
+                        const rightIconMenu = <ContextMenu isIconMenu onSelect={this.onEventActionSelect.bind(this, task)} data={eventActions} />;
                         eventsStatusLists[type].push((
                             <div key={i}>
                                 <ListItem
@@ -245,6 +260,7 @@ class HomePage extends Component {
 HomePage.contextTypes = {
     router: PropTypes.object.isRequired,
     ajax: PropTypes.object,
+    location: PropTypes.object,
     dialog: PropTypes.object
 };
 

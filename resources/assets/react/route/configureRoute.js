@@ -7,27 +7,17 @@ import App from '../components/App';
 import LoginPage from '../components/LoginPage';
 import NotFoundPage from '../components/NotFoundPage';
 import DashboardPage from '../components/DashboardPage';
-
 import HomePage from '../components/HomePage';
-import CalendarPage from '../components/CalendarPage';
-
-import RequestPage from '../components/RequestPage';
-
-
 import ScheduleCalendar from '../components/schedule/ScheduleCalendar';
 import SchedulePage from '../components/schedule/SchedulePage';
-
 import SettingPage from '../components/schedule/SettingPage';
-
 import CustomerPage from '../components/CustomerPage';
-
-import DoctorPage from '../components/schedule/DoctorPage';
 import DoctorSettingPage from '../components/schedule/DoctorSettingPage';
+import CategorySettingPage from '../components/schedule/CategorySettingPage';
 import SlotPage from '../components/schedule/SlotPage';
-
 import UserPage from '../components/user/UserPage';
 import UserModal from '../components/user/UserModal';
-
+import FormDemoPage from '../components/FormDemoPage';
 import DataTableDemo from '../components/DataTableDemo';
 
 const UserIsAuthenticated = UserAuthWrapper({
@@ -43,9 +33,7 @@ const UserIsAuthenticated = UserAuthWrapper({
 export default function configureRoute(store){
 
     const connect = (fn) => (nextState, replaceState) => fn(store, nextState, replaceState);
-
-    const useLogin = true; // true - to normally have to log in - change here
-    return (useLogin) ? (
+    return (
         <Route path="/" component={App}>
             <IndexRoute component={UserIsAuthenticated(DashboardPage)} />
             <Route path="login" component={LoginPage} />
@@ -54,31 +42,18 @@ export default function configureRoute(store){
                 <Route path=":id" component={UserIsAuthenticated(UserModal)} />
             </Route>
             <Route path="slots(/:doctor_id)(/:date)" component={UserIsAuthenticated(SlotPage)} />
-            <Route path="request" component={UserIsAuthenticated(RequestPage)} />
             <Route path="schedules/:role" component={UserIsAuthenticated(SchedulePage)}>
                 <Route path="(:doctor_id)(/:date)(/:hides)" component={UserIsAuthenticated(ScheduleCalendar)} />
             </Route>
             <Route path="settings" component={UserIsAuthenticated(SettingPage)}>
                 <Route path="doctors(/:doctor_id)(/:category_id)" component={UserIsAuthenticated(DoctorSettingPage)} />
+                <Route path="categories(/:category_id)" component={UserIsAuthenticated(CategorySettingPage)} />
             </Route>
             <Route path="customers(/:customer_id)" component={UserIsAuthenticated(CustomerPage)}>
             </Route>
+            <Route path="form" component={UserIsAuthenticated(FormDemoPage)} />
             <Route path="datatable" component={UserIsAuthenticated(DataTableDemo)} />
             <Route path="*" component={UserIsAuthenticated(NotFoundPage)} />
         </Route>
-    ):(
-        // For testing without logging in
-        <Route path="/" component={App}>
-            <IndexRoute component={HomePage} />
-            <Route path="/calendar" component={CalendarPage} onEnter={connect(UserIsAuthenticated.onEnter)}/>
-            <Route path="*" component={HomePage} />
-            <Route path="settings" component={UserIsAuthenticated(SettingPage)}>
-                <Route path="doctors(/:doctor_id)" component={UserIsAuthenticated(DoctorSettingPage)} />
-                <Route path="categories/:category_id" component={UserIsAuthenticated(DoctorSettingPage)} />
-            </Route>
-        </Route>
     );
-
-    console.log('asdf', asdf);
-
 }

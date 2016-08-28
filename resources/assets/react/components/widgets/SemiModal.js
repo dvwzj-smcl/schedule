@@ -84,7 +84,7 @@ class SemiModal extends Component {
     render() {
         // console.log('render: modal');
         let props = this.props;
-        const actions = [
+        const actions = props.formTemplate ? [
             <FlatButton
                 label="Cancel"
                 primary={true}
@@ -98,8 +98,23 @@ class SemiModal extends Component {
                 disabled={!this.state.canSubmit}
                 type="submit"
             />
+        ] : [
+            <FlatButton
+                label="Close"
+                primary={true}
+                onTouchTap={this.close}
+            />,
         ];
-        let children = props.formTemplate ? null : props.children;
+        let children = !props.formTemplate ? props.children :
+            <SemiForm
+                ref="form"
+                noButton
+                onValid={this.onValid}
+                onInvalid={this.onInvalid}
+                onLoad={this.props.onLoad? this.onLoad : null}
+                onSubmit={this.props.onSubmit? this.onSubmit : null}
+                formTemplate={props.formTemplate}
+            />;
         return (
             <div>
                 <Dialog
@@ -109,17 +124,7 @@ class SemiModal extends Component {
                     open={this.state.open}
                     onRequestClose={this.close}
                     autoScrollBodyContent={true} >
-                    <SemiForm
-                        ref="form"
-                        noButton
-                        onValid={this.onValid}
-                        onInvalid={this.onInvalid}
-                        onLoad={this.props.onLoad? this.onLoad : null}
-                        onSubmit={this.props.onSubmit? this.onSubmit : null}
-                        formTemplate={props.formTemplate}
-                    >
-                        {children}
-                    </SemiForm>
+                    {children}
                 </Dialog>
             </div>
         );
