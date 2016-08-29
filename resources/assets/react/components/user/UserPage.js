@@ -161,8 +161,6 @@ class UserPage extends Component {
                                         order: [{"column":"id","dir":"DESC"}],
                                         limit: 4
                                     }}
-                                    path="users"
-                                    location={this.props.location}
                                     pagination={true}
                                     dataSourceResult="data"
                                     dataSourceMap={{data: "tbData", total: "recordsTotal"}}

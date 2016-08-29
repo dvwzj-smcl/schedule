@@ -41,6 +41,7 @@ class SemiDataTable extends Component {
             page,
             data: [],
             total: 0,
+            order: null,
             editable: false
         };
         this.loaded = false;
@@ -110,16 +111,19 @@ class SemiDataTable extends Component {
             });
         });
         p.then((result)=>{
-            this.setState({page, data: result.data, total: result.total, editable: result.canEdit});
+            let pathname = this.props.pathname || this.props.location&&this.props.location.pathname;
             let order = options&&options.order ? options.order.map((field)=>[field.column,field.dir].join(':')).join(',') : null;
+            this.setState({page, data: result.data, total: result.total, editable: result.canEdit, order});
             let query = order ? {page, order} : {page};
-            this.context.router.push({pathname: this.props.path || this.props.location&&this.props.location.pathname, query});
+            pathname&&this.context.router.push({pathname, query});
         });
     }
     handleChangePage(page, options){
         if(typeof this.props.dataSource=='object') {
-            this.setState({page});
-            this.context.router.push({pathname: this.props.path || this.props.location&&this.props.location.pathname, query:{page}});
+            let order = pathname&&options&&options.order ? options.order.map((field)=>[field.column,field.dir].join(':')).join(',') : null;
+            this.setState({page, order});
+            let pathname = this.props.pathname || this.props.location&&this.props.location.pathname;
+            pathname&&this.context.router.push({pathname, query:{page}});
         }else{
             /*
             this.setState({loading: true});
@@ -148,7 +152,8 @@ class SemiDataTable extends Component {
         if(field.sortable) {
             let key = typeof field.key == 'object' ? field.key.map((k)=>k+':asc').join(',') : field.key+':asc';
             let re = new RegExp(key, 'gi');
-            let dir = (this.props.location.query.order&&this.props.location.query.order.match(re) ? 'desc' : 'asc') || 'asc';
+            let order = this.props.location ? this.props.location.query.order : this.state.order;
+            let dir = (order&&order.match(re) ? 'desc' : 'asc') || 'asc';
             //let order = [field.key, dir].join(':');
             //this.context.router.push({pathname: this.props.path || this.props.location.pathname, query:{page:1, order}});
             let options = {
@@ -161,13 +166,13 @@ class SemiDataTable extends Component {
         this.handleChangePage(page);
     }
     render() {
-        let order = this.props.location&&this.props.location.query.order ? (options=>{
+        let order = this.state.order ? (options=>{
             return {
                 column: options.map((f)=>f.column),
                 dir: options.map((f)=>f.dir).reduce((a,b)=>b)
             }
         })(
-            this.props.location ? this.props.location.query.order.split(',').map((field)=>{
+            this.state.order ? this.state.order.split(',').map((field)=>{
                 let f = field.split(':');
                 return {
                     column: f[0],

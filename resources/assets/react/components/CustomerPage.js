@@ -81,7 +81,7 @@ class CustomerPage extends Component {
                         }
                     ]
                 }}
-                path={`customers/${customer.id}`}
+                pathname={`customers/${customer.id}`}
                 dataSource={customerProfile} />
         ) : null;
         return (
@@ -136,7 +136,7 @@ class CustomerPage extends Component {
                                                 }
                                             ]
                                         }}
-                                        path="customers"
+                                        pathname="customers"
                                         location={this.props.location}
                                         pagination={true}
                                         limit={10}
