@@ -282,7 +282,11 @@ class ScheduleController extends Controller
         try {
             $count = $sql->count();
             $data = $sql->skip(Input::get('start'))->take(Input::get('length'))->get();
-            $result = BF::dataTable($data, $count, $count, false);
+            $test = array_map(function($customer){
+                $customer['boolean'] = true;
+                return $customer;
+            }, $data->toArray());
+            $result = BF::dataTable($test, $count, $count, false);
         } catch (\Illuminate\Database\QueryException $e) {
             return BF::result(false, $e->getMessage());
         }

@@ -132,7 +132,7 @@ class SemiDataTable extends Component {
             });
             */
             let defaultOptions = {
-                order: this.props.location&&this.props.location.query.order ? this.props.location.query.order.split(',').map((field)=>{
+                order: this.state.order ? this.state.order.split(',').map((field)=>{
                     let f = field.split(':');
                     return {
                         column: f[0],
@@ -256,7 +256,7 @@ class SemiDataTable extends Component {
                             <TableRow key={index} selected={row.selected}>
                                 {fields.map((field, i)=> {
                                     return (
-                                        <TableRowColumn key={i} style={field.style}>{row[field.key]}</TableRowColumn>
+                                        <TableRowColumn key={i} style={field.style}>{typeof row[field.key]=='boolean' ? row[field.key].toString() : row[field.key]}</TableRowColumn>
                                     )
                                 })}
                             </TableRow>

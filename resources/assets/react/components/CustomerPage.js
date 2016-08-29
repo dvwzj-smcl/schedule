@@ -47,7 +47,8 @@ class CustomerPage extends Component {
             last_name: 'Last Name',
             hn: 'HN',
             phone: 'Phone',
-            contact: 'Contact'
+            contact: 'Contact',
+            boolean: 'Boolean (Test)'
         };
         let customerProfile = customer ? Object.keys(customer).map((i)=>{
             return {
