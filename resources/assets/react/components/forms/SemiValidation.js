@@ -631,6 +631,7 @@ export class ValidationColorPicker extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            color: props.value ? {hex: props.value} : null,
             openModal: false
         };
         this.props._register(this);
@@ -649,6 +650,7 @@ export class ValidationColorPicker extends Component {
         this.props._update(this, event, true, true, value);
         this.props.onChange && this.props.onChange(event, value);
         let color = error ? null : {hex:value};
+        //console.log('color', color);
         this.setState({color});
     }
     handleColorChange(color){
@@ -677,7 +679,7 @@ export class ValidationColorPicker extends Component {
         this.refs.node.input.value = null;
     }
     render(){
-        let {hintText, validations, ...rest} = this.props;
+        let {hintText, validations, value, ...rest} = this.props;
         let input = this.props.states[this.props.name];
         hintText = (input&&input.value ? '' : (hintText || "Color"));
         validations.push("color");
@@ -701,9 +703,10 @@ export class ValidationColorPicker extends Component {
                 onTouchTap={this.handleSubmit}
                 />,
         ];
+        let defaultValue = this.state.color ? this.state.color.hex : null;
         return (
             <div className={this.props.containerClassName || null}>
-                <TextField {...rest} validations={validations} style={{width: width}} ref='node' hintText={hintText} onChange={this.handleChangeInput} errorText={handleError(this.props)} />
+                <TextField {...rest} defaultValue={value} validations={validations} style={{width: width}} ref='node' hintText={hintText} onChange={this.handleChangeInput} errorText={handleError(this.props)} />
                 <IconButton className="btn-icon" onTouchTap={this.handleOpen}>
                     <PaletteIcon/>
                 </IconButton>

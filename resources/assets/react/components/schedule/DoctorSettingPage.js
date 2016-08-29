@@ -107,7 +107,7 @@ class SchedulePage extends Component {
             doctorSettingForm = {
                 values: {color},
                 components: [
-                    [{type: 'color', name: 'color', label: 'Colors*', floatingLabelFixed: true, validations:['required']}]
+                    [{type: 'color', name: 'color', label: 'Colors*', floatingLabelFixed: true, required: true}]
                 ]
             };
         }
@@ -120,7 +120,7 @@ class SchedulePage extends Component {
             categorySettingForm = {
                 values: {color},
                 components: [
-                    [{type: 'color', name: 'color', label: 'Colors*', floatingLabelFixed: true, validations:['required']}]
+                    [{type: 'color', name: 'color', label: 'Colors*', floatingLabelFixed: true, required: true}]
                 ]
             };
         }
