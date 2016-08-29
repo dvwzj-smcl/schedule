@@ -12,45 +12,23 @@ class SemiText extends Component{
         this.state = {
             value: this.props.defaultValue || this.props.value || ''
         };
-        // this.onChange = this.onChange.bind(this);
-        // this.props.setValue = this.props.setValue.bind(this);
     }
-    //
-    // componentDidMount() {
-    //     const { debounce = 200 } = this.props;
-    //     this.setValidate = debounceFunc(this.props.setValue, debounce);
-    // }
-    //
-    // componentWillReceiveProps() {
-    //     const input = this.refs.input;
-    //     input.setState({ value: input.getValue() || '' });
-    // }
-    //
-    // onChange(event) {
-    //     if (this.props.onChange)
-    //         this.props.onChange(event);
-    //     this.setValidate(event.currentTarget.value);
-    // }
-    //
-    // setValue(value) {
-    //     this.refs.input.setValue(value);
-    // }
-
-
 
     componentWillMount() {
+        console.log('this.controlledValue(', this.controlledValue());
         this.props.setValue(this.controlledValue());
     }
 
     componentWillReceiveProps(nextProps) {
-        const isValueChanging = nextProps.value !== this.props.value;
-        if (isValueChanging || nextProps.defaultValue !== this.props.defaultValue) {
-            const value = this.controlledValue(nextProps);
-            if (isValueChanging || this.props.defaultValue === this.props.getValue()) {
-                this.setState({ value });
-                this.props.setValue(value);
-            }
-        }
+        // console.log('nextProps.value', this.props.getValue());
+        // const isValueChanging = nextProps.value !== this.props.value;
+        // if (isValueChanging || nextProps.defaultValue !== this.props.defaultValue) {
+        //     const value = this.controlledValue(nextProps);
+        //     if (isValueChanging || this.props.defaultValue === this.props.getValue()) {
+        //         this.setState({ value });
+        //         this.props.setValue(value);
+        //     }
+        // }
     }
 
     componentWillUpdate(nextProps, nextState) {
@@ -68,25 +46,41 @@ class SemiText extends Component{
     };
 
     handleBlur = (event) => {
-        this.props.setValue(event.currentTarget.value);
+        // this.props.setValue(event.currentTarget.value);
         if (this.props.onBlur) this.props.onBlur(event);
     };
 
     handleChange = (event) => {
-        this.setState({
-            value: event.currentTarget.value,
-        });
+        console.log('123', event.currentTarget.value);
+        this.props.setValue(event.currentTarget.value);
         if (this.props.onChange) this.props.onChange(event);
     };
 
-    handleKeyDown = (event) => {
-        if (keycode(event) === 'enter') this.props.setValue(event.currentTarget.value);
-        if (this.props.onKeyDown) this.props.onKeyDown(event, event.currentTarget.value);
-    };
+    // ---- For validate on press enter
+    // handleKeyDown = (event) => {
+    //     console.log('456', event.currentTarget.value, keycode(event));
+    //     let value = event.currentTarget.value;
+    //     if (keycode(event) === 'backspace' && value.length === 1) this.props.setValue(''); // trick
+    //     if (keycode(event) === 'enter') this.props.setValue(value);
+    //     if (this.props.onKeyDown) this.props.onKeyDown(event, value);
+    // };
 
     render() {
-        // console.log('render: text');
-        let {...rest} = this.props;
+        // console.log('render: text', this.props.value);
+        let {
+
+            // Remove Formsy's properties for safety.
+            getErrorMessage, getErrorMessages, getValue, hasValue, isFormDisabled, isFormSubmitted, isPristine, setValue, setValidation,
+            isRequired, isValid, isValidValue, resetValue, showError, showRequired, validationError, validationErrors,
+
+            // SemiForm's
+            value, type,
+
+            ...rest} = this.props;
+        // console.log('rest', rest);
+
+        let currentValue = this.props.getValue();
+
         return (
             <TextField
                 ref="input"
@@ -103,10 +97,10 @@ class SemiText extends Component{
                 onBlur={this.handleBlur}
                 onChange={this.handleChange}
                 // onFocus={onFocus}
-                onKeyDown={this.handleKeyDown}
+                // onKeyDown={this.handleKeyDown} // for validate on press enter
                 ref={this.setMuiComponentAndMaybeFocus}
-                value={this.state.value}
-                onChange={this.onChange}
+                value={currentValue}
+                // onChange={this.onChange}
             />
         );
     }
