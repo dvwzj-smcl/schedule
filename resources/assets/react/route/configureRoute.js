@@ -10,6 +10,7 @@ import DashboardPage from '../components/DashboardPage';
 import HomePage from '../components/HomePage';
 import ScheduleCalendar from '../components/schedule/ScheduleCalendar';
 import SchedulePage from '../components/schedule/SchedulePage';
+import ScheduleSummaryPage from '../components/schedule/ScheduleSummaryPage';
 import SettingPage from '../components/schedule/SettingPage';
 import CustomerPage from '../components/CustomerPage';
 import DoctorSettingPage from '../components/schedule/DoctorSettingPage';
@@ -42,6 +43,7 @@ export default function configureRoute(store){
                 <Route path=":id" component={UserIsAuthenticated(UserModal)} />
             </Route>
             <Route path="slots(/:doctor_id)(/:date)" component={UserIsAuthenticated(SlotPage)} />
+            <Route path="schedules/summary(/:doctor_id)(/:date)" component={UserIsAuthenticated(ScheduleSummaryPage)} />
             <Route path="schedules/:role" component={UserIsAuthenticated(SchedulePage)}>
                 <Route path="(:doctor_id)(/:date)(/:hides)" component={UserIsAuthenticated(ScheduleCalendar)} />
             </Route>

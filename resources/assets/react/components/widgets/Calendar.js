@@ -7,6 +7,8 @@ import 'jquery-ui/ui/widgets/draggable';
 import 'jquery-ui/ui/widgets/droppable';
 import 'fullcalendar';
 import 'fullcalendar/dist/lang-all';
+import {ActionPermIdentity, ActionInfo, HardwareKeyboardArrowRight, HardwareKeyboardArrowLeft} from 'material-ui/svg-icons';
+import FloatingActionButton from 'material-ui/FloatingActionButton';
 
 class Calendar extends Component {
     constructor(props, context) {
@@ -14,9 +16,9 @@ class Calendar extends Component {
         this.state = {};
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        return false;
-    }
+    // shouldComponentUpdate(nextProps, nextState) {
+    //     // return false;
+    // }
 
     // --- exposed functions
 
@@ -38,6 +40,19 @@ class Calendar extends Component {
     updateEvent(calEvent) {
         $('#calendar').fullCalendar('updateEvent', Object.assign({}, calEvent, {start: calEvent.start._i, end: calEvent.end._i}));
     }
+
+    nextWeek = () => {
+        console.log('this.props.date', this.props.date);
+        let current = new Date(this.props.date);
+        let nextWeek = new Date(current.getTime() + 7 * 24 * 60 * 60 * 1000);
+        if(this.props.onDateChange) this.props.onDateChange(nextWeek);
+    };
+
+    prevWeek = () => {
+        let current = new Date(this.props.date);
+        let prevWeek = new Date(current.getTime() - 7 * 24 * 60 * 60 * 1000);
+        if(this.props.onDateChange) this.props.onDateChange(prevWeek);
+    };
 
     onViewChange = () => {
 
@@ -109,6 +124,17 @@ class Calendar extends Component {
         let state = this.state;
         return (
             <div>
+                <div className="calendar-header">
+                    <h2>{(new Date(this.props.date)).toDateString()}</h2>
+                    <div className="button-group right" style={{zIndex: 999999}}>
+                        <FloatingActionButton mini={true} className="button" onTouchTap={this.prevWeek}>
+                            <HardwareKeyboardArrowLeft />
+                        </FloatingActionButton>
+                        <FloatingActionButton mini={true} className="button" onTouchTap={this.nextWeek}>
+                            <HardwareKeyboardArrowRight />
+                        </FloatingActionButton>
+                    </div>
+                </div>
                 <div id="calendar"></div>
                 <div id="cal-anchor" style={{position: 'absolute'}}></div>
             </div>

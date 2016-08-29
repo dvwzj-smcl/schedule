@@ -11,8 +11,6 @@ import * as scheduleActions from '../../actions/scheduleActions';
 import helper from '../../libs/helper';
 import SemiForm from '../forms/SemiForm';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
-import ScheduleFilter from './ScheduleFilter';
-import ScheduleEventList from './ScheduleEventList';
 import Paper from 'material-ui/Paper';
 import Checkbox from 'material-ui/Checkbox';
 import FlatButton from 'material-ui/FlatButton';
@@ -121,7 +119,7 @@ class SlotPage extends Component {
         params = Object.assign({
             doctor_id: 1, date: (new Date()).getISODate()
         }, this.props.params, params);
-        this.context.router.push(`/slots/${params.doctor_id}/${params.date}`);
+        this.context.router.push(`/schedules/summary/${params.date}`);
     };
 
     // ----- Calendar Functions
@@ -231,7 +229,7 @@ class SlotPage extends Component {
     };
 
     render() {
-        console.log('render: ScPage(parent)', this.props.schedule);
+        console.log('render: Summary', this.props.schedule);
         if(!this.initialized()) return <Loading />;
         let props = this.props;
         let {doctors, categories} = props.schedule.data;
@@ -243,7 +241,6 @@ class SlotPage extends Component {
             data: {doctor_id: doctors},
             values: this.state.values,
             components: [
-                [{type: 'select', name: 'doctor_id', label: 'Doctor*', required: true}],
                 [{type: 'date', name: 'date', label: 'Date', required: true}]
             ]
         };
@@ -281,7 +278,6 @@ class SlotPage extends Component {
         return (
             <div>
                 <ContextMenu ref="eventContextMenu" onSelect={this.onContextMenuSelect} data={eventActions} />
-                <ContextMenu ref="categoryContextMenu" onSelect={this.onSelectCategory} data={categories} />
                 <PageHeading title="Schedule" description={formTemplate.values.date.toString()} />
                 <Grid fluid className="content-wrap">
                     <Row>
