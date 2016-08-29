@@ -142,7 +142,7 @@ class SchedulePage extends Component {
             components.push([
                 {type: 'string', value: `${name}`, required: true},
                 {type: 'text', label: 'Enable', name: `enable-${sub_category_id}`, required: true},
-                {type: 'integer', label: 'Duration', name: `duration-${sub_category_id}`, required: true},
+                {type: 'numeric', label: 'Duration', name: `duration-${sub_category_id}`, required: true},
                 {type: 'hidden', name: `category_id-${sub_category_id}`},
                 {type: 'hidden', name: `sub_category_id-${sub_category_id}`}
             ]);

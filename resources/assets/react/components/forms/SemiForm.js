@@ -212,13 +212,6 @@ class SemiForm extends Component {
                                         />
                                 );
                                 break;
-                            case 'integer':
-                                component = (
-                                    <SemiValidation.components.TextField
-                                        {...rest} type="integer"
-                                        />
-                                );
-                                break;
                             case 'hidden':
                                 component = (
                                     <div style={{display: 'none'}}>
