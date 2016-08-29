@@ -23,6 +23,9 @@ import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import AutoComplete from 'material-ui/AutoComplete';
 import DatePicker from 'material-ui/DatePicker';
 import Subheader from 'material-ui/Subheader';
+import Slider from 'material-ui/Slider';
+import Chip from 'material-ui/Chip';
+import Toggle from 'material-ui/Toggle';
 import moment from 'moment';
 
 Object.assign(Validation.rules, {
@@ -211,7 +214,7 @@ export class ValidationForm extends Validation.components.Form {
             return obj;
         }).filter((obj)=>{
             let key = Object.keys(obj)[0];
-            if(typeof obj[key]=="number") return true;
+            if(typeof obj[key]=="number" || typeof obj[key]=="boolean") return true;
             if(typeof obj[key]=="string" && obj[key].trim()) return true;
             if(typeof obj[key]=="object" && (obj[key]!==null&&obj[key].length>0)) return true;
             return false;
@@ -797,6 +800,99 @@ export class ValidationDatePicker extends Component {
     }
 }
 
+export class ValidationSlider extends Component {
+    constructor(props) {
+        super(props);
+        this.props._register(this);
+        this.handleChange = this.handleChange.bind(this);
+    }
+    componentWillMount(){
+        this.props.value && this.props._update(this, event, true, true, this.props.value);
+    }
+    handleChange(event, value){
+        // let date = moment(value);
+        // this.props._update(this, event, true, true, date.format(this.props.format ? this.props.format : 'YYYY-MM-DD'));
+        // please use Date instead of Moment
+        this.props._update(this, event, true, true, value);
+        this.props.onChange && this.props.onChange(value);
+    }
+    render(){
+        let {
+            _register,
+            _update,
+            _validate,
+            validations,
+            states,
+            errors,
+            errorClassName,
+            containerClassName,
+            ...rest} = this.props;
+        let input = this.props.states[this.props.name];
+        let defaultValue = input&&input.value || null;
+
+        // fix width
+        let minusWidth = 36;
+        let showValue = this.props.showValue&&this.props.showValue==true;
+        if(showValue) minusWidth += 60;
+        let width = (this.props.fullWidth ? `calc(100% - ${minusWidth}px)` : `auto`);
+
+        return (
+            <div className={this.props.containerClassName || null}>
+                <Chip style={{display: showValue?'inline-block':'none', width: 72, verticalAlign: 'middle'}}>{defaultValue}</Chip>
+                <Slider {...rest} defaultValue={defaultValue} onChange={this.handleChange} style={{width: width, display: 'inline-block', height: 66, marginTop: 0, verticalAlign: 'middle'}}/>
+            </div>
+        );
+    }
+}
+
+export class ValidationToggle extends Component {
+    constructor(props) {
+        super(props);
+        this.props._register(this);
+        this.handleChange = this.handleChange.bind(this);
+    }
+    componentWillMount(){
+        this.props.value && this.props._update(this, event, true, true, this.props.value);
+    }
+    handleChange(event, value){
+        // let date = moment(value);
+        // this.props._update(this, event, true, true, date.format(this.props.format ? this.props.format : 'YYYY-MM-DD'));
+        // please use Date instead of Moment
+        this.props._update(this, event, true, true, value);
+        this.props.onChange && this.props.onChange(value);
+    }
+    render(){
+        let {
+            _register,
+            _update,
+            _validate,
+            validations,
+            states,
+            errors,
+            errorClassName,
+            containerClassName,
+            labelPosition,
+            label,
+            value,
+            ...rest} = this.props;
+        let input = this.props.states[this.props.name];
+        let defaultToggled = input&&input.value || false;
+
+        labelPosition = labelPosition || 'right';
+        label = defaultToggled==true ? 'Enabled' : 'Disabled';
+
+        // fix width
+        let minusWidth = 36;
+        let width = (this.props.fullWidth ? `calc(100% - ${minusWidth}px)` : `auto`);
+
+        return (
+            <div className={this.props.containerClassName || null}>
+                <Toggle {...rest} defaultToggled={defaultToggled} label={label} labelPosition={labelPosition} onToggle={this.handleChange} style={{width: width, display: 'inline-block', marginTop: 24}}/>
+            </div>
+        );
+    }
+}
+
 const components = Object.assign({}, Validation.components, {
     Form: ValidationForm,
     TextField: ValidationTextField,
@@ -808,7 +904,9 @@ const components = Object.assign({}, Validation.components, {
     ColorPicker: ValidationColorPicker,
     DatePicker: ValidationDatePicker,
     Radio: ValidationRadio,
-    Checkbox: ValidationCheckbox
+    Checkbox: ValidationCheckbox,
+    Slider: ValidationSlider,
+    Toggle: ValidationToggle
 });
 
 const SemiValidation = Object.assign({}, Validation, {components});

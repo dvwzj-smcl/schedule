@@ -268,6 +268,20 @@ class SemiForm extends Component {
                                         />
                                 );
                                 break;
+                            case 'slider':
+                                component = (
+                                    <SemiValidation.components.Slider
+                                        {...rest}
+                                        />
+                                );
+                                break;
+                            case 'toggle':
+                                component = (
+                                    <SemiValidation.components.Toggle
+                                        {...rest}
+                                        />
+                                );
+                                break;
                         }
                     }
                     cols.push(<Col key={itemId} xs md={md}>{component}</Col>);

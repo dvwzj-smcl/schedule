@@ -141,8 +141,8 @@ class SchedulePage extends Component {
             values[`sub_category_id-${sub_category_id}`] = sub_category_id;
             components.push([
                 {type: 'string', value: `${name}`, required: true},
-                {type: 'text', label: 'Enable', name: `enable-${sub_category_id}`, required: true},
-                {type: 'numeric', label: 'Duration', name: `duration-${sub_category_id}`, required: true},
+                {type: 'toggle', label: 'Enable', name: `enable-${sub_category_id}`},
+                {type: 'slider', label: 'Duration', name: `duration-${sub_category_id}`, showValue:true, step:10, min: 10, max: 120, required: true},
                 {type: 'hidden', name: `category_id-${sub_category_id}`},
                 {type: 'hidden', name: `sub_category_id-${sub_category_id}`}
             ]);
