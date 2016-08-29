@@ -205,6 +205,13 @@ class SemiForm extends Component {
                                     />
                                 );
                                 break;
+                            case 'numeric':
+                                component = (
+                                    <SemiValidation.components.TextField
+                                        {...rest} type="numeric"
+                                        />
+                                );
+                                break;
                             case 'hidden':
                                 component = (
                                     <div style={{display: 'none'}}>

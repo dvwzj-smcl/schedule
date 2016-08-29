@@ -273,6 +273,20 @@ export class ValidationTextField extends Validation.components.Input {
     componentWillMount(){
         this.props.value && this.props._update(this, event, true, true, this.props.value);
     }
+    handleChange(event){
+        if(this.props.type.match(/numeric/gi)) {
+            let re = new RegExp(/^\d+$/);
+            if(re.test(event.target.value)){
+                this.props._update(this, event);
+                event.persist();
+                this.props.onChange && this.props.onChange(event);
+            }
+        }else{
+            this.props._update(this, event);
+            event.persist();
+            this.props.onChange && this.props.onChange(event);
+        }
+    }
     handleClear(){
         this.props._update(this, event, true, true, '');
         this.props.onChange && this.props.onChange(null);
