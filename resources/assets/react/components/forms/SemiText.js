@@ -88,7 +88,7 @@ class SemiText extends Component{
                     onBlur={this.handleBlur}
                     onChange={this.handleChange}
                     // onFocus={onFocus}
-                    // onKeyDown={this.handleKeyDown} // for validate on press enter
+                    // onKeyDown={this.handleKeyDown} // for validate only when press enter
                     ref={this.setMuiComponentAndMaybeFocus}
                     value={currentValue}
                 />
