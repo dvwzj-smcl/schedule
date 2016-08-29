@@ -180,6 +180,10 @@ class ScheduleCalendar extends Component {
 
     // --- Full Calendar Functions
 
+    onDateChange = (date) => {
+        this.context.navigate({date: date.getISODate()});
+    };
+
     eventClick = (calEvent, jsEvent) => {
         // console.log('calEvent.sale_id', calEvent, jsEvent);
         console.log('calEvent.status', calEvent.status);
@@ -234,17 +238,6 @@ class ScheduleCalendar extends Component {
             ((0|(1<<8) + r + (256 - r) * percent / 100).toString(16)).substr(1) +
             ((0|(1<<8) + g + (256 - g) * percent / 100).toString(16)).substr(1) +
             ((0|(1<<8) + b + (256 - b) * percent / 100).toString(16)).substr(1);
-    };
-
-    nextWeek = (isNext) => {
-        let current = new Date(this.props.params.date);
-        if(isNext) {
-            let nextWeek = new Date(current.getTime() + 7 * 24 * 60 * 60 * 1000);
-            this.context.navigate({date: nextWeek.getISODate()});
-        } else {
-            let prevWeek = new Date(current.getTime() - 7 * 24 * 60 * 60 * 1000);
-            this.context.navigate({date: prevWeek.getISODate()});
-        }
     };
 
     fetchEventSource = (start, end, timezone, callback) => {
@@ -375,6 +368,7 @@ class ScheduleCalendar extends Component {
             defaultDate: props.params.date, // gotoDate on first load
             eventClick: this.eventClick,
             dayClick: this.dayClick,
+            onDateChange: this.onDateChange,
             events: this.fetchEventSource
         };
 
@@ -384,20 +378,7 @@ class ScheduleCalendar extends Component {
                 {requestModal}
                 {eventPopover}
                 <div className="semicon">
-                    <div className="calendar-header">
-                        <h2>{(new Date(this.props.params.date)).toDateString()}</h2>
-                        <div className="button-group right" style={{zIndex: 999999}}>
-                            <FloatingActionButton mini={true} className="button" onTouchTap={this.nextWeek.bind(this, false)}>
-                                <HardwareKeyboardArrowLeft />
-                            </FloatingActionButton>
-                            <FloatingActionButton mini={true} className="button" onTouchTap={this.nextWeek.bind(this, true)}>
-                                <HardwareKeyboardArrowRight />
-                            </FloatingActionButton>
-                        </div>
-                    </div>
-                    <div>
-                        <Calendar {...calendarSettings} ref="calendar" />
-                    </div>
+                    <Calendar {...calendarSettings} ref="calendar" date={this.props.params.date} />
                 </div>
             </Panel>
         );

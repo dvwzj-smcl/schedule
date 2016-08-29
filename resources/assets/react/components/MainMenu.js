@@ -1,10 +1,8 @@
 import React, {PropTypes, Component} from 'react';
-// import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
-
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
-import {ActionHome, ActionEvent, ActionEventSeat, ActionPermContactCalendar, SocialPerson, ActionSettings, ActionDashboard, ActionAccessibility } from 'material-ui/svg-icons';
+import {ActionDateRange, ActionHome, ActionEvent, ActionEventSeat, ActionPermContactCalendar, SocialPerson, ActionSettings, ActionDashboard, ActionAccessibility } from 'material-ui/svg-icons';
 // shift+shift and svg-icons\index to search for the name
 // see: https://www.materialui.co/icons, https://design.google.com/icons/
 
@@ -26,6 +24,12 @@ const menus = [
         text: "Organizer's Schedule",
         icon: <ActionEvent />,
         to: "/schedules/organizer",
+        permissions : ['organize-schedules']
+    },
+    {
+        text: "Schedule Summary",
+        icon: <ActionDateRange />,
+        to: "/schedules/summary",
         permissions : ['organize-schedules']
     },
     {
