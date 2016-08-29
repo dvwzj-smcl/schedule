@@ -43,7 +43,7 @@ export default function configureRoute(store){
                 <Route path=":id" component={UserIsAuthenticated(UserModal)} />
             </Route>
             <Route path="slots(/:doctor_id)(/:date)" component={UserIsAuthenticated(SlotPage)} />
-            <Route path="schedules/summary(/:doctor_id)(/:date)" component={UserIsAuthenticated(ScheduleSummaryPage)} />
+            <Route path="schedules/summary(/:date)(/:hides)" component={UserIsAuthenticated(ScheduleSummaryPage)} />
             <Route path="schedules/:role" component={UserIsAuthenticated(SchedulePage)}>
                 <Route path="(:doctor_id)(/:date)(/:hides)" component={UserIsAuthenticated(ScheduleCalendar)} />
             </Route>

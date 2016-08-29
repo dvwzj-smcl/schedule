@@ -7,8 +7,6 @@ import SemiValidation from './SemiValidation';
 import {Grid, Row, Col} from 'react-flexbox-grid';
 import TextField from 'material-ui/TextField';
 
-import SemiText from './SemiText';
-
 class SemiForm extends Component {
     constructor(props, context) {
         super(props, context);
@@ -190,29 +188,22 @@ class SemiForm extends Component {
                             floatingLabelText: item.label, // todo: * and optional
                             hintText: item.hint ? item.hint : '',
                             value,
-                            // validations
+                            validations
                         };
 
                         let {type, ...rest} = Object.assign(defaultValues, item, overrideValues);
 
                         switch (type) {
-                            case 'text':
-                                component = (
-                                    <SemiText
-                                        {...rest}
-                                    />
-                                );
-                                break;
-                            case 'password':
-                                component = (
-                                    <SemiText
-                                        {...rest} type="password"
-                                    />
-                                );
-                                break;
                             case 'string':
                                 component = (
                                     <div className="form-string">{value}</div>
+                                );
+                                break;
+                            case 'text':
+                                component = (
+                                    <SemiValidation.components.TextField
+                                        {...rest}
+                                    />
                                 );
                                 break;
                             case 'numeric':
@@ -229,6 +220,13 @@ class SemiForm extends Component {
                                             {...rest} type="hidden"
                                         />
                                     </div>
+                                );
+                                break;
+                            case 'password':
+                                component = (
+                                    <SemiValidation.components.TextField
+                                        {...rest} type="password"
+                                    />
                                 );
                                 break;
                             case 'select':
@@ -301,22 +299,23 @@ class SemiForm extends Component {
          */
 
         let resetBtn = hasReset && !noButton ? (
-            <RaisedButton
+            <SemiValidation.components.RaisedButton
                 label="Reset"
-                style={{marginTop: 24, marginLeft: 24}}
+                type="button"
+                style={{marginTop: 24, marginLeft: 16}}
                 onClick={this.resetForm}
-            />
+                />
         ) : null;
 
         let submitBtn = noSubmitButton || props.noButton ? null : (
-            <RaisedButton
+            <SemiValidation.components.RaisedButton
                 formNoValidate
                 secondary={true}
-                style={{marginTop: 24}}
+                style={{marginTop: 24, marginLeft: buttonRight? 16:0}}
                 type="submit"
                 label={submitLabel || 'Submit'}
-                disabled={!this.state.canSubmit}
-            />);
+                disabled={no_required ? false : !this.state.canSubmit}
+                />);
 
         let formClass = `${buttonRight ? 'btn-right' : ''} ${compact ? 'compact' : ''}`;
 
@@ -329,19 +328,18 @@ class SemiForm extends Component {
         // console.log('rest', rest);
 
         return (
-            <Form
+            <SemiValidation.components.Form
                 className={`semiForm ${formClass}`}
                 onSubmit={this.onSubmit}
                 onInvalid={this.disableButton}
                 onValid={this.enableButton}
-                onInvalidSubmit={this.notifyFormError}
                 ref="form"
                 {...rest}
             >
                 {formItems}
                 {buttons}
                 <button style={{display:'none'}} ref="submitBtn" type="submit">Submit</button>
-            </Form>);
+            </SemiValidation.components.Form>);
     }
 }
 

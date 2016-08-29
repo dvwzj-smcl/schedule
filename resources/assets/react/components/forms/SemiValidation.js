@@ -207,7 +207,11 @@ class MultiSelect extends SelectField {
 }
 
 export class ValidationForm extends Validation.components.Form {
+    componentWillReceiveProps(nextProps) {
+        console.log('this.components', this.components);
+    }
     getData(){
+        console.log('*this.state.states', this.state.states);
         let data = Object.keys(this.state.states).map((key)=> {
             let obj = {};
             obj[key] = this.state.states[key].value;
@@ -263,6 +267,7 @@ export class ValidationForm extends Validation.components.Form {
         }, this);
     }
     handleSubmit(event){
+        console.log('this.getData()', this.getData());
         event.preventDefault();
         this.props.onSubmit && this.props.onSubmit( this.getData(), this.state.errors, event);
     }

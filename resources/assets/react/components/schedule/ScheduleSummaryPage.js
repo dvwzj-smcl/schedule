@@ -71,19 +71,17 @@ class SlotPage extends Component {
                     this.init().then(calendar => {
                         calendar.gotoDate(nextProps.params.date);
                     });
-                    if (params.doctor_id != nextProps.params.doctor_id) this.refreshCalendar();
+                    if (params.hides != nextParams.hides) this.refreshCalendar();
                 }
             });
         }
     };
 
     setValuesState = (params) => {
-        let {doctor_id, date} = params;
+        let {date} = params;
         this.setState({
             values: {
-                doctor_id: doctor_id ? parseInt(doctor_id) : 1,
                 date: date ? new Date(date) : new Date()
-                // date2: date ? new Date(date).toString() : new Date().toString(),
             }
         });
     };
@@ -110,16 +108,16 @@ class SlotPage extends Component {
     };
 
     onSubmit = (data) => {
-        console.log('data', data);
         let date = data.date ? (typeof data.date === 'string') ? data.date : data.date.getISODate() : new Date();
-        this.navigate({date, doctor_id: data.doctor_id})
+        this.navigate({date})
     };
 
     navigate = (params) => {
+        if(this.props.params.hides === undefined && params.hides === undefined) params.hides = ''; // fix hides undefined
         params = Object.assign({
-            doctor_id: 1, date: (new Date()).getISODate()
+            date: (new Date()).getISODate(), hides: ''
         }, this.props.params, params);
-        this.context.router.push(`/schedules/summary/${params.date}`);
+        this.context.router.push(`/schedules/summary/${params.date}/${params.hides}`);
     };
 
     // ----- Calendar Functions
@@ -147,56 +145,22 @@ class SlotPage extends Component {
         let props = this.props;
         let me = this;
         me.loading = true;
-        me.context.ajax.call('get', `schedules/doctors/${props.params.doctor_id}/events?${params}`).then( response => {
+        me.context.ajax.call('get', `schedules/events?${params}`).then( response => {
             me.init().then( () => {
-                let {slots} = response.data;
+                let {events} = response.data;
                 let doctors = me.props.schedule.data.doctors;
-                console.log('slot', slots);
                 me.user = me.props.user;
-                for(let i in slots) {
-                    let slot = slots[i];
-                    let doctor_id = slot.sc_doctor_id;
-                    let cat_id = slot.sc_category_id;
-                    slot.index = i; // array index
-                    slot.color = doctors[doctor_id].categories[cat_id].color;
+                for(let i in events) {
+                    let event = events[i];
+                    let doctor_id = event.sc_doctor_id;
+                    event.color = doctors[doctor_id].color;
                 }
-                callback(slots);
+                callback(events);
                 me.loading = false;
             });
         }).catch( error => {
             console.log('error: fetchEventSource', error);
             me.loading = false;
-        });
-    };
-
-    eventResize = (calEvent) => {
-        this.updateEvent(calEvent);
-    };
-    eventDrop = (calEvent) => {
-        this.updateEvent(calEvent);
-    };
-    eventClick = (calEvent, jsEvent) => {
-        this.refs.eventContextMenu.open(jsEvent.target, calEvent);
-    };
-    select = (a, b, jsEvent, view, anchor) => {
-        console.log('****', jsEvent.pageY);
-        let start = a.format('YYYY-MM-DD H:mm:ss');
-        let end = b.format('YYYY-MM-DD H:mm:ss');
-        this.refs.categoryContextMenu.open(anchor, {start, end});
-    };
-    updateEvent = (calEvent) => {
-        this.context.dialog.confirm('Are you sure you want to apply this change?', null, (confirm)=>{
-            if(confirm) {
-                let {start, end, sc_doctor_id, sc_organizer_id, sc_category_id, id} = calEvent;
-                let data = {start: start.format('YYYY-MM-DD H:mm:ss'), end: end.format('YYYY-MM-DD H:mm:ss'), sc_doctor_id, sc_organizer_id, sc_category_id};
-                this.context.ajax.call('put', `schedules/slots/${id}`, data).then( response => {
-                    this.refreshCalendar();
-                }).catch( error => {
-                    this.context.dialog.alert(error, 'Error');
-                });
-            }else{
-                this.undoCalendar(calEvent);
-            }
         });
     };
 
@@ -219,26 +183,16 @@ class SlotPage extends Component {
         }
     };
 
-    onSelectCategory = (category_id, data) => {
-        let req = {doctor_id:this.props.params.doctor_id, category_id, start: data.start, end: data.end}
-        this.context.ajax.call('post', `schedules/slots`, req).then( response => {
-            this.refreshCalendar();
-        }).catch( error => {
-            this.context.dialog.alert(error, 'Error');
-        });
-    };
-
     render() {
         console.log('render: Summary', this.props.schedule);
         if(!this.initialized()) return <Loading />;
         let props = this.props;
         let {doctors, categories} = props.schedule.data;
-        let {doctor_id, date} = props.params;
+        let {date} = props.params;
 
         // --- Forms
 
         let formTemplate = {
-            data: {doctor_id: doctors},
             values: this.state.values,
             components: [
                 [{type: 'date', name: 'date', label: 'Date', required: true}]
@@ -248,29 +202,24 @@ class SlotPage extends Component {
         // --- Colors
 
         if (props.schedule.data) {
-            let {doctors, categories} = props.schedule.data;
-            this.colorList = [];
-            if (doctor_id) {
-                for (let i in doctors[doctor_id].categories) {
-                    let {color, name}= categories[i];
-                    this.colorList.push(<Checkbox key={i} name={name} label={name} checked={true} iconStyle={{fill: color}} labelStyle={{color: color}}/>);
-                }
-            }
+            // todo
+            // let {doctors} = props.schedule.data;
+            // this.colorList = [];
+            // for (let i in doctors) {
+            //     let {color, user} = doctors[i];
+            //     this.colorList.push(<Checkbox key={i} name={name} label={name} checked={true} iconStyle={{fill: color}} labelStyle={{color: color}}/>);
+            // }
         }
 
         // --- Calendar
 
         let calendarSettings = {
             header: false,
-            droppable: true,
-            editable: true,
-            selectable: true,
-            slotDuration: '00:30:00',
+            droppable: false,
+            editable: false,
+            selectable: false,
+            slotDuration: '00:10:00',
             defaultDate: props.params.date, // gotoDate on first load
-            eventClick: this.eventClick,
-            eventResize: this.eventResize,
-            eventDrop: this.eventDrop,
-            select: this.select,
             onDateChange: this.onDateChange,
             events: this.fetchEventSource
         };
@@ -287,16 +236,14 @@ class SlotPage extends Component {
                                     <SemiForm submitLabel="GO" buttonRight compact onSubmit={this.onSubmit} formTemplate={formTemplate} />
                                 </div>
                             </Panel>
-                            {!doctor_id ? null : (
-                                <Panel title="Show" type="secondary">
-                                    <div className="semicon">
-                                        {this.colorList}
-                                    </div>
-                                </Panel>
-                            )}
+                            <Panel title="Show" type="secondary">
+                                <div className="semicon">
+                                    {this.colorList}
+                                </div>
+                            </Panel>
                         </Col>
                         <Col md={9}>
-                            {!doctor_id ? null : (
+                            {!date ? null : (
                                 <Panel title="Schedule">
                                     <div className="semicon">
                                         <Calendar {...calendarSettings} ref="calendar" date={this.props.params.date} />
