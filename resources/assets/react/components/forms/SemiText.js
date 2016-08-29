@@ -4,41 +4,17 @@ import FormsyText from 'formsy-material-ui/lib/FormsyText';
 import keycode from 'keycode';
 import TextField from 'material-ui/TextField';
 import ErrorMessage from '../forms/ErrorMessage';
-
+import IconButton from 'material-ui/IconButton/IconButton';
+import ClearIcon from 'material-ui/svg-icons/content/clear';
+import VisibleOffIcon from 'material-ui/svg-icons/action/visibility-off';
 
 class SemiText extends Component{
     constructor(props) {
         super(props);
-        this.state = {
-            value: this.props.defaultValue || this.props.value || ''
-        };
     }
 
     componentWillMount() {
-        console.log('this.controlledValue(', this.controlledValue());
         this.props.setValue(this.controlledValue());
-    }
-
-    componentWillReceiveProps(nextProps) {
-        // console.log('nextProps.value', this.props.getValue());
-        // const isValueChanging = nextProps.value !== this.props.value;
-        // if (isValueChanging || nextProps.defaultValue !== this.props.defaultValue) {
-        //     const value = this.controlledValue(nextProps);
-        //     if (isValueChanging || this.props.defaultValue === this.props.getValue()) {
-        //         this.setState({ value });
-        //         this.props.setValue(value);
-        //     }
-        // }
-    }
-
-    componentWillUpdate(nextProps, nextState) {
-        // if (nextState._isPristine && // eslint-disable-line no-underscore-dangle
-        //     nextState._isPristine !== this.state._isPristine) { // eslint-disable-line no-underscore-dangle
-        //     // Calling state here is valid, as it cannot cause infinite recursion.
-        //     const value = this.controlledValue(nextProps);
-        //     this.props.setValue(value);
-        //     this.setState({ value });
-        // }
     }
 
     controlledValue = (props = this.props) => {
@@ -46,62 +22,79 @@ class SemiText extends Component{
     };
 
     handleBlur = (event) => {
-        // this.props.setValue(event.currentTarget.value);
+        this.props.setValue(event.currentTarget.value);
         if (this.props.onBlur) this.props.onBlur(event);
     };
 
     handleChange = (event) => {
-        console.log('123', event.currentTarget.value);
         this.props.setValue(event.currentTarget.value);
         if (this.props.onChange) this.props.onChange(event);
     };
 
-    // ---- For validate on press enter
-    // handleKeyDown = (event) => {
-    //     console.log('456', event.currentTarget.value, keycode(event));
-    //     let value = event.currentTarget.value;
-    //     if (keycode(event) === 'backspace' && value.length === 1) this.props.setValue(''); // trick
-    //     if (keycode(event) === 'enter') this.props.setValue(value);
-    //     if (this.props.onKeyDown) this.props.onKeyDown(event, value);
-    // };
+    // For example only. Formsy already has form.reset method. See SemiForm.resetForm
+    reset = () => {
+        this.props.setValue(this.controlledValue());
+    };
+    
+    handleClear = () => {
+        this.props.setValue('');
+    };
 
     render() {
-        // console.log('render: text', this.props.value);
+        console.log('render: text', this.props.validations);
         let {
 
-            // Remove Formsy's properties for safety.
-            getErrorMessage, getErrorMessages, getValue, hasValue, isFormDisabled, isFormSubmitted, isPristine, setValue, setValidation,
-            isRequired, isValid, isValidValue, resetValue, showError, showRequired, validationError, validationErrors,
+            // Remove Formsy's properties for safety(may not necessary)
+            getErrorMessage, getErrorMessages, getValue, hasValue, isFormDisabled, isFormSubmitted, isPristine, setValue,
+            isRequired, isValid, isValidValue, resetValue, showError, showRequired,
 
             // SemiForm's
-            value, type,
+            value, type, validations, validationErrors,
 
             ...rest} = this.props;
-        // console.log('rest', rest);
-
+        
         let currentValue = this.props.getValue();
+        
+        // --- Icon Buttons
+        let clearIcon = null;
+        let minusWidth = 0;
+        if (currentValue && currentValue.length !== 0) {
+            clearIcon = (
+                <IconButton className="btn-icon" onTouchTap={this.handleClear.bind(this)}>
+                    <ClearIcon/>
+                </IconButton>
+            );
+            minusWidth += 36;
+        }
+        let passwordIcon = null;
+        if (type === 'password') {
+            passwordIcon = (
+                <IconButton className="btn-icon" disabled style={{display: this.props.type=='password' ? 'inline-block' : 'none'}}>
+                    <VisibleOffIcon/>
+                </IconButton>
+            );
+            minusWidth += 36;
+        }
+        let width = (this.props.fullWidth ? `calc(100% - ${minusWidth}px)` : `auto`);
 
         return (
-            <TextField
-                ref="input"
-                validationErrors={{
-                    minLength: ErrorMessage.minLength,
-                    maxLength: ErrorMessage.maxLength,
-                    isEmail: ErrorMessage.email,
-                    equalsField: ErrorMessage.equalsField
-                }}
+            <div>
+                <TextField
+                    ref="input"
+                    {...rest}
 
-                {...rest}
-
-                errorText={this.props.getErrorMessage()}
-                onBlur={this.handleBlur}
-                onChange={this.handleChange}
-                // onFocus={onFocus}
-                // onKeyDown={this.handleKeyDown} // for validate on press enter
-                ref={this.setMuiComponentAndMaybeFocus}
-                value={currentValue}
-                // onChange={this.onChange}
-            />
+                    style={{width: width}}
+                    errorText={this.props.getErrorMessage()}
+                    onBlur={this.handleBlur}
+                    onChange={this.handleChange}
+                    // onFocus={onFocus}
+                    // onKeyDown={this.handleKeyDown} // for validate on press enter
+                    ref={this.setMuiComponentAndMaybeFocus}
+                    value={currentValue}
+                />
+                {clearIcon}
+                {passwordIcon}
+            </div>
         );
     }
 }

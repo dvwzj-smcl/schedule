@@ -6,7 +6,7 @@ import Loading from '../widgets/Loading';
 import SemiValidation from './SemiValidation';
 import {Grid, Row, Col} from 'react-flexbox-grid';
 import TextField from 'material-ui/TextField';
-
+import ErrorMessage from '../forms/ErrorMessage';
 import SemiText from './SemiText';
 
 class SemiForm extends Component {
@@ -124,7 +124,6 @@ class SemiForm extends Component {
          */
 
         let components = [];
-        let no_required = true;
         if(formTemplate) {
             let values = this.state.values;
             let data = this.state.data;
@@ -177,20 +176,23 @@ class SemiForm extends Component {
                         };
 
                         let vs = item.validations,
-                            validations = item.required ? ['required'] : ['optional'];
+                            validations = {},
+                            validationErrors = {};
                         if (vs) {
-                            for (let v of vs) {
-                                validations.push(v);
+                            if (typeof vs === 'string') {
+                                validations[vs] = true;
+                                if(ErrorMessage[vs]) validationErrors[vs] = ErrorMessage[vs];
                             }
+                            // todo if not string
                         }
-                        if(validations.indexOf('required')>=0){
-                            no_required = false;
-                        }
+
+                        console.log('validations', validations, validationErrors);
                         let overrideValues = { // props with different names or need processing
                             floatingLabelText: item.label, // todo: * and optional
                             hintText: item.hint ? item.hint : '',
                             value,
-                            // validations
+                            validations,
+                            validationErrors
                         };
 
                         let {type, ...rest} = Object.assign(defaultValues, item, overrideValues);
@@ -219,7 +221,7 @@ class SemiForm extends Component {
                                 component = (
                                     <SemiValidation.components.TextField
                                         {...rest} type="numeric"
-                                        />
+                                    />
                                 );
                                 break;
                             case 'hidden':
@@ -335,6 +337,7 @@ class SemiForm extends Component {
                 onInvalid={this.disableButton}
                 onValid={this.enableButton}
                 onInvalidSubmit={this.notifyFormError}
+                onChange={this.validateForm}
                 ref="form"
                 {...rest}
             >

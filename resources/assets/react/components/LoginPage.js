@@ -48,7 +48,7 @@ class LoginPage extends Component {
             values: {username: 'organizer1', password: 'asdfasdf'},
             // values: {username: 'sale1', password: 'asdfasdf'},
             components: [
-                [{type: 'text', name: 'username', label: 'Username', required: true, hint: 'your username or email'}],
+                [{type: 'text', name: 'username', label: 'Username', required: true, hint: 'your username or email', validations:'isAlphanumeric'}],
                 [{type: 'password', name: 'password', label: 'Password', required: true}]
             ]
         };
@@ -62,7 +62,7 @@ class LoginPage extends Component {
                             <AppBar
                                 title="Login"
                                 showMenuIconButton={false} />
-                            <SemiForm onSubmit={this.onSubmit} style={{padding: '16px 24px'}} formTemplate={formTemplate} />
+                            <SemiForm hasReset onSubmit={this.onSubmit} style={{padding: '16px 24px'}} formTemplate={formTemplate} />
                         </Paper>
                     </Col>
                 </Row>
