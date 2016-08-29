@@ -274,17 +274,23 @@ export class ValidationTextField extends Validation.components.Input {
         this.props.value && this.props._update(this, event, true, true, this.props.value);
     }
     handleChange(event){
-        if(this.props.type.match(/numeric/gi)) {
-            let re = new RegExp(/^\d+$/);
-            if(re.test(event.target.value)){
+        if(!event.target.value || this.props.type.match(/text/gi) || this.props.type.match(/password/gi)){
+            this.props._update(this, event);
+            event.persist();
+            this.props.onChange && this.props.onChange(event);
+        }else if(this.props.type.match(/numeric/gi) || this.props.type.match(/integer/gi)){
+            if(validator.isNumeric(event.target.value)){
+                if(this.props.type.match(/integer/gi)) event.target.value = parseInt(event.target.value);
                 this.props._update(this, event);
                 event.persist();
                 this.props.onChange && this.props.onChange(event);
             }
-        }else{
-            this.props._update(this, event);
-            event.persist();
-            this.props.onChange && this.props.onChange(event);
+        }else if(this.props.type.match(/alphanumeric/gi)){
+            if(validator.isAlphanumeric(event.target.value)){
+                this.props._update(this, event);
+                event.persist();
+                this.props.onChange && this.props.onChange(event);
+            }
         }
     }
     handleClear(){
