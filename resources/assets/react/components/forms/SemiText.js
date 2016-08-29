@@ -80,16 +80,11 @@ class SemiText extends Component{
         return (
             <div>
                 <TextField
-                    ref="input"
                     {...rest}
-
                     style={{width: width}}
                     errorText={this.props.getErrorMessage()}
                     onBlur={this.handleBlur}
                     onChange={this.handleChange}
-                    // onFocus={onFocus}
-                    // onKeyDown={this.handleKeyDown} // for validate only when press enter
-                    ref={this.setMuiComponentAndMaybeFocus}
                     value={currentValue}
                 />
                 {clearIcon}
