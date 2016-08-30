@@ -181,13 +181,19 @@ class SemiForm extends Component {
                             validationErrors = {};
                         if (vs) {
                             if (typeof vs === 'string') {
-                                validations[vs] = true;
-                                if(ErrorMessage[vs]) validationErrors[vs] = ErrorMessage[vs];
+                                let params = vs.split(':');
+                                if(params.length === 1) {
+                                    validations[vs] = true;
+                                    if(ErrorMessage[vs]) validationErrors[vs] = ErrorMessage[vs];
+                                } else if(params.length === 2){
+                                    validations[params[0]] = params[1];
+                                    if(ErrorMessage[params[0]]) validationErrors[params[0]] = ErrorMessage[params[0]];
+                                }
                             }
                             // todo if not string
                         }
 
-                        // console.log('validations', validations, validationErrors);
+                        console.log('validations', validations, validationErrors);
                         let overrideValues = { // props with different names or need processing
                             floatingLabelText: item.label, // todo: * and optional
                             hintText: item.hint ? item.hint : '',
