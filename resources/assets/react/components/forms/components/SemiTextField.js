@@ -6,8 +6,17 @@ import ErrorMessage from '../../forms/ErrorMessage';
 import IconButton from 'material-ui/IconButton/IconButton';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
 import VisibleOffIcon from 'material-ui/svg-icons/action/visibility-off';
+import validator from 'validator';
 
 class SemiTextField extends SemiInputComponent{
+    handleChange = (event) => {
+        let value = event.currentTarget.value;
+        if(this.props.type.match(/numeric/gi) && value&&!validator.isNumeric(value)){
+            value = this.props.getValue();
+        }
+        this.props.setValue(value);
+        this.props.onChange&&this.props.onChange(event);
+    }
     render() {
         //console.log('render: SemiTextField', this.props.validations);
         let {
@@ -54,6 +63,10 @@ class SemiTextField extends SemiInputComponent{
             );
             minusWidth += 36;
         }
+        if (type&&type.match(/numeric/gi)) {
+            validations['isNumeric'] = true;
+            validationErrors['isNumeric'] = 'Accept only number!';
+        }
         let width = (this.props.fullWidth ? `calc(100% - ${minusWidth}px)` : `auto`);
 
         return (
@@ -63,7 +76,7 @@ class SemiTextField extends SemiInputComponent{
                     style={{width: width}}
                     errorText={this.props.getErrorMessage()}
                     onBlur={this.handleBlur}
-                    onChange={this.handleChange}
+                    onChange={this.handleChange.bind(this)}
                     value={currentValue}
                     />
                 {clearIcon}

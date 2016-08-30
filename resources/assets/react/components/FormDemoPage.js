@@ -149,7 +149,12 @@ class FormDemoPage extends Component {
                     {type: 'date', name: 'date', label: 'Date*', required: true}
                 ],
                 [
-                    {type: 'select', name: 'test_select', label: 'Test Select*', options:[{id:1,name:1},{id:2,name:2}], required: true}
+                    {type: 'select', name: 'test_select', label: 'Test Select*', options:[{id:1,name:1},{id:2,name:2}], required: true},
+                    {type: 'multiselect', name: 'test_multiple_select', label: 'Test Multiple Select*', options:[{id:1,name:1},{id:2,name:2}], required: true}
+                ],
+                [
+                    {type: 'color', name: 'test_color', label: 'Test Color*', required: true},
+                    {type: 'numeric', name: 'test_number', label: 'Test Number*', required: true}
                 ]
             ]
         };

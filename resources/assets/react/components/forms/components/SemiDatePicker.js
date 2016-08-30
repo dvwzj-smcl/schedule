@@ -6,7 +6,6 @@ import DateRangeIcon from 'material-ui/svg-icons/action/date-range';
 import ErrorMessage from '../../forms/ErrorMessage';
 import IconButton from 'material-ui/IconButton/IconButton';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
-import VisibleOffIcon from 'material-ui/svg-icons/action/visibility-off';
 
 class SemiDatePicker extends SemiInputComponent{
     componentDidMount() {

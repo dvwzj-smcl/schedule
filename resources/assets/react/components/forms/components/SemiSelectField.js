@@ -85,8 +85,8 @@ class SemiSelectField extends SemiInputComponent{
         }
         let labels = [];
 
-        if(children==undefined&&items) children = items;
-        if(currentValue==undefined) currentValue = multiple ? [] : null;
+        if(!children&&items) children = items;
+        if(!currentValue) currentValue = multiple ? [] : null;
         if(floatingLabelFixed==undefined) floatingLabelFixed = true;
 
         let valueIsObject = typeof currentValue=='object'&&currentValue!==null;

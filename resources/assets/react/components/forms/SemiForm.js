@@ -11,6 +11,7 @@ import SemiText from './SemiText';
 import SemiTextField from './components/SemiTextField';
 import SemiSelectField from './components/SemiSelectField';
 import SemiDatePicker from './components/SemiDatePicker';
+import SemiColorPicker from './components/SemiColorPicker';
 import SemiDate from './SemiDate';
 
 class SemiForm extends Component {
@@ -229,7 +230,7 @@ class SemiForm extends Component {
                                 break;
                             case 'numeric':
                                 component = (
-                                    <SemiValidation.components.TextField
+                                    <SemiTextField
                                         {...rest} type="numeric"
                                     />
                                 );
@@ -265,7 +266,7 @@ class SemiForm extends Component {
                                 break;
                             case 'color':
                                 component = (
-                                    <SemiValidation.components.ColorPicker
+                                    <SemiColorPicker
                                         {...rest}
                                     />
                                 );
