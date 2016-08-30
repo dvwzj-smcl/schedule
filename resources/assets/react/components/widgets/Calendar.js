@@ -30,7 +30,16 @@ class Calendar extends Component {
         let calendar = $('#calendar');
         calendar.fullCalendar('removeEvents');
         calendar.fullCalendar('addEventSource', source);
-        calendar.fullCalendar('addEventSource', source);
+    }
+
+    filterClientEvents(filter) {
+        let calendar = $('#calendar');
+        let events = calendar.fullCalendar('clientEvents', filter);
+        console.log('***', events);
+        // let newSource = calendar.fullCalendar('getEventSources').filter(m => filter(m.permissions, props.user.permissions));
+        // calendar.fullCalendar('removeEvents');
+        // calendar.fullCalendar('addEventSource', source);
+        // calendar.fullCalendar('addEventSource', source);
     }
 
     refresh(source) {

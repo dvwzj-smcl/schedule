@@ -11,6 +11,7 @@ class ScheduleModuleSeeder extends Seeder
      */
     public function run()
     {
+        $colors = ['#C22326','#F37338','#027878','#FDB632','#801638','#2B80B9'];
         $doctors = [];
         $sales = [];
         $organizers = [];
@@ -53,7 +54,7 @@ class ScheduleModuleSeeder extends Seeder
                     ];
                     // $subcats = $category->sub_categories()->get()->keyBy('sc_sub_category_id');
                 }
-                $doctor = \App\Models\User\Doctor::create(['color'=>'#ffffff', 'data'=> json_encode($data), 'user_id'=>$user->id]);
+                $doctor = \App\Models\User\Doctor::create(['color'=>$colors[$user->id%(count($colors))], 'data'=> json_encode($data), 'user_id'=>$user->id]);
                 $doctors[] = $doctor->id;
             } else if($user->hasRole('sale')) {
                 $sales[] = $user->id;

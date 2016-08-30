@@ -136,7 +136,17 @@ class FormDemoPage extends Component {
 
         // ************* Test SemiFrom: Formsy Here!
         let formTemplate = {
-            values: {first_name: 'Semi', last_name: 'Semi', password: 'asdfasdf', passwordConfirm: 'asdfasdf', date: new Date()}, // default values
+            values: {
+                first_name: 'Semi',
+                last_name: 'Semi',
+                password: 'asdfasdf',
+                passwordConfirm: 'asdfasdf',
+                date: new Date(),
+                test_select: '1',
+                test_multiple_select: [1,2],
+                test_color: '#c5cae9',
+                test_number: 123,
+            }, // default values
             settings: {},
             // validators: {hn: {rule: '/^\d{6,7}$/', hint: 'Invalid HN'}},
             components: [
@@ -149,7 +159,7 @@ class FormDemoPage extends Component {
                     {type: 'date', name: 'date', label: 'Date*', required: true}
                 ],
                 [
-                    {type: 'select', name: 'test_select', label: 'Test Select*', options:[{id:1,name:1},{id:2,name:2}], required: true},
+                    {type: 'select', name: 'test_select', label: 'Test Select*', options:[{id:1,name:'asdf'},{id:2,name:'qwer'}], required: true},
                     {type: 'multiselect', name: 'test_multiple_select', label: 'Test Multiple Select*', options:[{id:1,name:1},{id:2,name:2}], required: true}
                 ],
                 [
@@ -158,7 +168,7 @@ class FormDemoPage extends Component {
                 ],
                 [
                     {type: 'slider', name: 'test_slider', label: 'Test Slider*', step: 10, min: 0, max: 120, showValue: true, required: true},
-                    {type: 'toggle', name: 'test_toggle', label: 'Test Toggle*', labelOn: 'Enabled', labelOff: 'Disabled', required: true}
+                    {type: 'toggle', name: 'test_toggle', label: 'Test Toggle*', labelOn: 'Enabled', labelOff: 'Disabled'}
                 ]
             ]
         };
@@ -245,7 +255,7 @@ class FormDemoPage extends Component {
 
 FormDemoPage.propTypes = {};
 FormDemoPage.contextTypes = {
-    dialog: PropTypes.object.isRequired
+    dialog: PropTypes.object
 };
 
 function mapStateToProps(state) {

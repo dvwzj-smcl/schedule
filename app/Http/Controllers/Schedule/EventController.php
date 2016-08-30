@@ -6,9 +6,9 @@ use App\Models\Calendar\Event;
 use App\Models\Calendar\Slot;
 use App\Models\Calendar\SubCategory;
 use App\Models\User\Customer;
+use App\Models\User\Doctor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use BF;
@@ -19,51 +19,37 @@ class EventController extends Controller
 {
 
     public function index() {
-        // for Summary Page
+        // ----- For Summary Page Only
         try {
-            $isOrganizer = BF::isOrganizer();
-            // parse date
-            if (empty($dateParam)) $date = Carbon::now();
-            else $date = Carbon::parse($dateParam);
-            $date2 = clone $date;
-
             if (Input::has(['start', 'end'])) {
                 $start = Carbon::createFromTimestamp(Input::get('start'));
                 $end = Carbon::createFromTimestamp(Input::get('end'));
-                $query = Slot::with('category')->byDate($start, $end)->where('sc_doctor_id', $doctor_id);
             } else {
-                $query = Slot::with('category')->byDate($date)->where('sc_doctor_id', $doctor_id);
+                Carbon::setWeekStartsAt(Carbon::SUNDAY);
+                Carbon::setWeekEndsAt(Carbon::SATURDAY);
+                $start = Carbon::now()->startOfWeek();
+                $end = $start->copy()->addWeek(1);
             }
-
-            $slots = $query->get();
+            $query = Doctor::currentBranch()
+                ->with(['slots' => function ($query) use($start, $end) {
+                    $query->with('events.sub_category')->where('start', '>', $start)->where('start', '<', $end)->orderBy('start', 'asc');
+                }]);
+            $doctors = $query->get();
             $events = [];
-            $self_id = BF::getUserId();
-            $nameLookup = static::getSubCategoryNames();
-
-            foreach ($slots as $slot) {
-                $slot->title = $slot->category->name;
-                foreach ($slot->events as $event) {
-                    $customer = null;
-                    if ($isOrganizer || $self_id == $event->sale_id) {
-                        $customer = $event->customer->toArray();
+            foreach ($doctors as $doctor) {
+                $doctor_id = $doctor->id;
+                foreach ($doctor->slots as $slot) {
+                    $sc_category_id = $slot->sc_category_id;
+                    foreach ($slot->events as $event) {
+                        $events[] = array_merge($event->toArray(), [
+                            'doctor_id' => $doctor_id,
+                            'sc_category_id' => $sc_category_id,
+                            'title' => $event->sub_category->name,
+                        ]);
                     }
-                    $events[] = [
-                        'event_id' => $event->id,
-                        'start' => $event->start,
-                        'end' => $event->end,
-                        'sale_id' => $event->sale_id,
-                        'slot_id' => $event->sc_slot_id,
-                        'category_id' => $slot->category->id,
-                        'sub_category_id' => $event->sc_sub_category_id,
-                        'status' => $event->status,
-                        'title' => $nameLookup[$slot->category->id][$event->sc_sub_category_id],
-                        'customer' => $customer
-                    ];
                 }
-                unset($slot['category']);
-                unset($slot['events']);
             }
-            return BF::result(true, ['slots' => $slots, 'events' => $events, 'time' => $date2], '[schedule] get slot');
+            return BF::result(true, ['events' => $events]);
         }catch(\Exception $e){
             return BF::result(false, $e->getMessage());
         }

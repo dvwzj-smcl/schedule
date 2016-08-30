@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, {Component, PropTypes} from 'react';
 import DatePicker from 'material-ui/DatePicker';
 import DateRangeIcon from 'material-ui/svg-icons/action/date-range';
 import IconButton from 'material-ui/IconButton/IconButton';
@@ -11,7 +11,7 @@ class SemiDate extends Component {
     }
 
     componentDidMount() {
-        const { defaultDate } = this.props;
+        const {defaultDate} = this.props;
         const value = this.props.getValue();
         if (typeof value === 'undefined' && typeof defaultDate !== 'undefined') {
             this.props.setValue(defaultDate);
@@ -27,7 +27,7 @@ class SemiDate extends Component {
         this.props.setValue('');
     };
 
-    render(){
+    render() {
         let {
             // Remove Formsy's properties for safety(may not necessary)
             getErrorMessage, getErrorMessages, getValue, hasValue, isFormDisabled, isFormSubmitted, isPristine, setValue,
@@ -36,14 +36,15 @@ class SemiDate extends Component {
             // SemiForm's
             value, type, validations, validationErrors,
 
-            ...rest} = this.props;
+            ...rest
+        } = this.props;
 
         let currentValue = this.props.getValue();
 
         // --- Icon Buttons
         let clearIcon = null;
         let minusWidth = 0;
-        if (currentValue && currentValue.length !== 0) {
+        if (this.props.showClearIcon && currentValue && currentValue.length !== 0) { // default to not show
             clearIcon = (
                 <IconButton className="btn-icon" onTouchTap={this.handleClear.bind(this)}>
                     <ClearIcon/>
@@ -52,7 +53,7 @@ class SemiDate extends Component {
             minusWidth += 36;
         }
         let dateIcon = null;
-        if (!(this.props.showDateIcon === false)) {
+        if (this.props.showDateIcon !== false) {
             dateIcon = (
                 <IconButton className="btn-icon" disabled>
                     <DateRangeIcon/>

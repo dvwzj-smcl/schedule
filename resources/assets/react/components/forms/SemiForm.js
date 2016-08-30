@@ -199,7 +199,7 @@ class SemiForm extends Component {
                             // todo if not string
                         }
 
-                        console.log('validations', validations, validationErrors);
+                        // console.log('validations', validations, validationErrors);
                         let overrideValues = { // props with different names or need processing
                             floatingLabelText: item.label, // todo: * and optional
                             hintText: item.hint ? item.hint : '',

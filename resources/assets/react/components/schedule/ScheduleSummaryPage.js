@@ -68,14 +68,26 @@ class SlotPage extends Component {
             this.init().then(() => {
                 // --- Calendar
                 if(nextProps) {
+                    let nextParam = nextProps.params;
                     this.init().then(calendar => {
                         calendar.gotoDate(nextProps.params.date);
                     });
-                    if (params.hides != nextParams.hides) this.refreshCalendar();
+                    // if (params.hides != nextParam.hides) {
+                    //     this.refreshColor(nextParam.hides);
+                    // }
+                    this.refreshCalendar();
                 }
             });
         }
     };
+
+    // refreshColor = (hides) => {
+    //     this.init().then(calendar => {
+    //         calendar.filterClientEvents((event) => {
+    //             console.log('event, event2', event, event2);
+    //         });
+    //     });
+    // };
 
     setValuesState = (params) => {
         let {date} = params;
@@ -109,6 +121,7 @@ class SlotPage extends Component {
 
     onSubmit = (data) => {
         let date = data.date ? (typeof data.date === 'string') ? data.date : data.date.getISODate() : new Date();
+        console.log('data', data);
         this.navigate({date})
     };
 
@@ -127,15 +140,8 @@ class SlotPage extends Component {
     };
 
     refreshCalendar = () => {
-        console.log('refresh');
         this.init().then(calendar=> { // refresh
             calendar.refresh(this.fetchEventSource);
-        });
-    };
-
-    undoCalendar = (calEvent) => {
-        this.init().then(calendar=> { // refresh
-            calendar.updateEvent(calEvent);
         });
     };
 
@@ -150,11 +156,18 @@ class SlotPage extends Component {
                 let {events} = response.data;
                 let doctors = me.props.schedule.data.doctors;
                 me.user = me.props.user;
-                for(let i in events) {
-                    let event = events[i];
-                    let doctor_id = event.sc_doctor_id;
+
+                events = events.filter(event=> {
+                    let doctor_id = event.doctor_id;
+                    if (props.params.hides) {
+                        let hides = props.params.hides.split('_');
+                        if (hides.indexOf(doctor_id.toString()) !== -1) return false;
+                    }
+                    // colors
                     event.color = doctors[doctor_id].color;
-                }
+                    return true;
+                });
+
                 callback(events);
                 me.loading = false;
             });
@@ -183,6 +196,19 @@ class SlotPage extends Component {
         }
     };
 
+    onCheck = (obj) => {
+        let name = obj.target.getAttribute('name');
+        console.log('name', name);
+        // let h = this.context.hides, hides = '';
+        // h[name] = !h[name];
+        // if(h.other) hides += 'o';
+        // if(h.approved) hides += 'a';
+        // if(h.pending) hides += 'p';
+        // if(h.rejected) hides += 'r';
+        // if(h.canceled) hides += 'c';
+        // this.context.navigate({hides});
+    };
+
     render() {
         console.log('render: Summary', this.props.schedule);
         if(!this.initialized()) return <Loading />;
@@ -200,15 +226,15 @@ class SlotPage extends Component {
         };
 
         // --- Colors
-
+        let colorList = [];
         if (props.schedule.data) {
             // todo
-            // let {doctors} = props.schedule.data;
-            // this.colorList = [];
-            // for (let i in doctors) {
-            //     let {color, user} = doctors[i];
-            //     this.colorList.push(<Checkbox key={i} name={name} label={name} checked={true} iconStyle={{fill: color}} labelStyle={{color: color}}/>);
-            // }
+            let {doctors} = props.schedule.data;
+            this.colorList = [];
+            for (let i in doctors) {
+                let {color, user, id} = doctors[i];
+                colorList.push(<Checkbox key={i} name={id} onCheck={this.onCheck} label={user.name} checked={true} iconStyle={{fill: color}} labelStyle={{color: color}}/>);
+            }
         }
 
         // --- Calendar
@@ -238,7 +264,7 @@ class SlotPage extends Component {
                             </Panel>
                             <Panel title="Show" type="secondary">
                                 <div className="semicon">
-                                    {this.colorList}
+                                    {colorList}
                                 </div>
                             </Panel>
                         </Col>

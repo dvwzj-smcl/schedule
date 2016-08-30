@@ -3,13 +3,10 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Requests;
-
+use Illuminate\Http\Request;
 use App\Models\User\Branch;
 use App\Models\User\Role;
 use App\Models\User\User;
-
-
-use Illuminate\Support\Facades\DB;
 use Input;
 use BF;
 use Validator;
@@ -84,10 +81,36 @@ class UserController extends Controller
         return BF::result(true, $data, '[user] create');
     }
 
-    public function store()
+    public function store(Request $request)
     {
+        try {
+            $validator = Validator::make($request->all(), [
+                'username' => 'required|between:1,50',
+                'password' => 'required|between:1,50',
+                'confirmPassword' => 'required|between:1,50',
+                'name' => 'required|between:1,96',
+                'email' => 'required|email|exists:states,abbreviation',
+                'branch' => 'required|numeric',
+                'phone' => 'required|between:3,50',
+                'phone2' => 'between:3,50',
+                'roles' => 'required',
+            ], [
+                'required' => 'The :attribute field is required.',
+                'same'     => 'The :attribute and :other must match.',
+                'size'     => 'The :attribute must be exactly :size.',
+                'between'  => 'The :attribute must be between :min - :max.',
+                'in'       => 'The :attribute must be one of the following types: :values',
+                'email'    => 'The :attribute must be one of the following types: :values',
+            ]);
+            if ($validator->fails()) {
+                throw new \Exception('Slot not found');
+            }
+        } catch(\Exception $e) {
+            return BF::result(false, $e->getMessage());
+        }
 
 
+        // Pok's
         $testMode = true;
         $userId = ($testMode) ? 1 : Auth::user()->id;
 
