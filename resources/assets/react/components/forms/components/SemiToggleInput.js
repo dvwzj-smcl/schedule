@@ -37,6 +37,8 @@ class SemiToggleInput extends SemiInputComponent{
 
         let currentValue = this.props.getValue();
 
+        let toggled = currentValue==true ? true : false;
+
         let width = (this.props.fullWidth ? `100%` : `auto`);
 
         return (
@@ -66,14 +68,14 @@ class SemiToggleInput extends SemiInputComponent{
                             transformOrigin: 'left top 0px',
                             pointerEvents: 'none',
                             color: 'rgba(0, 0, 0, 0.498039)',
-                            '-webkit-user-select': 'none'
+                            WebkitUserSelect: 'none'
                     }}>
                         {this.props.label}
                     </label>
                 </div>
                 ) : null}
                 <div style={{marginTop: 22}}>
-                    <Toggle {...rest} label={currentValue?this.props.labelOn||'On':this.props.labelOff||'Off'} toggled={currentValue} onToggle={this.handleToggle.bind(this)} style={{width}} />
+                    <Toggle {...rest} label={currentValue?this.props.labelOn||'On':this.props.labelOff||'Off'} toggled={toggled} onToggle={this.handleToggle.bind(this)} style={{width}} />
                 </div>
             </div>
         );

@@ -85,7 +85,7 @@ class SemiSliderInput extends SemiInputComponent{
                             transformOrigin: 'left top 0px',
                             pointerEvents: 'none',
                             color: 'rgba(0, 0, 0, 0.498039)',
-                            '-webkit-user-select': 'none'
+                            WebkitUserSelect: 'none'
                     }}>
                         {this.props.label}
                     </label>
