@@ -11,7 +11,7 @@ import validator from 'validator';
 class SemiTextField extends SemiInputComponent{
     handleChange = (event) => {
         let value = event.currentTarget.value;
-        if(this.props.type.match(/numeric/gi) && value&&!validator.isNumeric(value)){
+        if(this.props.type && this.props.type.match(/numeric/gi) && value&&!validator.isNumeric(value)){
             value = this.props.getValue();
         }
         this.props.setValue(value);

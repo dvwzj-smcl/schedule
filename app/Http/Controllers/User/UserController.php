@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Requests;
+use App\Models\Calendar\Category;
+use App\Models\User\Doctor;
 use Illuminate\Http\Request;
 use App\Models\User\Branch;
 use App\Models\User\Role;
@@ -83,104 +85,126 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+        $data = $request->all();
         try {
-            $validator = Validator::make($request->all(), [
-                'username' => 'required|between:1,50',
-                'password' => 'required|between:1,50',
-                'confirmPassword' => 'required|between:1,50',
+            $validator = Validator::make($data, [
+                'username' => 'required|between:1,50|not_exists:users,username', // not_exist is custom
+                'password' => 'required|between:8,50',
+                'passwordConfirm' => 'required|same:password',
                 'name' => 'required|between:1,96',
-                'email' => 'required|email|exists:states,abbreviation',
-                'branch' => 'required|numeric',
+                'email' => 'required|email|not_exists:users,email',
+                'branch_id' => 'required|numeric',
                 'phone' => 'required|between:3,50',
-                'phone2' => 'between:3,50',
+                'phone_2' => 'between:3,50',
                 'roles' => 'required',
-            ], [
-                'required' => 'The :attribute field is required.',
-                'same'     => 'The :attribute and :other must match.',
-                'size'     => 'The :attribute must be exactly :size.',
-                'between'  => 'The :attribute must be between :min - :max.',
-                'in'       => 'The :attribute must be one of the following types: :values',
-                'email'    => 'The :attribute must be one of the following types: :values',
-            ]);
+            ], BF::getErrorMessage()); // for convenience when needed to change error message in the future
             if ($validator->fails()) {
-                throw new \Exception('Slot not found');
+                throw new \Exception($validator->errors()->first());
             }
+            $data["password"] = bcrypt($data["password"]);
+            $user = User::create($data);
+            if($user == null) throw new \Exception('Cannot create user');
+            $user->roles()->sync($data['roles']);
+
+            // Create Doctor
+            if($user->hasRole('doctor')) {
+                if(Doctor::where('user_id', $user->id)->count() == 0) {
+                    $doctorData = ['categories'=>[]];
+                    $categories = Category::all();
+                    foreach($categories as $cat) {
+                        $sub_categories = [];
+                        foreach ($cat->sub_categories as $sub) {
+                            $sub_categories[$sub->id] = [
+                                'category_id' => $cat->id,
+                                'sub_category_id' => $sub->id,
+                                'duration' => $sub->duration,
+                                'enable' => false,
+                            ];
+                        }
+                        $doctorData['categories'][$cat->id] = [
+                            'color' => $cat->color,
+                            'sub_categories' => $sub_categories
+                        ];
+                    }
+                    Doctor::create(['color' => BF::getRandomColor(), 'data' => json_encode($doctorData), 'user_id' => $user->id]);
+                }
+            }
+            return BF::result(true, ['user' => $user], '[user] create');
         } catch(\Exception $e) {
             return BF::result(false, $e->getMessage());
         }
 
-
         // Pok's
-        $testMode = true;
-        $userId = ($testMode) ? 1 : Auth::user()->id;
-
-        $data = Input::all();
-        $rules = array(
-            'username' => 'required|min:3|max:50',
-            'password' => 'required|min:3|max:50',
-            'confirmPassword' => 'required|min:3|max:50',
-            'name' => 'required|min:3|max:50',
-            'email' => 'required|email',
-            'branch' => 'required|numeric',
-            'phone' => 'required|min:3|max:50',
-            'phone2' => 'min:3|max:50',
-            'roles' => 'required',
-        );
-
-        $validator = Validator::make($data, $rules);
-        if ($validator->fails()) {
-            return BF::result(false, $validator->messages()->first());
-        }
-
-        if ($data["password"] != $data["confirmPassword"]) {
-            return BF::result(false, 'กรุณากรอกพาสเวิดให้ตรงกันค่ะ!');
-        }
-        if (empty($data["email"])) {
-            return BF::result(false, 'กรุณากรอกอีเมล์ค่ะ!');
-        }
-        try {
-            $chk = User::where('email', $data["email"])->first();
-            if (isset($chk)) {
-                return BF::result(false, 'อีเมล์นี้มีในระบบอยู่แล้วค่ะ!'); //--- check email repeat
-            }
-        } catch (\Illuminate\Database\QueryException $e) {
-            if ($e->getCode() == 23000) {
-                return BF::result(false, "อีเมล์ซ้ำ: {$data['email']}");
-            }
-            return BF::result(false, $e->getMessage());
-        }
-        try {
-            $chk = User::where('username', $data["username"])->first();
-            if (isset($chk)) {
-                return BF::result(false, 'ผู้ใช้นี้มีอยู่ในระบบอยู่แล้วค่ะ!'); //--- check email repeat
-            }
-        } catch (\Illuminate\Database\QueryException $e) {
-            if ($e->getCode() == 23000) {
-                return BF::result(false, "user name ซ้ำ : {$data['email']}");
-            }
-            return BF::result(false, $e->getMessage());
-        }
-
-        $data["password"] = bcrypt($data["password"]);
-        $data = array_diff_key($data, array_flip(['id', '_method', 'deleted_at', 'deleted_by', 'updated_at', 'created_at']));
-        $data["created_by"] = $userId;
-        $data["branch_id"] = $data["branch"];
-        $data["phone_2"] = $data["phone2"];
-
-        try {
-            $status = User::create($data);
-            if ($status === NULL) {
-                return BF::result(false, 'failed!');
-            }
-
-            $status->roleUser()->sync($data['roles']);
-        } catch (\Illuminate\Database\QueryException $e) {
-            if ($e->getCode() == 23000) {
-                return BF::result(false, "ชื่อซ้ำ: {$data['name']}");
-            }
-            return BF::result(false, $e->getMessage());
-        }
-        return BF::result(true, [], '[user] create');
+//        $testMode = true;
+//        $userId = ($testMode) ? 1 : Auth::user()->id;
+//
+//        $data = Input::all();
+//        $rules = array(
+//            'username' => 'required|min:3|max:50',
+//            'password' => 'required|min:3|max:50',
+//            'confirmPassword' => 'required|min:3|max:50',
+//            'name' => 'required|min:3|max:50',
+//            'email' => 'required|email',
+//            'branch' => 'required|numeric',
+//            'phone' => 'required|min:3|max:50',
+//            'phone2' => 'min:3|max:50',
+//            'roles' => 'required',
+//        );
+//
+//        $validator = Validator::make($data, $rules);
+//        if ($validator->fails()) {
+//            return BF::result(false, $validator->messages()->first());
+//        }
+//
+//        if ($data["password"] != $data["confirmPassword"]) {
+//            return BF::result(false, 'กรุณากรอกพาสเวิดให้ตรงกันค่ะ!');
+//        }
+//        if (empty($data["email"])) {
+//            return BF::result(false, 'กรุณากรอกอีเมล์ค่ะ!');
+//        }
+//        try {
+//            $chk = User::where('email', $data["email"])->first();
+//            if (isset($chk)) {
+//                return BF::result(false, 'อีเมล์นี้มีในระบบอยู่แล้วค่ะ!'); //--- check email repeat
+//            }
+//        } catch (\Illuminate\Database\QueryException $e) {
+//            if ($e->getCode() == 23000) {
+//                return BF::result(false, "อีเมล์ซ้ำ: {$data['email']}");
+//            }
+//            return BF::result(false, $e->getMessage());
+//        }
+//        try {
+//            $chk = User::where('username', $data["username"])->first();
+//            if (isset($chk)) {
+//                return BF::result(false, 'ผู้ใช้นี้มีอยู่ในระบบอยู่แล้วค่ะ!'); //--- check email repeat
+//            }
+//        } catch (\Illuminate\Database\QueryException $e) {
+//            if ($e->getCode() == 23000) {
+//                return BF::result(false, "user name ซ้ำ : {$data['email']}");
+//            }
+//            return BF::result(false, $e->getMessage());
+//        }
+//
+//        $data["password"] = bcrypt($data["password"]);
+//        $data = array_diff_key($data, array_flip(['id', '_method', 'deleted_at', 'deleted_by', 'updated_at', 'created_at']));
+//        $data["created_by"] = $userId;
+//        $data["branch_id"] = $data["branch"];
+//        $data["phone_2"] = $data["phone2"];
+//
+//        try {
+//            $status = User::create($data);
+//            if ($status === NULL) {
+//                return BF::result(false, 'failed!');
+//            }
+//
+//            $status->roleUser()->sync($data['roles']);
+//        } catch (\Illuminate\Database\QueryException $e) {
+//            if ($e->getCode() == 23000) {
+//                return BF::result(false, "ชื่อซ้ำ: {$data['name']}");
+//            }
+//            return BF::result(false, $e->getMessage());
+//        }
+//        return BF::result(true, [], '[user] create');
     }
 
     public function show($id)

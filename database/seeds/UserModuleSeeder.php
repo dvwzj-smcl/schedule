@@ -14,10 +14,10 @@ class UserModuleSeeder extends Seeder
         \App\Models\User\Branch::create(['name' => 'สาขาสยามสแควร์','email' => 'info@masterpiececlinic.com','phone' => '026580531', 'fax' => '026580503','address' => '199/6,201 ถ.พระราม1 แขวงปทุมวัน เขตปทุมวัน กรุงเทพ 10330','desc' => 'สาขาแรก']);
         \App\Models\User\Branch::create(['name' => 'สาขาหาดใหญ่','email' => 'info@masterpiececlinic.com','phone' => '026580531', 'fax' => '026580503','address' => '199/6,201 ถ.พระราม1 แขวงปทุมวัน เขตปทุมวัน กรุงเทพ 10330','desc' => 'สาขาสอง']);
 
-        $role_admin = \App\Models\User\Role::create(['name'=>'admin', 'display_name'=>'User Administrator', 'description'=>'User is allowed to manage and edit other users']);
-        $role_doctor = \App\Models\User\Role::create(['name'=>'doctor', 'display_name'=>'User Doctor', 'description'=>'Just a doctor role']);
-        $role_organizer = \App\Models\User\Role::create(['name'=>'organizer', 'display_name'=>'User Organizer', 'description'=>'Just a organizer role']);
-        $role_sale = \App\Models\User\Role::create(['name'=>'sale', 'display_name'=>'User Sale', 'description'=>'Just a sale role']);
+        $role_admin = \App\Models\User\Role::create(['name'=>'admin', 'display_name'=>'Administrator', 'description'=>'User is allowed to manage and edit other users']);
+        $role_doctor = \App\Models\User\Role::create(['name'=>'doctor', 'display_name'=>'Doctor', 'description'=>'Just a doctor role']);
+        $role_organizer = \App\Models\User\Role::create(['name'=>'organizer', 'display_name'=>'Organizer', 'description'=>'Just a organizer role']);
+        $role_sale = \App\Models\User\Role::create(['name'=>'sale', 'display_name'=>'Sale', 'description'=>'Just a sale role']);
 
         $doctor_count = 3;
         $sale_count = 2;

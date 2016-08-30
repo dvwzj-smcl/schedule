@@ -80,11 +80,22 @@ class UserModal extends Component {
 
         let formTemplate = {
             data: {branch_id: data.branches, roles: data.roles},
-            values: this.state.values,
+            // values: this.state.values,
+            values: {
+                username: 'user1',
+                email: 'admin@localhost.com',
+                password: 'password555',
+                passwordConfirm: 'password555',
+                branch_id: 1,
+                name: 'test name',
+                phone: '1234',
+                phone_2: '1',
+                roles: [1]
+            },
             components: [
                 [
                     {type: 'text', name: 'username', label: 'Username*', required: true},
-                    {type: 'text', name: 'email', label: 'Email*', required: true, validations: ['email']}
+                    {type: 'text', name: 'email', label: 'Email*', required: true, validations:'isEmail'}
                 ],
                 {
                     settings: {hide: !isEdit},
@@ -102,17 +113,17 @@ class UserModal extends Component {
                 {
                     settings: {hide: isEdit && !changePass},
                     items: [
-                        {type: 'password', name: 'password', label: 'Password*', required: true, validations: ['password']},
-                        {type: 'password', name: 'passwordConfirm', label: 'Confirm Password*', hint: 'Same as password', required: true, validations: ['password']}
+                        {type: 'password', name: 'password', label: 'Password*', required: true},
+                        {type: 'password', name: 'passwordConfirm', label: 'Confirm Password*', hint: 'Same as password', required: true, validations:'equalsField:password'}
                     ]
                 },
                 [
                     {type: 'text', name: 'name', label: 'Full Name*', required: true},
-                    {type: 'select', name: 'branch_id', label: 'Branch*'}
+                    {type: 'select', name: 'branch_id', label: 'Branch*', required: true}
                 ],
                 [
                     {type: 'text', name: 'phone', label: 'Phone*', required: true},
-                    {type: 'text', name: 'phone2', label: 'Secondary Phone', hint: 'Secondary phone number'}
+                    {type: 'text', name: 'phone_2', label: 'Secondary Phone', hint: 'Secondary phone number'}
                 ],
                 [
                     {type: 'multiselect', name: 'roles', label: 'Roles*', required: true}

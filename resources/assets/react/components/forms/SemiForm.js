@@ -107,7 +107,6 @@ class SemiForm extends Component {
     // for triggering submit button using ref
     submit() {
         ReactDOM.findDOMNode(this.refs.submitBtn).click();
-        ReactDOM.findDOMNode(this.refs.submitBtn).click();
     }
 
     resetForm() {
@@ -240,7 +239,7 @@ class SemiForm extends Component {
                             case 'hidden':
                                 component = (
                                     <div style={{display: 'none'}}>
-                                        <SemiValidation.components.TextField
+                                        <SemiTextField
                                             {...rest} type="hidden"
                                         />
                                     </div>

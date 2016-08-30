@@ -6,8 +6,14 @@ import Toggle from 'material-ui/Toggle';
 
 class SemiToggleInput extends SemiInputComponent{
     handleToggle(event, value){
-        let nextValue = value;
-        if(value==false&&this.props.required) nextValue = '';
+        // original
+        // let nextValue = value;
+        // if(value==false&&this.props.required) nextValue = '';
+        // this.props.setValue(nextValue);
+        // this.props.onChange&&this.props.onChange(value, event);
+
+        // fix: required = true only (eg. accept term and condition)
+        let nextValue = !value;
         this.props.setValue(nextValue);
         this.props.onChange&&this.props.onChange(value, event);
     }

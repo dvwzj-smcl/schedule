@@ -32,6 +32,26 @@ class BaseFunctionManager {
         ];
     }
 
+    public static function getErrorMessage() {
+        return [
+            /* // reserved for future use
+            'required' => 'The :attribute field is required.',
+            'same' => 'The :attribute and :other must match.',
+            'size' => 'The :attribute must be exactly :size.',
+            'between' => 'The :attribute must be between :min - :max.',
+            'in' => 'The :attribute must be one of the following types: :values',
+            'email' => 'Invalid email',
+            'numeric' => 'The :attribute must be number',
+            */
+            'not_exists' => 'The :attribute already exist.',
+        ];
+    }
+
+    public static function getRandomColor() {
+        $colors = ['#C22326','#F37338','#027878','#FDB632','#801638','#2B80B9'];
+        return $colors[rand(0, count($colors)-1)];
+    }
+
     public static function getBranchId() {
         //return \Auth::user()->branch_id;
         return \Auth::check() ? \Auth::user()->branch_id : null; // for test

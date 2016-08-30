@@ -146,6 +146,7 @@ class FormDemoPage extends Component {
                 test_multiple_select: [1,'2'],
                 test_color: '#c5cae9',
                 test_number: 123,
+                test_toggle: true,
             }, // default values
             settings: {},
             // validators: {hn: {rule: '/^\d{6,7}$/', hint: 'Invalid HN'}},
@@ -160,7 +161,7 @@ class FormDemoPage extends Component {
                 ],
                 [
                     {type: 'select', name: 'test_select', label: 'Test Select*', options:[{id:1,name:'asdf'},{id:2,name:'qwer'}], required: true},
-                    {type: 'multiselect', name: 'test_multiple_select', label: 'Test Multiple Select*', options:[{id:1,name:1},{id:2,name:2}], required: true}
+                    {type: 'multiselect', name: 'test_multiple_select', label: 'Test Multiple Select*', options:[{id:1,name:'asdf'},{id:2,name:'zxcv'}], required: true}
                 ],
                 [
                     {type: 'color', name: 'test_color', label: 'Test Color*', required: true},
