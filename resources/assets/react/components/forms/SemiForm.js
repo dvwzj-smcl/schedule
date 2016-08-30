@@ -8,6 +8,7 @@ import {Grid, Row, Col} from 'react-flexbox-grid';
 import TextField from 'material-ui/TextField';
 import ErrorMessage from '../forms/ErrorMessage';
 import SemiText from './SemiText';
+import SemiDate from './SemiDate';
 
 class SemiForm extends Component {
     constructor(props, context) {
@@ -81,7 +82,6 @@ class SemiForm extends Component {
     }
 
     onSubmit(data, error, event) {
-        // console.log('data, error', data, error);
         if (this.props.onSubmit) {
             let promise = this.props.onSubmit(data, this.context.ajax);
             if (promise) {
@@ -100,6 +100,7 @@ class SemiForm extends Component {
 
     // for triggering submit button using ref
     submit() {
+        ReactDOM.findDOMNode(this.refs.submitBtn).click();
         ReactDOM.findDOMNode(this.refs.submitBtn).click();
     }
 
@@ -186,7 +187,7 @@ class SemiForm extends Component {
                             // todo if not string
                         }
 
-                        console.log('validations', validations, validationErrors);
+                        // console.log('validations', validations, validationErrors);
                         let overrideValues = { // props with different names or need processing
                             floatingLabelText: item.label, // todo: * and optional
                             hintText: item.hint ? item.hint : '',
@@ -261,7 +262,7 @@ class SemiForm extends Component {
                                 break;
                             case 'date':
                                 component = (
-                                    <SemiValidation.components.DatePicker
+                                    <SemiDate
                                         {...rest}
                                     />
                                 );

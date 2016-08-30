@@ -100,8 +100,13 @@ class FormDemoPage extends Component {
     }
 
     onSubmit(event){
+        console.log('submit event', event);
         event.preventDefault();
         console.log(this.refs.form.getData());
+    }
+
+    onSemiformSubmit(data){
+        console.log('submit', data);
     }
 
     ajax(method, url, data, success, error){
@@ -207,7 +212,7 @@ class FormDemoPage extends Component {
             // data: this.state.eventModal.data,
             // values: this.state.eventModal.values,
             // values: {first_name: 'Semi', last_name: 'colon', hn: '55123456', phone: '0871234567', contact: 'kickass.to'}, // default values
-            values: {first_name: 'Semi', last_name: 'Semi'}, // default values
+            values: {first_name: 'Semi', last_name: 'Semi', password: 'asdfasdf', passwordConfirm: 'asdfasdf', date: new Date()}, // default values
             settings: {},
             // validators: {hn: {rule: '/^\d{6,7}$/', hint: 'Invalid HN'}},
             components: [
@@ -217,7 +222,7 @@ class FormDemoPage extends Component {
                 ],
                 [
                     {type: 'text', name: 'first_name', label: 'First Name*', required: true},
-                    {type: 'text', name: 'last_name', label: 'Last Name*', required: true}
+                    {type: 'date', name: 'date', label: 'Date*', required: true}
                 ],
             ]
         };
@@ -228,17 +233,17 @@ class FormDemoPage extends Component {
                 <Grid fluid className="content-wrap">
                     <Row>
                         <Col md={9}>
-                            <Panel title="Request">
+                            <Panel title="SemiForm">
+                                <div className="con-pad">
+                                    <SemiForm formTemplate={formTemplate} onSubmit={this.onSemiformSubmit}/>
+                                </div>
+                            </Panel>
+                            <Panel title="SemiValidation">
                                 <div className="con-pad">
                                     <SemiValidation.components.Form ref="form" onSubmit={this.onSubmit}>
                                         {formItems2}
                                         <SemiValidation.components.RaisedButton label="Submit" type="submit" />
                                     </SemiValidation.components.Form>
-                                </div>
-                            </Panel>
-                            <Panel title="Request">
-                                <div className="con-pad">
-                                    <SemiForm formTemplate={formTemplate} />
                                 </div>
                             </Panel>
                             {/*<SemiDataTable settings={{

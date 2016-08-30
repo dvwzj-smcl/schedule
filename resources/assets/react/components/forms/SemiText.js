@@ -41,7 +41,7 @@ class SemiText extends Component{
     };
 
     render() {
-        console.log('render: text', this.props.validations);
+        // console.log('render: text', this.props.validations);
         let {
 
             // Remove Formsy's properties for safety(may not necessary)
@@ -69,7 +69,7 @@ class SemiText extends Component{
         let passwordIcon = null;
         if (type === 'password') {
             passwordIcon = (
-                <IconButton className="btn-icon" disabled style={{display: this.props.type=='password' ? 'inline-block' : 'none'}}>
+                <IconButton className="btn-icon" disabled>
                     <VisibleOffIcon/>
                 </IconButton>
             );

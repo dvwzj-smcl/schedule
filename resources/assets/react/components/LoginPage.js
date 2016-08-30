@@ -62,7 +62,7 @@ class LoginPage extends Component {
                             <AppBar
                                 title="Login"
                                 showMenuIconButton={false} />
-                            <SemiForm hasReset onSubmit={this.onSubmit} style={{padding: '16px 24px'}} formTemplate={formTemplate} />
+                            <SemiForm onSubmit={this.onSubmit} style={{padding: '16px 24px'}} formTemplate={formTemplate} />
                         </Paper>
                     </Col>
                 </Row>
