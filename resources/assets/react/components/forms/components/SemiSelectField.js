@@ -13,7 +13,7 @@ class SemiSelectField extends SemiInputComponent{
     controlledValue = (props = this.props) => {
         let value = (props.value || props.defaultValue);
         let valueIsObject = typeof value=='object';
-        let defaultValue = props.multiple ? (valueIsObject ? value : (value ? [value] : props.required ? '' : [])) : (valueIsObject ? value[0] : props.required ? '' : null);
+        let defaultValue = props.multiple ? (valueIsObject ? value : (value ? [value] : props.required ? '' : [])) : (valueIsObject ? value[0] : (value ? value : props.required ? '' : null));
         return defaultValue;
     };
     render() {
@@ -91,21 +91,31 @@ class SemiSelectField extends SemiInputComponent{
 
         let valueIsObject = typeof currentValue=='object'&&currentValue!==null;
 
-        if(valueIsObject) {
-            for (let i in children) {
-                if (currentValue.indexOf(children[i].props.value) >= 0) {
+
+
+        for (let i in children) {
+            /*
+            if (valueIsObject ? currentValue.indexOf(children[i].value) >= 0 : currentValue==children[i].value) {
+                labels.push(children[i].props.primaryText);
+            }
+            */
+            if (valueIsObject){
+                if(currentValue.map(v=>parseInt(v,10)).indexOf(parseInt(children[i].props.value, 10)) >= 0){
+                    labels.push(children[i].props.primaryText);
+                }
+            }else{
+                if(parseInt(currentValue,10)==parseInt(children[i].props.value,10)){
                     labels.push(children[i].props.primaryText);
                 }
             }
-        }else if(currentValue){
-            labels = [currentValue];
         }
+
         let checkboxItems = children ? children.map((item, i) => {
             let checkbox = <Checkbox
-                checked={(valueIsObject ? currentValue.indexOf(item.props.value) >= 0 : currentValue==item.props.value)}
+                checked={(valueIsObject ? currentValue.map(v=>parseInt(v,10)).indexOf(parseInt(item.props.value,10)) >= 0 : parseInt(currentValue,10)==parseInt(item.props.value,10))}
                 onCheck={(e,v) => {
                     if(multiple){
-                        const index = currentValue.indexOf(item.props.value);
+                        const index = currentValue.map(v=>parseInt(v,10)).indexOf(parseInt(item.props.value,10));
                         if(index < 0) {
                             currentValue.push(item.props.value);
                             this.props.onChange&&this.props.onChange(currentValue, index);
@@ -114,7 +124,7 @@ class SemiSelectField extends SemiInputComponent{
                             this.props.onChange&&this.props.onChange(currentValue, index);
                         }
                     }else{
-                        currentValue = item.props.value;
+                        currentValue = parseInt(item.props.value);
                         this.refs.dropdown.handleRequestCloseMenu();
                         this.props.onChange&&this.props.onChange(currentValue, i);
                     }

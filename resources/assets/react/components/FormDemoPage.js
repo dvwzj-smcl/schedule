@@ -143,7 +143,7 @@ class FormDemoPage extends Component {
                 passwordConfirm: 'asdfasdf',
                 date: new Date(),
                 test_select: '1',
-                test_multiple_select: [1,2],
+                test_multiple_select: [1,'2'],
                 test_color: '#c5cae9',
                 test_number: 123,
             }, // default values
