@@ -155,6 +155,10 @@ class FormDemoPage extends Component {
                 [
                     {type: 'color', name: 'test_color', label: 'Test Color*', required: true},
                     {type: 'numeric', name: 'test_number', label: 'Test Number*', required: true}
+                ],
+                [
+                    {type: 'slider', name: 'test_slider', label: 'Test Slider*', step: 10, min: 0, max: 120, showValue: true, required: true},
+                    {type: 'toggle', name: 'test_toggle', label: 'Test Toggle*', labelOn: 'Enabled', labelOff: 'Disabled', required: true}
                 ]
             ]
         };

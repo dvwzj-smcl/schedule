@@ -12,6 +12,8 @@ import SemiTextField from './components/SemiTextField';
 import SemiSelectField from './components/SemiSelectField';
 import SemiDatePicker from './components/SemiDatePicker';
 import SemiColorPicker from './components/SemiColorPicker';
+import SemiSliderInput from './components/SemiSliderInput';
+import SemiToggleInput from './components/SemiToggleInput';
 import SemiDate from './SemiDate';
 
 class SemiForm extends Component {
@@ -287,14 +289,14 @@ class SemiForm extends Component {
                                 break;
                             case 'slider':
                                 component = (
-                                    <SemiValidation.components.Slider
+                                    <SemiSliderInput
                                         {...rest}
                                         />
                                 );
                                 break;
                             case 'toggle':
                                 component = (
-                                    <SemiValidation.components.Toggle
+                                    <SemiToggleInput
                                         {...rest}
                                         />
                                 );
