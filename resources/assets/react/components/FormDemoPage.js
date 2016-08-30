@@ -147,6 +147,9 @@ class FormDemoPage extends Component {
                 [
                     {type: 'text', name: 'first_name', label: 'First Name*', required: true, validations:'isAlphanumeric'},
                     {type: 'date', name: 'date', label: 'Date*', required: true}
+                ],
+                [
+                    {type: 'select', name: 'test_select', label: 'Test Select*', options:[{id:1,name:1},{id:2,name:2}], required: true}
                 ]
             ]
         };

@@ -8,6 +8,9 @@ import {Grid, Row, Col} from 'react-flexbox-grid';
 import TextField from 'material-ui/TextField';
 import ErrorMessage from '../forms/ErrorMessage';
 import SemiText from './SemiText';
+import SemiTextField from './components/SemiTextField';
+import SemiSelectField from './components/SemiSelectField';
+import SemiDatePicker from './components/SemiDatePicker';
 import SemiDate from './SemiDate';
 
 class SemiForm extends Component {
@@ -207,14 +210,14 @@ class SemiForm extends Component {
                         switch (type) {
                             case 'text':
                                 component = (
-                                    <SemiText
+                                    <SemiTextField
                                         {...rest}
                                     />
                                 );
                                 break;
                             case 'password':
                                 component = (
-                                    <SemiText
+                                    <SemiTextField
                                         {...rest} type="password"
                                     />
                                 );
@@ -242,7 +245,7 @@ class SemiForm extends Component {
                                 break;
                             case 'select':
                                 component = (
-                                    <SemiValidation.components.SelectField
+                                    <SemiSelectField
                                         options={data[name]}
                                         {...rest}
                                     />
@@ -250,8 +253,9 @@ class SemiForm extends Component {
                                 break;
                             case 'multiselect':
                                 component = (
-                                    <SemiValidation.components.MultipleSelectField
-                                        options={data[name]} floatingLabelFixed={true}
+                                    <SemiSelectField
+                                        options={data[name]}
+                                        multiple={true}
                                         {...rest}
                                     />
                                 );
@@ -268,7 +272,7 @@ class SemiForm extends Component {
                                 break;
                             case 'date':
                                 component = (
-                                    <SemiDate
+                                    <SemiDatePicker
                                         {...rest}
                                     />
                                 );
