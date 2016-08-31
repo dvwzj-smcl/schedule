@@ -7,8 +7,7 @@ import Toggle from 'material-ui/Toggle';
 class SemiToggleInput extends SemiInputComponent{
     controlledValue = (props = this.props) => {
         let value = (props.value || props.defaultValue);
-        let defaultValue = value ? value : (props.required ? '' : false);
-        console.log('defaultValue', defaultValue);
+        let defaultValue = value ? value : false;
         return defaultValue;
     };
     handleToggle(event, value){
