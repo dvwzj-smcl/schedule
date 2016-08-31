@@ -120,7 +120,8 @@ class SemiAutoComplete extends SemiInputComponent{
                 <AutoComplete
                     ref="input"
                     {...rest}
-                    style={{width: width}}
+                    inputStyle={{cursor: this.props.disabled ? 'not-allowed' : null}}
+                    style={{width}}
                     errorText={this.props.getErrorMessage()}
                     dataSource={sources}
                     value={currentValue}

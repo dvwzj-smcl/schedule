@@ -128,6 +128,7 @@ class SemiColorPicker extends SemiInputComponent{
                 <TextField
                     ref="input"
                     {...rest}
+                    inputStyle={{cursor: this.props.disabled ? 'not-allowed' : null}}
                     style={{width: width, display: 'inline-block'}}
                     errorText={this.props.getErrorMessage()}
                     onChange={this.handleChange}

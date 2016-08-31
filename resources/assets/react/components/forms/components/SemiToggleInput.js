@@ -63,7 +63,7 @@ class SemiToggleInput extends SemiInputComponent{
         return (
             <div>
                 <div style={{marginTop: 22}}>
-                    <Toggle {...rest} toggled={toggled} onToggle={this.handleToggle.bind(this)} style={{width}} />
+                    <Toggle {...rest} toggled={toggled} onToggle={this.handleToggle.bind(this)} inputStyle={{cursor: this.props.disabled ? 'not-allowed' : null}} style={{width}} />
                 </div>
             </div>
         );

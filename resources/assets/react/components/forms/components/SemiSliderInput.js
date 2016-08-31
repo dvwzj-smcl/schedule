@@ -100,7 +100,7 @@ class SemiSliderInput extends SemiInputComponent{
                     }}>
                         {currentValue}
                     </Chip>
-                    <Slider {...rest} value={currentValue} onChange={this.handleSlide.bind(this)} style={{width: width, display: 'inline-block', height: 66, verticalAlign: 'middle'}}/>
+                    <Slider {...rest} value={currentValue} onChange={this.handleSlide.bind(this)} style={{width: width, display: 'inline-block', height: 66, verticalAlign: 'middle'}} />
                     {clearIcon}
                 </div>
             </div>

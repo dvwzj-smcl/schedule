@@ -110,13 +110,15 @@ class SemiCheckInput extends SemiInputComponent{
 
         let checkboxItems = children ? children.map((item, i) => {
             let checkbox = <Checkbox
+                disabled={this.props.disabled}
                 checkedIcon={multiple ? null : <RadioButtonChecked />}
                 uncheckedIcon={multiple ? null : <RadioButtonUnchecked />}
                 checked={(valueIsObject ? currentValue.map(v=>parseInt(v,10)).indexOf(parseInt(item.props.value,10)) >= 0 : parseInt(currentValue,10)==parseInt(item.props.value,10))}
                 onCheck={this.handleCheck.bind(this, item, i)} />;
             return React.cloneElement(item, {
                 leftCheckbox: labelPosition=='right' ? null : checkbox,
-                rightToggle: labelPosition=='right' ? checkbox : null
+                rightToggle: labelPosition=='right' ? checkbox : null,
+                style: {cursor: this.props.disabled ? 'not-allowed' : null}
             });
         }) : null;
 
