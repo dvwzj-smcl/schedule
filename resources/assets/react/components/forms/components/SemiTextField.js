@@ -73,6 +73,7 @@ class SemiTextField extends SemiInputComponent{
             <div>
                 <TextField
                     {...rest}
+                    type={type||'text'}
                     style={{width: width}}
                     errorText={this.props.getErrorMessage()}
                     onBlur={this.handleBlur}
