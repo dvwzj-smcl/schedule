@@ -8,8 +8,10 @@ import {List, ListItem} from 'material-ui/List';
 import ErrorMessage from '../../forms/ErrorMessage';
 import IconButton from 'material-ui/IconButton/IconButton';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
+import RadioButtonChecked from 'material-ui/svg-icons/toggle/radio-button-checked';
+import RadioButtonUnchecked from 'material-ui/svg-icons/toggle/radio-button-unchecked';
 
-class SemiSelectField extends SemiInputComponent{
+class SemiCheckInput extends SemiInputComponent{
     controlledValue = (props = this.props) => {
         let value = (props.value || props.defaultValue);
         let valueIsObject = typeof value=='object';
@@ -22,7 +24,7 @@ class SemiSelectField extends SemiInputComponent{
         if(this.props.multiple){
             const index = currentValue.map(v=>parseInt(v,10)).indexOf(parseInt(item.props.value,10));
             if(index < 0) {
-                currentValue.push(parseInt(item.props.value,10));
+                currentValue.push(item.props.value);
                 this.props.onChange&&this.props.onChange(currentValue, index);
             }else{
                 currentValue.splice(index, 1);
@@ -30,7 +32,6 @@ class SemiSelectField extends SemiInputComponent{
             }
         }else{
             currentValue = parseInt(item.props.value);
-            this.refs.dropdown.handleRequestCloseMenu();
             this.props.onChange&&this.props.onChange(currentValue, i);
         }
         if(typeof currentValue=='object'&&this.props.required&&currentValue.length==0||currentValue==null) currentValue='';
@@ -54,26 +55,9 @@ class SemiSelectField extends SemiInputComponent{
             showError,
             showRequired,
 
-            autoWidth,
-            children,
-            style,
-            underlineDisabledStyle,
-            underlineFocusStyle,
-            underlineStyle,
-            errorStyle,
-            selectFieldRoot,
-            disabled,
-            floatingLabelText,
             floatingLabelFixed,
-            floatingLabelStyle,
-            hintStyle,
-            hintText,
-            fullWidth,
-            errorText,
-            onFocus,
-            onBlur,
-            onChange,
-
+            labelPosition,
+            children,
             value,
             options,
             multiple,
@@ -87,14 +71,14 @@ class SemiSelectField extends SemiInputComponent{
 
         // --- Icon Buttons
         let clearIcon = null;
-        let minusWidth = 0;
+        let minusWidth = 36;
         if (currentValue && currentValue.length !== 0) {
             clearIcon = (
                 <IconButton className="btn-icon" onTouchTap={this.handleClear.bind(this)}>
                     <ClearIcon/>
                 </IconButton>
             );
-            minusWidth += 36;
+            minusWidth += 0;
         }
         let items = options ? [] : null;
         if(typeof options === 'object') { // object or array only
@@ -103,6 +87,7 @@ class SemiSelectField extends SemiInputComponent{
                 items.push(<ListItem value={id} key={id} primaryText={options[i].name}/>);
             }
         }
+
         let labels = [];
 
         if(!children&&items) children = items;
@@ -111,14 +96,7 @@ class SemiSelectField extends SemiInputComponent{
 
         let valueIsObject = typeof currentValue=='object'&&currentValue!==null;
 
-
-
         for (let i in children) {
-            /*
-            if (valueIsObject ? currentValue.indexOf(children[i].value) >= 0 : currentValue==children[i].value) {
-                labels.push(children[i].props.primaryText);
-            }
-            */
             if (valueIsObject){
                 if(currentValue.map(v=>parseInt(v,10)).indexOf(parseInt(children[i].props.value, 10)) >= 0){
                     labels.push(children[i].props.primaryText);
@@ -132,56 +110,29 @@ class SemiSelectField extends SemiInputComponent{
 
         let checkboxItems = children ? children.map((item, i) => {
             let checkbox = <Checkbox
+                checkedIcon={multiple ? null : <RadioButtonChecked />}
+                uncheckedIcon={multiple ? null : <RadioButtonUnchecked />}
                 checked={(valueIsObject ? currentValue.map(v=>parseInt(v,10)).indexOf(parseInt(item.props.value,10)) >= 0 : parseInt(currentValue,10)==parseInt(item.props.value,10))}
                 onCheck={this.handleCheck.bind(this, item, i)} />;
             return React.cloneElement(item, {
-                leftCheckbox: checkbox
+                leftCheckbox: labelPosition=='right' ? null : checkbox,
+                rightToggle: labelPosition=='right' ? checkbox : null
             });
         }) : null;
 
         let width = (this.props.fullWidth ? `calc(100% - ${minusWidth}px)` : `auto`);
-        let textFieldStyle = Object.assign({},style,{width});
 
         return (
             <div>
-                <TextField
-                    ref="input"
-                    style={textFieldStyle}
-                    floatingLabelText={floatingLabelText}
-                    floatingLabelFixed={floatingLabelFixed}
-                    floatingLabelStyle={floatingLabelStyle}
-                    hintStyle={hintStyle}
-                    hintText={(!hintText && !floatingLabelText) ? ' ' : hintText}
-                    fullWidth={fullWidth}
-                    errorText={errorText}
-                    underlineStyle={underlineStyle}
-                    errorStyle={errorStyle}
-                    onFocus={onFocus}
-                    onBlur={onBlur}
-                    underlineDisabledStyle={underlineDisabledStyle}
-                    underlineFocusStyle={underlineFocusStyle}
-                    >
-                    <div style={{width: "100%"}}>
-                        <div style={{position:"absolute", bottom: floatingLabelFixed ? 26 : 12, left:0, width: "100%", overflow:"hidden" }}>{labels.join(", ")}</div>
-                        <DropDownMenu
-                            ref="dropdown"
-                            disabled={disabled}
-                            style={{width:"100%"}}
-                            autoWidth={/*autoWidth*/false}
-                            iconStyle={{right: 0}}
-                            underlineStyle={{
-                                borderTop: 'none'
-                            }}
-                            {...rest}
-                            >
-                            {checkboxItems}
-                        </DropDownMenu>
-                    </div>
-                </TextField>
-                {clearIcon}
+                <List {...rest} style={{display: 'inline-block', verticalAlign: 'bottom', width}} >
+                    {checkboxItems}
+                </List>
+                <div style={{display: 'inline-block', verticalAlign: 'bottom', paddingBottom: '8px'}} >
+                    {clearIcon}
+                </div>
             </div>
         );
     }
 }
 
-export default HOC(SemiSelectField);
+export default HOC(SemiCheckInput);

@@ -14,6 +14,7 @@ import SemiDatePicker from './components/SemiDatePicker';
 import SemiColorPicker from './components/SemiColorPicker';
 import SemiSliderInput from './components/SemiSliderInput';
 import SemiToggleInput from './components/SemiToggleInput';
+import SemiCheckInput from './components/SemiCheckInput';
 import SemiDate from './SemiDate';
 
 class SemiForm extends Component {
@@ -281,7 +282,15 @@ class SemiForm extends Component {
                                 break;
                             case 'checkbox':
                                 component = (
-                                    <SemiValidation.components.Checkbox
+                                    <SemiCheckInput
+                                        multiple={true}
+                                        {...rest}
+                                        />
+                                );
+                                break;
+                            case 'radio':
+                                component = (
+                                    <SemiCheckInput
                                         {...rest}
                                         />
                                 );

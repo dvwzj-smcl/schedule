@@ -146,7 +146,7 @@ class FormDemoPage extends Component {
                 test_multiple_select: [1,'2'],
                 test_color: '#c5cae9',
                 test_number: 123,
-                test_toggle: true,
+                test_toggle1: true,
             }, // default values
             settings: {},
             // validators: {hn: {rule: '/^\d{6,7}$/', hint: 'Invalid HN'}},
@@ -168,8 +168,20 @@ class FormDemoPage extends Component {
                     {type: 'numeric', name: 'test_number', label: 'Test Number*', required: true}
                 ],
                 [
-                    {type: 'slider', name: 'test_slider', label: 'Test Slider*', step: 10, min: 0, max: 120, showValue: true, required: true},
-                    {type: 'toggle', name: 'test_toggle', label: 'Test Toggle*', labelOn: 'Enabled', labelOff: 'Disabled'}
+                    {type: 'slider', name: 'test_slider1', label: 'Test Slider 1*', step: 10, min: 0, max: 120, showValue: true, required: true},
+                    {type: 'toggle', name: 'test_toggle1', label: 'Test Toggle 1*', labelPosition: "right", required: true}
+                ],
+                [
+                    {type: 'slider', name: 'test_slider2', label: 'Test Slider 2*', step: 10, min: 0, max: 120, showValue: false, required: true},
+                    {type: 'toggle', name: 'test_toggle2', label: 'Test Toggle 2*', required: true}
+                ],
+                [
+                    {type: 'checkbox', name: 'test_checkbox1', label: 'Test Checkbox 1*', options:[{id:1,name:'aaaa'},{id:2,name:'bbbb'}], required: true},
+                    {type: 'radio', name: 'test_radio1', label: 'Test Radio 1*', options:[{id:3,name:'cccc'},{id:4,name:'dddd'}], required: true}
+                ],
+                [
+                    {type: 'checkbox', name: 'test_checkbox2', label: 'Test Checkbox 2*', labelPosition: "right", options:[{id:1,name:'aaaa'},{id:2,name:'bbbb'}], required: true},
+                    {type: 'radio', name: 'test_radio2', label: 'Test Radio 2*', labelPosition: "right", options:[{id:3,name:'cccc'},{id:4,name:'dddd'}], required: true}
                 ]
             ]
         };
