@@ -18,14 +18,14 @@ class SemiAutoComplete extends SemiInputComponent{
     handleClear = () => {
         this.props.setValue('');
         this.props.onChange&&this.props.onChange('', null, event);
-        //this.refs.input.setState({searchText: ''});
+        this.refs.input.setState({searchText: ''});
     }
     handleNewRequest(chosenRequest, index){
         const {value} = chosenRequest;
-        let sources = typeof this.props.dataSource=='object' ? this.props.dataSource : this.state.sources;
-        let searchText = '';
-        for(let i in sources){
-            if(parseInt(sources[i].value,10)==parseInt(value,10)) searchText=sources[i].text;
+        let searchText = value;
+        if(this.props.typeahead) {
+            let sources = typeof this.props.dataSource=='object' ? this.props.dataSource : this.state.sources;
+            for (let i in sources) if (sources[i].value == value) searchText = sources[i].text;
         }
         this.props.setValue(searchText);
         this.props.onChange&&this.props.onChange(searchText, index, event);
@@ -69,11 +69,7 @@ class SemiAutoComplete extends SemiInputComponent{
             }
         }
 
-        let sources = typeof this.props.dataSource=='object' ? this.props.dataSource : this.state.sources;
         let searchText = this.props.typeahead ? value : '';
-        for(let i in sources){
-            if(parseInt(sources[i].value,10)==parseInt(value,10)) searchText=sources[i].text;
-        }
         this.props.setValue(searchText);
         this.props.onChange&&this.props.onChange(searchText, index, event);
     }
@@ -118,10 +114,6 @@ class SemiAutoComplete extends SemiInputComponent{
         let width = (this.props.fullWidth ? `calc(100% - ${minusWidth}px)` : `auto`);
 
         let sources = typeof this.props.dataSource=='object' ? this.props.dataSource : this.state.sources;
-        let searchText = '';
-        for(let i in sources){
-            if(parseInt(sources[i].value,10)==parseInt(currentValue,10)) searchText=sources[i].text;
-        }
 
         return (
             <div>
@@ -131,8 +123,8 @@ class SemiAutoComplete extends SemiInputComponent{
                     style={{width: width}}
                     errorText={this.props.getErrorMessage()}
                     dataSource={sources}
+                    value={currentValue}
                     className={this.props.className || null}
-                    searchText={searchText}
                     onNewRequest={this.handleNewRequest.bind(this)}
                     filter={AutoComplete.caseInsensitiveFilter}
                     dataSourceConfig={{value: 'text', text: 'text'}}
