@@ -24,7 +24,7 @@ class ScheduleFilter extends Component {
         this.context.navigate({date, doctor_id: data.doctor_id})
     };
     
-    onCheck = (obj) => {
+    onCheck = (obj, value) => {
         let name = obj.target.getAttribute('name');
         let h = this.context.hides, hides = '';
         h[name] = !h[name];
