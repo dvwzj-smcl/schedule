@@ -71,14 +71,14 @@ class SemiCheckInput extends SemiInputComponent{
 
         // --- Icon Buttons
         let clearIcon = null;
-        let minusWidth = 36;
-        if (currentValue && currentValue.length !== 0) {
+        let minusWidth = 0;
+        if (currentValue && currentValue.length !== 0 && !this.props.disabled) {
             clearIcon = (
                 <IconButton className="btn-icon" onTouchTap={this.handleClear.bind(this)}>
                     <ClearIcon/>
                 </IconButton>
             );
-            minusWidth += 0;
+            minusWidth += 36;
         }
         let items = options ? [] : null;
         if(typeof options === 'object') { // object or array only

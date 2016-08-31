@@ -88,7 +88,7 @@ class SemiSelectField extends SemiInputComponent{
         // --- Icon Buttons
         let clearIcon = null;
         let minusWidth = 0;
-        if (currentValue && currentValue.length !== 0) {
+        if (currentValue && currentValue.length !== 0 && !this.props.disabled) {
             clearIcon = (
                 <IconButton className="btn-icon" onTouchTap={this.handleClear.bind(this)}>
                     <ClearIcon/>
