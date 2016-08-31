@@ -15,6 +15,7 @@ import SemiColorPicker from './components/SemiColorPicker';
 import SemiSliderInput from './components/SemiSliderInput';
 import SemiToggleInput from './components/SemiToggleInput';
 import SemiCheckInput from './components/SemiCheckInput';
+import SemiAutoComplete from './components/SemiAutoComplete';
 import SemiDate from './SemiDate';
 
 class SemiForm extends Component {
@@ -305,6 +306,21 @@ class SemiForm extends Component {
                             case 'toggle':
                                 component = (
                                     <SemiToggleInput
+                                        {...rest}
+                                        />
+                                );
+                                break;
+                            case 'autocomplete':
+                                component = (
+                                    <SemiAutoComplete
+                                        {...rest}
+                                        />
+                                );
+                                break;
+                            case 'typeahead':
+                                component = (
+                                    <SemiAutoComplete
+                                        typeahead={true}
                                         {...rest}
                                         />
                                 );

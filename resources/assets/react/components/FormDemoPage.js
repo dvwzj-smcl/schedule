@@ -182,6 +182,10 @@ class FormDemoPage extends Component {
                 [
                     {type: 'checkbox', name: 'test_checkbox2', label: 'Test Checkbox 2*', labelPosition: "right", options:[{id:1,name:'aaaa'},{id:2,name:'bbbb'}], required: true},
                     {type: 'radio', name: 'test_radio2', label: 'Test Radio 2*', labelPosition: "right", options:[{id:3,name:'cccc'},{id:4,name:'dddd'}], required: true}
+                ],
+                [
+                    {type: 'autocomplete', name: 'test_auto_complete', label: 'Test Auto Complete*', dataSource: [{value:1,text:'test 1'},{value:2,text:'test 2'}],  /*dataSourceResult:"doctors", dataSourceSearch: 'name', dataSourceMap: {value: 'id', text: 'user.name'},*/ required: true},
+                    {type: 'typeahead', name: 'test_type_ahead', label: 'Test Type Ahead*', dataSource: [{value:3,text:'test 3'},{value:4,text:'test 4'}], required: true}
                 ]
             ]
         };
