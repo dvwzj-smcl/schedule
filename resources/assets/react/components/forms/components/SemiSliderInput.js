@@ -48,13 +48,13 @@ class SemiSliderInput extends SemiInputComponent{
         let minusWidth = 0;
         if (currentValue !== 0 && !this.props.disabled) {
             clearIcon = (
-                <IconButton className="btn-icon" style={{marginLeft: 36, display: 'inline-block', verticalAlign: 'middle'}} onTouchTap={this.handleClear.bind(this)}>
+                <IconButton className="btn-icon" style={{marginLeft: 0, display: 'inline-block', verticalAlign: 'middle'}} onTouchTap={this.handleClear.bind(this)}>
                     <ClearIcon/>
                 </IconButton>
             );
-            minusWidth += 72;
+            minusWidth += 36;
         }
-        if(showValue) minusWidth+=72;
+        if(showValue) minusWidth += 72;
 
         let width = (this.props.fullWidth ? `calc(100% - ${minusWidth}px)` : `auto`);
 

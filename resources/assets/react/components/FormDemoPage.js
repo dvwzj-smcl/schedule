@@ -156,36 +156,36 @@ class FormDemoPage extends Component {
                     {type: 'password', name: 'passwordConfirm', label: 'Confirm Password*', hint: 'Same as password', required: true, validations:'equalsField:password'}
                 ],
                 [
-                    {type: 'text', name: 'first_name', label: 'First Name*', disabled: true, validations:'isAlphanumeric'},
-                    {type: 'date', name: 'date', label: 'Date*', disabled: true}
+                    {type: 'text', name: 'first_name', label: 'First Name*', required: true, validations:'isAlphanumeric', disabled: true},
+                    {type: 'date', name: 'date', label: 'Date*', required: true}
                 ],
                 [
-                    {type: 'select', name: 'test_select', label: 'Test Select*', options:[{id:1,name:'asdf'},{id:2,name:'qwer'}], disabled: true},
-                    {type: 'multiselect', name: 'test_multiple_select', label: 'Test Multiple Select*', options:[{id:1,name:'asdf'},{id:2,name:'zxcv'}], disabled: true}
+                    {type: 'select', name: 'test_select', label: 'Test Select*', options:[{id:1,name:'asdf'},{id:2,name:'qwer'}], required: true, disabled: true},
+                    {type: 'multiselect', name: 'test_multiple_select', label: 'Test Multiple Select*', options:[{id:1,name:'asdf'},{id:2,name:'zxcv'}], required: true, disabled: true}
                 ],
                 [
-                    {type: 'color', name: 'test_color', label: 'Test Color*', disabled: true},
+                    {type: 'color', name: 'test_color', label: 'Test Color*', required: true},
                     {type: 'numeric', name: 'test_number', label: 'Test Number*', disabled: true}
                 ],
                 [
-                    {type: 'slider', name: 'test_slider1', label: 'Test Slider 1*', step: 10, min: 0, max: 120, showValue: true, disabled: true},
-                    {type: 'toggle', name: 'test_toggle1', label: 'Test Toggle 1*', labelPosition: "right", disabled: true}
+                    {type: 'slider', name: 'test_slider1', label: 'Test Slider 1*', step: 10, min: 0, max: 120, showValue: true, required: false},
+                    {type: 'toggle', name: 'test_toggle1', label: 'Test Toggle 1*', labelPosition: "right", required: false}
                 ],
                 [
-                    {type: 'slider', name: 'test_slider2', label: 'Test Slider 2*', step: 10, min: 0, max: 120, showValue: false, disabled: true},
-                    {type: 'toggle', name: 'test_toggle2', label: 'Test Toggle 2*', disabled: true}
+                    {type: 'slider', name: 'test_slider2', label: 'Test Slider 2*', step: 10, min: 0, max: 120, showValue: false, required: false},
+                    {type: 'toggle', name: 'test_toggle2', label: 'Test Toggle 2*', required: false}
                 ],
                 [
-                    {type: 'checkbox', name: 'test_checkbox1', label: 'Test Checkbox 1*', options:[{id:1,name:'aaaa'},{id:2,name:'bbbb'}], disabled: true},
-                    {type: 'radio', name: 'test_radio1', label: 'Test Radio 1*', options:[{id:3,name:'cccc'},{id:4,name:'dddd'}], disabled: true}
+                    {type: 'checkbox', name: 'test_checkbox1', label: 'Test Checkbox 1*', options:[{id:1,name:'aaaa'},{id:2,name:'bbbb'}], required: false},
+                    {type: 'radio', name: 'test_radio1', label: 'Test Radio 1*', options:[{id:3,name:'cccc'},{id:4,name:'dddd'}], required: false}
                 ],
                 [
-                    {type: 'checkbox', name: 'test_checkbox2', label: 'Test Checkbox 2*', labelPosition: "right", options:[{id:1,name:'aaaa'},{id:2,name:'bbbb'}], disabled: true},
-                    {type: 'radio', name: 'test_radio2', label: 'Test Radio 2*', labelPosition: "right", options:[{id:3,name:'cccc'},{id:4,name:'dddd'}], disabled: true}
+                    {type: 'checkbox', name: 'test_checkbox2', label: 'Test Checkbox 2*', labelPosition: "right", options:[{id:1,name:'aaaa'},{id:2,name:'bbbb'}], required: false},
+                    {type: 'radio', name: 'test_radio2', label: 'Test Radio 2*', labelPosition: "right", options:[{id:3,name:'cccc'},{id:4,name:'dddd'}], required: false}
                 ],
                 [
-                    {type: 'autocomplete', name: 'test_auto_complete', label: 'Test Auto Complete*', dataSource: [{value:1,text:'test 1'},{value:2,text:'test 2'}],  /*dataSourceResult:"doctors", dataSourceSearch: 'name', dataSourceMap: {value: 'id', text: 'user.name'},*/ disabled: true},
-                    {type: 'typeahead', name: 'test_type_ahead', label: 'Test Type Ahead*', dataSource: [{value:3,text:'test 3'},{value:4,text:'test 4'}], disabled: true}
+                    {type: 'autocomplete', name: 'test_auto_complete', label: 'Test Auto Complete*', dataSource: [{value:1,text:'test 1'},{value:2,text:'test 2'}],  /*dataSourceResult:"doctors", dataSourceSearch: 'name', dataSourceMap: {value: 'id', text: 'user.name'},*/ required: false},
+                    {type: 'typeahead', name: 'test_type_ahead', label: 'Test Type Ahead*', dataSource: [{value:3,text:'test 3'},{value:4,text:'test 4'}], required: false}
                 ]
             ]
         };

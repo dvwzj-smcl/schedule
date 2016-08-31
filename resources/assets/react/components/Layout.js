@@ -52,7 +52,6 @@ class Layout extends Component {
 
     openAlert(...params) {
         // console.log('description', title, description);
-        console.log('openAlert');
         this.refs.alert.open(params);
     }
 

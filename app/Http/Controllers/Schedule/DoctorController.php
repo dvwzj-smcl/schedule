@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Schedule;
 
-use App\Models\Calendar\Doctor;
+use App\Models\User\Doctor;
 use Illuminate\Http\Request;
 use BF;
 use App\Http\Requests;
@@ -27,8 +27,8 @@ class DoctorController extends Controller
                 'color' => $request->get('color'),
                 'data' => $request->get('data'),
             ];
-            $sub = Doctor::create($data);
-            return BF::result(true, ['doctor' => $sub]);
+            $doctor = Doctor::create($data);
+            return BF::result(true, ['doctor' => $doctor]);
         } catch (\Exception $e){
             return BF::result(false, $e->getMessage());
         }
@@ -45,10 +45,29 @@ class DoctorController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $sub = Doctor::find($id);
-            if($sub == null) throw new \Exception('Doctor not found!');
-            $sub->update($request->all());
-            return BF::result(true, ['doctor' => $sub]);
+            $doctor = Doctor::find($id);
+            if($doctor == null) throw new \Exception('Doctor not found!');
+            $updateData = $request->all();
+            // For Doctor Setting
+            if($request->has('data')) {
+                $newData = $updateData['data'];
+                $cat_id = $newData['category_id'];
+                $data = json_decode($doctor->data, true);
+                $sub = [];
+                foreach ($newData as $key => $value) {
+                    $attr = explode('-', $key);
+                    if(count($attr) == 2) {
+                        if(!isset($sub[$attr[1]])) $sub[$attr[1]] = [];
+                        $sub[$attr[1]][$attr[0]] = $value;
+//                        $data['categories'][$cat_id]['sub_categories'][$attr[1]][$attr[0]] = $value;
+                    }
+                }
+                $data['categories'][$cat_id]['color'] = $newData['color'];
+                $data['categories'][$cat_id]['sub_categories'] = $sub;
+                $updateData['data'] = json_encode($data);
+            }
+            $doctor->update($updateData);
+            return BF::result(true, ['doctor' => $doctor]);
         }catch(\Exception $e){
             return BF::result(false, $e->getMessage());
         }

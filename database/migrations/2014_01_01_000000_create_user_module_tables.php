@@ -20,6 +20,7 @@ class CreateUserModuleTables extends Migration
             $table->string('phone', 20);
             $table->string('phone_2', 20)->nullable();
             $table->string('password', 60);
+            $table->string('status', 60)->nullable();
             $table->integer('branch_id')->unsigned();
             $table->string('lang', 2)->default('th');
             $table->rememberToken();

@@ -72,17 +72,18 @@ class ScheduleModuleSeeder extends Seeder
         // Generate sample slots
 
         $current = \Carbon\Carbon::create(2016, 8, 20);
-        $limit = \Carbon\Carbon::create(2016, 12, 31);
+        $limit = \Carbon\Carbon::create(2016, 10, 31);
+        $created_by = $organizers[rand(0, count($organizers) - 1)];
         while($current < $limit) {
             foreach($doctors as $id) {
                 $start = clone $current;
                 $end = clone $current;
-                $slot = \App\Models\Calendar\Slot::create(['start' => $start->setTime(8, 0), 'end' => $end->setTime(12, 0), 'sc_doctor_id' => $id, 'created_by' => 1, 'sc_category_id' => 1]);
+                $slot = \App\Models\Calendar\Slot::create(['start' => $start->setTime(8, 0), 'end' => $end->setTime(12, 0), 'sc_doctor_id' => $id, 'created_by' => $created_by, 'sc_category_id' => 1]);
                 static::randomFillEvents($slot);
-                $slot = \App\Models\Calendar\Slot::create(['start' => $start->setTime(14, 0), 'end' => $end->setTime(15, 0), 'sc_doctor_id' => $id, 'created_by' => 1, 'sc_category_id' => 2]);
+                $slot = \App\Models\Calendar\Slot::create(['start' => $start->setTime(14, 0), 'end' => $end->setTime(15, 0), 'sc_doctor_id' => $id, 'created_by' => $created_by, 'sc_category_id' => 2]);
                 static::randomFillEvents($slot);
-                \App\Models\Calendar\Slot::create(['start' => $start->setTime(15, 0), 'end' => $end->setTime(17, 0), 'sc_doctor_id' => $id, 'created_by' => 1, 'sc_category_id' => 1]);
-                \App\Models\Calendar\Slot::create(['start' => $start->setTime(17, 0), 'end' => $end->setTime(20, 0), 'sc_doctor_id' => $id, 'created_by' => 1, 'sc_category_id' => 2]);
+                \App\Models\Calendar\Slot::create(['start' => $start->setTime(15, 0), 'end' => $end->setTime(17, 0), 'sc_doctor_id' => $id, 'created_by' => $created_by, 'sc_category_id' => 1]);
+                \App\Models\Calendar\Slot::create(['start' => $start->setTime(17, 0), 'end' => $end->setTime(20, 0), 'sc_doctor_id' => $id, 'created_by' => $created_by, 'sc_category_id' => 2]);
             }
             $current->addDay();
         }
@@ -102,7 +103,7 @@ class ScheduleModuleSeeder extends Seeder
             $end = clone $time;
             $end->addMinute($sub['duration']);
             $reason = '';
-            $status = static::getRandomStatus();
+            $status = ($time < $today) ? 'approved' : static::getRandomStatus();
             if($status == 'approved') {
             } else if($status == 'rejected') {
                 if(rand(0, 100) < 50) $reason = 'reject reason';
@@ -138,7 +139,7 @@ class ScheduleModuleSeeder extends Seeder
 
     public function getRandomStatus() {
         $status = ['rejected', 'canceled', 'pending'];
-        if(rand(0, 10) < 8) return 'approved';
+        if(rand(0, 10) < 9) return 'approved';
         return $status[rand(0,count($status)-1)];
     }
 

@@ -1,47 +1,16 @@
-
 import React, {Component,PropTypes} from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {browserHistory} from 'react-router';
 import {Grid, Row, Col} from 'react-flexbox-grid';
-
-//widget
 import Panel from '../widgets/Panel';
 import PageHeading from '../widgets/PageHeading';
-
-
-import DataTable from '../widgets/DataTable';
-
 import SemiDataTable from '../widgets/SemiDataTable';
 import {TableRowColumn} from 'material-ui/Table';
 import IconButton from 'material-ui/IconButton';
-
 import {ContentAdd,ContentCreate, ActionAutorenew,ActionDelete} from 'material-ui/svg-icons';
-import RaisedButton from 'material-ui/RaisedButton';
 import SemiButton from '../widgets/SemiButton';
-import {fullWhite} from 'material-ui/styles/colors';
-
 import api from '../../api';
-// import IconButton from 'material-ui/IconButton';
-// import {Table, TableBody, TableFooter, TableHeader, TableHeaderColumn, TableRow, TableRowColumn}
-//     from 'material-ui/Table';
-
-
-// import {BootstrapTable, TableHeaderColumn} from 'react-bootstrap-table';
-
-
-// import ReactPaginate from 'react-paginate';
-
-
-// Forms
-// import SemiText from '../forms/SemiText';
-// import SemiForm from '../forms/SemiForm';
-// import ErrorMessage from '../forms/ErrorMessage';
-
-// Formsy
-
-
-
 class UserPage extends Component {
     constructor(props) {
 
@@ -87,6 +56,19 @@ class UserPage extends Component {
         this.context.router.push("/users"+'/'+user_id)
     }
 
+    deleteUser = (user_id) => {
+        this.context.dialog.confirm('Are you sure?', 'Delete', (confirm)=> {
+            if (confirm) {
+                this.context.ajax.call('delete', `users/${user_id}`, null).then(response => {
+                    this.context.dialog.alert('User deleted', 'Success', 'success');
+                    // todo: refresh datatable
+                }).catch(error => {
+                    this.context.dialog.alert(error, 'Error');
+                });
+            }
+        });
+    };
+
     render() {
 
         console.log('this.state',this.state);
@@ -130,7 +112,12 @@ class UserPage extends Component {
                                             {
                                                 title: "ID",
                                                 key: "id",
+                                                style: {width: '10%'},
                                                 sortable: true
+                                            },
+                                            {
+                                                title: "Username",
+                                                key: "username"
                                             },
                                             {
                                                 title: "Email",
@@ -144,13 +131,14 @@ class UserPage extends Component {
                                             {
                                                 title: "Actions",
                                                 key: 'action',
+                                                style: {width: '10%'},
                                                 custom: (row,index,tbDataProps)=>{
                                                     return tbDataProps.editable ? (
                                                         <div>
                                                             <IconButton backgroundColor="#F00" onClick={this.editUser.bind(null, row.id)} >
                                                                 <ContentCreate />
                                                             </IconButton>
-                                                            <IconButton>
+                                                            <IconButton onClick={this.deleteUser.bind(null, row.id)}>
                                                                 <ActionDelete />
                                                             </IconButton>
                                                         </div>
@@ -159,7 +147,7 @@ class UserPage extends Component {
                                             }
                                         ],
                                         order: [{"column":"id","dir":"DESC"}],
-                                        limit: 4
+                                        limit: 10
                                     }}
                                     pagination={true}
                                     dataSourceResult="data"
@@ -182,7 +170,9 @@ UserPage.propTypes = {
     ])
 };
 UserPage.contextTypes = {
-    router: PropTypes.object.isRequired
+    router: PropTypes.object.isRequired,
+    ajax: PropTypes.object,
+    dialog: PropTypes.object
 };
 
 const mapStateToProps = ({ user }) => ({ user });

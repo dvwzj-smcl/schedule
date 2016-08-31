@@ -62,7 +62,8 @@ class SubcategoryController extends Controller
             $sub->delete();
             return BF::result(true, ['subcategory' => $sub]);
         } catch (\Illuminate\Database\QueryException $e){
-            return BF::result(false, 'Cannot delete this subcategory. There are appointments with this subcategory.');
+            if($e->getCode() == 23000) return BF::result(false, 'Cannot delete this subcategory. There are appointments with this subcategory.');
+            return BF::result(false, $e->getMessage());
         } catch (\Exception $e){
             return BF::result(false, $e->getMessage());
         }

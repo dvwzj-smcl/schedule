@@ -1,6 +1,6 @@
 import React, { PropTypes, Component } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
-import {fullWhite} from '../../../../../node_modules/material-ui/styles/colors';
+import {fullWhite, green500, lightGreen500} from '../../../../../node_modules/material-ui/styles/colors';
 import {browserHistory} from 'react-router';
 
 import {ContentAdd, ActionAutorenew, ActionDelete, HardwareKeyboardArrowRight, HardwareKeyboardArrowLeft} from 'material-ui/svg-icons';
@@ -24,7 +24,7 @@ class SemiButton extends Component{
         switch(semiType) {
             case 'add':
                 params.icon = <ContentAdd color={fullWhite} />;
-                params.backgroundColor = "#a4c639";
+                params.backgroundColor = green500;
                 params.labelColor=fullWhite;
                 break;
             case 'refresh':

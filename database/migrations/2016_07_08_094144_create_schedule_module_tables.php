@@ -15,7 +15,7 @@ class CreateScheduleModuleTables extends Migration
         Schema::create('sc_doctors', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('restrict');
+            $table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
             $table->string('color')->default('#ffffff');
             $table->text('data');
             $table->timestamps();

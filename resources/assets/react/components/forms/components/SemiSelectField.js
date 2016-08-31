@@ -31,7 +31,7 @@ class SemiSelectField extends SemiInputComponent{
         }else{
             currentValue = parseInt(item.props.value);
             this.refs.dropdown.handleRequestCloseMenu();
-            this.props.onChange&&this.props.onChange(currentValue, i);
+            this.props.onChange&&this.props.onChange(currentValue, index);
         }
         if(typeof currentValue=='object'&&this.props.required&&currentValue.length==0||currentValue==null) currentValue='';
         this.props.setValue(currentValue);

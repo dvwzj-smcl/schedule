@@ -2,8 +2,10 @@
 
 namespace App\Models\User;
 
+use App\Models\Calendar\Category;
 use Zizaco\Entrust\Traits\EntrustUserTrait;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use BF;
 
 class User extends Authenticatable
 {
@@ -78,6 +80,33 @@ class User extends Authenticatable
         })->join('roles', function($join) {
             $join->on('roles.id', '=', 'role_user.role_id')->where('roles.name', '=', 'sale');
         });
+    }
+
+    public function checkAndCreateDoctor()
+    {
+        if($this->hasRole('doctor')) {
+            // Create only not exist
+            if(Doctor::where('user_id', $this->id)->count() == 0) {
+                $doctorData = ['categories'=>[]];
+                $categories = Category::all();
+                foreach($categories as $cat) {
+                    $sub_categories = [];
+                    foreach ($cat->sub_categories as $sub) {
+                        $sub_categories[$sub->id] = [
+                            'category_id' => $cat->id,
+                            'sub_category_id' => $sub->id,
+                            'duration' => $sub->duration,
+                            'enable' => false,
+                        ];
+                    }
+                    $doctorData['categories'][$cat->id] = [
+                        'color' => $cat->color,
+                        'sub_categories' => $sub_categories
+                    ];
+                }
+                Doctor::create(['color' => BF::getRandomColor(), 'data' => json_encode($doctorData), 'user_id' => $this->id]);
+            }
+        }
     }
 
 }

@@ -72,7 +72,7 @@ class SemiCheckInput extends SemiInputComponent{
         // --- Icon Buttons
         let clearIcon = null;
         let minusWidth = 0;
-        if (currentValue && currentValue.length !== 0 && !this.props.disabled) {
+        if (currentValue && currentValue.length !== 0 && !this.props.disabled && this.props.showClear) {
             clearIcon = (
                 <IconButton className="btn-icon" onTouchTap={this.handleClear.bind(this)}>
                     <ClearIcon/>
@@ -109,6 +109,7 @@ class SemiCheckInput extends SemiInputComponent{
         }
 
         let checkboxItems = children ? children.map((item, i) => {
+            console.log('item', item);
             let checkbox = <Checkbox
                 disabled={this.props.disabled}
                 checkedIcon={multiple ? null : <RadioButtonChecked />}

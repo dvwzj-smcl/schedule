@@ -5,15 +5,10 @@ import ErrorMessage from '../../forms/ErrorMessage';
 import Toggle from 'material-ui/Toggle';
 
 class SemiToggleInput extends SemiInputComponent{
-    constructor(props) {
-        super(props);
-        this.toggleValue = props.value || props.defaultValue;
-        if(this.toggleValue === undefined) this.toggleValue = false;
-    }
     controlledValue = (props = this.props) => {
-        let value = (props.value || props.defaultValue);
-        let defaultValue = value ? value : false;
-        return defaultValue;
+        this.toggleValue = props.value || props.defaultValue;
+        if(!this.toggleValue) this.toggleValue = false;
+        return this.toggleValue;
     };
     handleToggle(event, value){
         // original
@@ -60,9 +55,11 @@ class SemiToggleInput extends SemiInputComponent{
 
         let width = (this.props.fullWidth ? `100%` : `auto`);
 
+        let containerStyle = this.props.containerStyle ? this.props.containerStyle : {marginTop: 48};
+
         return (
             <div>
-                <div style={{marginTop: 22}}>
+                <div style={containerStyle}>
                     <Toggle {...rest} toggled={toggled} onToggle={this.handleToggle.bind(this)} inputStyle={{cursor: this.props.disabled ? 'not-allowed' : null}} style={{width}} />
                 </div>
             </div>

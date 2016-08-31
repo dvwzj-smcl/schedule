@@ -137,6 +137,7 @@ class SemiForm extends Component {
             let data = this.state.data;
 
             let validators = formTemplate.validators;
+            let formSettings = formTemplate.settings;
             if (validators) {
                 // todo: validator & component
             }
@@ -210,6 +211,12 @@ class SemiForm extends Component {
                         };
 
                         let {type, ...rest} = Object.assign(defaultValues, item, overrideValues);
+
+                        // Set default visibility of X (clear button)
+                        let showClear = true; // default
+                        if (formSettings && formSettings.showClear !== undefined) showClear = formSettings.showClear; // override default
+                        if (rest.showClear !== undefined) showClear = rest.showClear; // override all
+                        rest.showClear = showClear;
 
                         switch (type) {
                             case 'text':

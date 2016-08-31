@@ -178,6 +178,18 @@ class ScheduleCalendar extends Component {
         });
     };
 
+    getEnableSubcategories = (sc_category_id) => {
+        let subcategories = this.doctors[this.props.params.doctor_id].categories[sc_category_id].sub_categories;
+        let enables = {};
+        for(let i in subcategories) {
+            let sub = subcategories[i];
+            if(sub.enable) enables[sub.sub_category_id] = sub;
+        }
+        console.log('enables', enables);
+        return enables;
+    };
+
+
     // --- Full Calendar Functions
 
     onDateChange = (date) => {
@@ -210,12 +222,12 @@ class ScheduleCalendar extends Component {
             let {id, sc_category_id} = slot;
             // console.log('this.doctors[this.props.params.doctor_id]', this.doctors);
             let data = {
-                sub_category_id: this.doctors[this.props.params.doctor_id].categories[sc_category_id].sub_categories
+                sub_category_id: this.getEnableSubcategories(sc_category_id)
             };
             let values = {
                 customer: {}, start: helper.toDate(date)
             };
-            // console.log('data', data, values);
+            console.log('data', data, values);
             this.setState({eventModal:{data, values}});
             this.refs.eventModal.open({sc_category_id, id});
         }

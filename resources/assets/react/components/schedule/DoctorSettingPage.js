@@ -5,15 +5,11 @@ import {Grid, Row, Col} from 'react-flexbox-grid';
 import Panel from '../widgets/Panel';
 import Loading from '../widgets/Loading';
 import {List, ListItem} from 'material-ui/List';
-import IconButton from 'material-ui/IconButton';
 import {ContentCreate, ContentInbox, ActionGrade, ContentSend, ContentDrafts, ActionInfo, ActionCancel, ActionDelete} from 'material-ui/svg-icons';
 import {ActionHome, ActionEvent, ActionEventSeat, ContentSave} from 'material-ui/svg-icons';
 import * as scheduleActions from '../../actions/scheduleActions';
 import SemiForm from '../forms/SemiForm';
 import SemiDataTable from '../widgets/SemiDataTable';
-import SemiButton from '../widgets/SemiButton';
-import SemiModal from '../widgets/SemiModal';
-import TextField from 'material-ui/TextField';
 
 import {HardwareKeyboardArrowRight, HardwareKeyboardArrowLeft} from 'material-ui/svg-icons';
 
@@ -53,7 +49,8 @@ class SchedulePage extends Component {
 
     saveColor = (data) => {
         console.log('save color', data);
-        this.context.ajax.call('put', `schedules/doctors/${this.props.params.doctor_id}`, null).then(response => {
+        this.context.ajax.call('put', `schedules/doctors/${this.props.params.doctor_id}`, data).then(response => {
+            this.context.dialog.alert('Data saved', 'Success', 'success');
             this.props.actions.init();
         }).catch(error => {
             this.context.dialog.alert(error, 'Error');
@@ -63,11 +60,12 @@ class SchedulePage extends Component {
     saveSubcategory = (data) => {
         console.log('save', data);
         // todo: JSON
-        // this.context.ajax.call('put', `schedules/doctors/${this.props.params.doctor_id}`, null).then(response => {
-        //     this.props.actions.init();
-        // }).catch(error => {
-        //     this.context.dialog.alert(error, 'Error');
-        // });
+        this.context.ajax.call('put', `schedules/doctors/${this.props.params.doctor_id}`, {data}).then(response => {
+            this.context.dialog.alert('Data saved', 'Success', 'success');
+            this.props.actions.init();
+        }).catch(error => {
+            this.context.dialog.alert(error, 'Error');
+        });
     };
 
     editSubcategory = (params) => {
@@ -75,7 +73,7 @@ class SchedulePage extends Component {
     };
 
     render() {
-        console.log('render: doctor setting page', this.state);
+        // console.log('render: doctor setting page', this.state);
         if(!this.initialized()) return <Loading />;
 
         let props = this.props;
@@ -112,46 +110,70 @@ class SchedulePage extends Component {
             };
         }
         
-        // --- Category Settings
-
-        let categorySettingForm = null;
-        if (category_id) {
-            let color = data.doctors[doctor_id].categories[category_id].color;
-            categorySettingForm = {
-                values: {color},
-                components: [
-                    [{type: 'color', name: 'color', label: 'Colors*', floatingLabelFixed: true, required: true}]
-                ]
-            };
-        }
-
-        let subcategoriesObj =  category_id ? data.doctors[doctor_id].categories[category_id].sub_categories : {};
-        
         // --- Subcategory Settings
 
-        let components = [];
-        let values = [];
-        // todo: move to helper
-        for(let i in subcategoriesObj) {
-            let item = subcategoriesObj[i];
-            let {name, category_id, sub_category_id, duration, enable} = item;
-            values[`enable-${sub_category_id}`] = enable;
-            values[`duration-${sub_category_id}`] = duration;
-            values[`category_id-${sub_category_id}`] = category_id;
-            values[`sub_category_id-${sub_category_id}`] = sub_category_id;
-            components.push([
-                {type: 'string', value: `${name}`, required: true},
-                {type: 'toggle', label: 'Enable', name: `enable-${sub_category_id}`},
-                {type: 'slider', label: 'Duration', name: `duration-${sub_category_id}`, showValue:true, step:10, min: 10, max: 120, required: true},
-                {type: 'hidden', name: `category_id-${sub_category_id}`},
-                {type: 'hidden', name: `sub_category_id-${sub_category_id}`}
-            ]);
+        let components = [
+            [{type: 'color', name: 'color', label: 'Colors*', floatingLabelFixed: true, required: true}],
+            [{type: 'hidden', name: `category_id`}]
+        ];
+
+        let subcategoryForm = null;
+        if(category_id) {
+            let doctorSubcats = category_id ? data.doctors[doctor_id].categories[category_id].sub_categories : {},
+                subcats = data.categories[category_id].sub_categories;
+
+            let color = data.doctors[doctor_id].categories[category_id].color;
+            let values = {color, category_id};
+            for(let index in subcats){
+                let i = subcats[index].id;
+                let name, category_id, sub_category_id, duration, enable;
+                if(doctorSubcats[i]) {
+                    let item = doctorSubcats[i];
+                    name = item.name;
+                    duration = item.duration;
+                    category_id = item.category_id;
+                    sub_category_id = item.sub_category_id;
+                    enable = item.enable;
+                } else {
+                    let item = subcats[index];
+                    name = item.name;
+                    duration = item.duration;
+                    category_id = item.sc_category_id;
+                    sub_category_id = item.id;
+                    enable = false;
+                }
+                values[`enable-${sub_category_id}`] = enable;
+                values[`duration-${sub_category_id}`] = duration;
+                values[`category_id-${sub_category_id}`] = category_id;
+                values[`sub_category_id-${sub_category_id}`] = sub_category_id;
+                components.push([
+                    {type: 'string', value: `${name}`, required: true},
+                    {type: 'toggle', label: 'Enable', name: `enable-${sub_category_id}`, fullWidth: false},
+                    {type: 'slider', label: 'Duration', name: `duration-${sub_category_id}`, showValue:true, step:10, min: 10, max: 180, required: true},
+                    {type: 'hidden', name: `category_id-${sub_category_id}`},
+                    {type: 'hidden', name: `sub_category_id-${sub_category_id}`}
+                ]);
+            }
+            // for(let i in doctorSubcats) {
+            //     let item = doctorSubcats[i];
+            //     let {name, category_id, sub_category_id, duration, enable} = item;
+            //     values[`enable-${sub_category_id}`] = enable;
+            //     values[`duration-${sub_category_id}`] = duration;
+            //     values[`category_id-${sub_category_id}`] = category_id;
+            //     values[`sub_category_id-${sub_category_id}`] = sub_category_id;
+            //     components.push([
+            //         {type: 'string', value: `${name}`, required: true},
+            //         {type: 'toggle', label: 'Enable', name: `enable-${sub_category_id}`, fullWidth: false},
+            //         {type: 'slider', label: 'Duration', name: `duration-${sub_category_id}`, showValue:true, step:10, min: 10, max: 180, required: true},
+            //         {type: 'hidden', name: `category_id-${sub_category_id}`},
+            //         {type: 'hidden', name: `sub_category_id-${sub_category_id}`}
+            //     ]);
+            // }
+            subcategoryForm = {
+                values: values,
+                components: components
+            };
         }
-        let subcategoryForm = {
-            values: values,
-            components: components
-        };
-        console.log('subcategoryForm', subcategoryForm);
 
         return (
             <Row>
@@ -162,7 +184,6 @@ class SchedulePage extends Component {
                         </div>
                     </Panel>
                 </Col>
-
                 <Col md={9}>
                 {!doctor_id ? null : (
                     <Row>
@@ -172,19 +193,12 @@ class SchedulePage extends Component {
                                     <SemiForm buttonRight formTemplate={doctorSettingForm} onSubmit={this.saveColor} submitLabel="Save"/>
                                 </div>
                             </Panel>
-                            {!category_id ? null : (
-                                <Panel title="Cagegory" type="secondary">
-                                    <div className="semicon">
-                                        <SemiForm buttonRight formTemplate={categorySettingForm} onSubmit={this.saveColor} submitLabel="Save"/>
-                                    </div>
-                                </Panel>
-                            )}
                         </Col>
                         <Col md={8}>
                             {!category_id ? null : (
-                                <Panel title="Subcategories" type="secondary">
+                                <Panel title="Category" type="secondary">
                                     <div className="semicon">
-                                        <SemiForm buttonRight formTemplate={subcategoryForm} onSubmit={this.saveSubcategory}/>
+                                        <SemiForm buttonRight formTemplate={subcategoryForm} onSubmit={this.saveSubcategory} submitLabel="Save"/>
                                     </div>
                                 </Panel>
                             )}

@@ -46,7 +46,6 @@ class SettingPage extends Component {
         let {doctors} = props.schedule.data;
         let params = props.params;
         let settingType = this.props.location.pathname.split('/')[2];
-        console.log(props.schedule.data);
         return (
             <div>
                 <PageHeading title="Settings" description="Set colors and durations" />

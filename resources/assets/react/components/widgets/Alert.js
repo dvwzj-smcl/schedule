@@ -9,6 +9,7 @@ class Alert extends Component {
         this.state = {
             open: props.open || false,
             title: props.title? props.title : 'Alert',
+            type: props.type || 'error',
             description: props.description? props.description : 'Something happened!'
         };
         this.close = this.close.bind(this);
@@ -19,8 +20,8 @@ class Alert extends Component {
         this.setState({ open: false });
     }
 
-    open([description, title]){
-        this.setState({ open: true, description, title });
+    open([description, title, type]){
+        this.setState({ open: true, description, title, type});
     }
 
     render() {
@@ -33,10 +34,13 @@ class Alert extends Component {
                 onTouchTap={this.close}
             />
         ];
+        let color = '#C62828';
+        if(state.type == 'success') color = '#43A047';
+        if(state.type == 'warning') color = '#EF6C00';
         return (
             <Dialog
                 style={{zIndex: 99999}}
-                titleStyle={{ backgroundColor: '#C62828', color: '#FFFFFF' }}
+                titleStyle={{ backgroundColor: color, color: '#FFFFFF' }}
                 title={state.title}
                 actions={actions}
                 modal={false}

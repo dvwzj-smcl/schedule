@@ -141,7 +141,7 @@ class CategorySettingPage extends Component {
                 components: [
                     [
                         {type: 'text', name: 'name', label: 'Name*', required: true},
-                        {type: 'text', name: 'duration', label: 'Duration*', required: true},
+                        {type: 'slider', name: 'duration', label: 'Duration* (minutes)', required: true, showValue:true, step:10, min: 10, max: 180, required: true},
                         {type: 'hidden', name: 'id'}
                     ]
                 ]

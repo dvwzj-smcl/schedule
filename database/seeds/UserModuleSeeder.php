@@ -62,20 +62,35 @@ class UserModuleSeeder extends Seeder
         $perms['view-branches'] = \App\Models\User\Permission::create(['name'=>'view-branches', 'display_name'=>'View Branches', 'description'=>'']);
         $perms['edit-branches'] = \App\Models\User\Permission::create(['name'=>'edit-branches', 'display_name'=>'Edit Branches', 'description'=>'']);
 
+        // slot page
+        $perms['view-slot'] = \App\Models\User\Permission::create(['name'=>'view-slot', 'display_name'=>'View Slot', 'description'=>'']);
+        $perms['edit-slot'] = \App\Models\User\Permission::create(['name'=>'edit-slot', 'display_name'=>'Edit Slot', 'description'=>'']);
+
+        // summary
         $perms['view-schedules'] = \App\Models\User\Permission::create(['name'=>'view-schedules', 'display_name'=>'View Schedules', 'description'=>'']);
+        // organizer' schedule
         $perms['organize-schedules'] = \App\Models\User\Permission::create(['name'=>'organize-schedules', 'display_name'=>'Edit Schedules', 'description'=>'']);
-        $perms['edit-schedules'] = \App\Models\User\Permission::create(['name'=>'edit-schedules', 'display_name'=>'Edit Schedules', 'description'=>'']);
+        // sale' schedule
         $perms['request-schedules'] = \App\Models\User\Permission::create(['name'=>'request-schedules', 'display_name'=>'Request Schedules', 'description'=>'']);
+        // settings
+        $perms['schedule-settings'] = \App\Models\User\Permission::create(['name'=>'schedule-settings', 'display_name'=>'Schedules Settings', 'description'=>'']);
 
         $role_admin->attachPermission($perms['view-users']);
         $role_admin->attachPermission($perms['edit-users']);
         $role_admin->attachPermission($perms['view-roles']);
         $role_admin->attachPermission($perms['edit-roles']);
+        $role_admin->attachPermission($perms['view-branches']);
+        $role_admin->attachPermission($perms['edit-branches']);
 
         $role_doctor->attachPermission($perms['view-schedules']);
+
         $role_organizer->attachPermission($perms['organize-schedules']);
-        $role_organizer->attachPermission($perms['edit-schedules']);
-        $role_organizer->attachPermission($perms['request-schedules']);
+        $role_organizer->attachPermission($perms['view-schedules']);
+        $role_organizer->attachPermission($perms['schedule-settings']);
+        $role_organizer->attachPermission($perms['view-slot']);
+        $role_organizer->attachPermission($perms['edit-slot']);
+
+        $role_sale->attachPermission($perms['view-schedules']);
         $role_sale->attachPermission($perms['request-schedules']);
     }
 }

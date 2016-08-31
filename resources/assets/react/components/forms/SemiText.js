@@ -31,11 +31,20 @@ class SemiText extends Component{
         if (this.props.onChange) this.props.onChange(event);
     };
 
+    // ---- For validate on press enter
+    // handleKeyDown = (event) => {
+    //     console.log('456', event.currentTarget.value, keycode(event));
+    //     let value = event.currentTarget.value;
+    //     if (keycode(event) === 'backspace' && value.length === 1) this.props.setValue(''); // trick
+    //     if (keycode(event) === 'enter') this.props.setValue(value);
+    //     if (this.props.onKeyDown) this.props.onKeyDown(event, value);
+    // };
+
     // For example only. Formsy already has form.reset method. See SemiForm.resetForm
     reset = () => {
         this.props.setValue(this.controlledValue());
     };
-    
+
     handleClear = () => {
         this.props.setValue('');
     };
@@ -85,6 +94,9 @@ class SemiText extends Component{
                     errorText={this.props.getErrorMessage()}
                     onBlur={this.handleBlur}
                     onChange={this.handleChange}
+                    // onFocus={onFocus}
+                    // onKeyDown={this.handleKeyDown} // for validate on press enter
+                    ref={this.setMuiComponentAndMaybeFocus}
                     value={currentValue}
                 />
                 {clearIcon}

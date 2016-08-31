@@ -69,10 +69,15 @@ class EventController extends Controller
             if($subcat == null) throw new \Exception('Invalid subcategory');
             if($subcat->sc_category_id !== $slot->sc_category_id) throw new \Exception('Invalid category');
 
+            // get duration
+            $data = json_decode(Doctor::find($slot->sc_doctor_id)->data, true);
+            $duration = $data['categories'][$subcat->sc_category_id]['sub_categories'][$subcat->id]['duration'];
+            if(empty($duration)) $duration = $subcat->duration;
+
             // set time
             $start = Carbon::parse($event['start'], 'UTC')->setTimezone('Asia/Bangkok');
             //$end = clone $start; $end->addMinutes($subcat->duration);
-            $end = $start->copy()->addMinutes($subcat->duration);
+            $end = $start->copy()->addMinutes($duration);
             $event['start'] = $start;
             $event['end'] = $end;
 

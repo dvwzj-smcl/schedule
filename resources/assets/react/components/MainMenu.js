@@ -18,7 +18,7 @@ const menus = [
         text: "Sale's Schedule",
         icon: <ActionEvent />,
         to: "/schedules/sale",
-        permissions : ['organize-schedules']
+        permissions : ['request-schedules']
     },
     {
         text: "Organizer's Schedule",
@@ -30,49 +30,53 @@ const menus = [
         text: "Schedule Summary",
         icon: <ActionDateRange />,
         to: "/schedules/summary",
-        permissions : ['organize-schedules']
+        permissions : ['view-schedules']
     },
     {
         text: "Doctor's Slots",
         icon: <ActionDashboard />,
         to: "/slots",
-        permissions : ['organize-schedules']
+        permissions : ['edit-slot']
     },
     {
         text: "Settings",
         icon: <ActionSettings />,
         to: "/settings/doctors",
-        permissions : ['organize-schedules']
+        parentPath: '/settings',
+        permissions : ['schedule-settings']
     },
     {
         text: "Customers",
         icon: <ActionAccessibility />,
         to: "/customers",
-        permissions : ['organize-schedules']
+        permissions : ['edit-customers']
     },
     {
         text: "Users",
         icon: <SocialPerson />,
-        to: "/users"
+        to: "/users",
+        permissions : ['edit-users']
     },
     {
         text: "FormDemo",
         icon: <ActionPermContactCalendar />,
-        to: "/form",
-        permissions : ['organize-schedules']
+        to: "/form"
     },
     {
         text: "DataTableDemo",
         icon: <ActionPermContactCalendar />,
-        to: "/datatable",
-        permissions : ['organize-schedules']
+        to: "/datatable"
     }
 ];
 
-const menuFilter = (menu, permissions) => {
+const menuFilter = (required, permissions) => {
     // todo : filter here
-    // console.log('menu', menu, permissions);
-    return true;
+    // console.log('menu', required, permissions);
+    if(!required) return true;
+    for(let item of required) {
+        if(permissions.indexOf(item) !== -1) return true;
+    }
+    return false;
 };
 
 class MainMenu extends Component {
@@ -86,8 +90,12 @@ class MainMenu extends Component {
         return this.context.router.push(pathname);
     }
 
-    isActiveMenu(pathname) {
-        return this.props.location.pathname == pathname;
+    isActiveMenu(menuPath, parentPath) {
+        // console.log('props.location.pathname', this.props.location.pathname, pathname);
+        if(menuPath == '/') return false;
+        let currentPath = this.props.location.pathname;
+        let path = parentPath || menuPath;
+        return currentPath.indexOf(path) !== -1;
     }
 
     render() {
@@ -104,7 +112,7 @@ class MainMenu extends Component {
                         primaryText={props.app.sidebar.expanded ? menuItem.text : "\u00a0"}
                         leftIcon={menuItem.icon}
                         onTouchTap={this.linkTo.bind(null, menuItem.to)}
-                        style={this.isActiveMenu(menuItem.to)?{backgroundColor: 'rgba(0,0,0,0.2)'}:null}/>
+                        style={this.isActiveMenu(menuItem.to, menuItem.parentPath)?{backgroundColor: 'rgba(0,0,0,0.2)'}:null}/>
                 );
             })}
         </Menu>);

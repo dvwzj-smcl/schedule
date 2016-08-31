@@ -46,6 +46,7 @@ class LoginPage extends Component {
         let formTemplate = {
             data: {},
             values: {username: 'organizer1', password: 'asdfasdf'},
+            settings: {showClear: false},
             // values: {username: 'sale1', password: 'asdfasdf'},
             components: [
                 [{type: 'text', name: 'username', label: 'Username', required: true, hint: 'your username or email', validations:'isAlphanumeric'}],

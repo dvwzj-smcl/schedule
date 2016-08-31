@@ -45,10 +45,17 @@ class UserModal extends Component {
         let userId = this.props.params.id;
         let url = userId ? `users/${userId}` : 'users';
         let method = userId ? 'put' : 'post';
+        let SuccessMessage = userId ? 'User Updated' : 'User Created';
 
         // todo
         // must return a promise
-        return ajax.call(method, url, data);
+        return ajax.call(method, url, data).then( response => {
+            this.context.dialog.alert(SuccessMessage, 'Success', 'success');
+            return response;
+        }).catch( error => {
+            this.context.dialog.alert(error, 'Error');
+            throw error;
+        });
     }
 
 
@@ -80,18 +87,18 @@ class UserModal extends Component {
 
         let formTemplate = {
             data: {branch_id: data.branches, roles: data.roles},
-            // values: this.state.values,
-            values: {
-                username: 'user1',
-                email: 'admin@localhost.com',
-                password: 'password555',
-                passwordConfirm: 'password555',
-                branch_id: 1,
-                name: 'test name',
-                phone: '1234',
-                phone_2: '1',
-                roles: [1]
-            },
+            values: this.state.values,
+            // values: {
+            //     username: 'user1',
+            //     email: 'admin@localhost.com',
+            //     password: 'password555',
+            //     passwordConfirm: 'password555',
+            //     branch_id: 1,
+            //     name: 'test name',
+            //     phone: '1234',
+            //     phone_2: '1',
+            //     roles: [1]
+            // },
             components: [
                 [
                     {type: 'text', name: 'username', label: 'Username*', required: true},

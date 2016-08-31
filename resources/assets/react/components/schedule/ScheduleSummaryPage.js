@@ -225,18 +225,6 @@ class SlotPage extends Component {
             ]
         };
 
-        // --- Colors
-        let colorList = [];
-        if (props.schedule.data) {
-            // todo
-            let {doctors} = props.schedule.data;
-            this.colorList = [];
-            for (let i in doctors) {
-                let {color, user, id} = doctors[i];
-                colorList.push(<Checkbox key={i} name={id} onCheck={this.onCheck} label={user.name} checked={true} iconStyle={{fill: color}} labelStyle={{color: color}}/>);
-            }
-        }
-
         // --- Calendar
 
         let calendarSettings = {
@@ -248,6 +236,36 @@ class SlotPage extends Component {
             defaultDate: props.params.date, // gotoDate on first load
             onDateChange: this.onDateChange,
             events: this.fetchEventSource
+        };
+        
+        // --- Colors
+
+        // todo: use this example
+        let colorComponents = [];
+        if (props.schedule.data) {
+            let {doctors} = props.schedule.data;
+            this.colorComponents = [];
+            for (let i in doctors) {
+                let {color, user, id} = doctors[i];
+                colorComponents.push(<Checkbox key={i} name={id} onCheck={this.onCheck} label={user.name} checked={true} iconStyle={{fill: color}} labelStyle={{color: color}}/>);
+            }
+        }
+
+        // todo: add color to checkboxes
+        let colorList = [];
+        if (props.schedule.data) {
+            let {doctors} = props.schedule.data;
+            this.colorList = [];
+            for (let i in doctors) {
+                let {color, id, user:{name}} = doctors[i];
+                colorList.push({id, name, color});
+            }
+        }
+
+        let filterForm = {
+            components: [
+                [{type: 'checkbox', name: 'test_checkbox2', options: colorList, showClear: false}]
+            ]
         };
 
         return (
@@ -264,7 +282,8 @@ class SlotPage extends Component {
                             </Panel>
                             <Panel title="Show" type="secondary">
                                 <div className="semicon">
-                                    {colorList}
+                                    {colorComponents}
+                                    <SemiForm noSubmitButton formTemplate={filterForm} />
                                 </div>
                             </Panel>
                         </Col>

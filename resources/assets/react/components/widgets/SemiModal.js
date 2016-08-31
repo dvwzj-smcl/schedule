@@ -45,7 +45,6 @@ class SemiModal extends Component {
 
     onSubmit = (data, ajax) => {
         if(typeof ajax === 'function') return; // unknown bug fix, try removing this and console.log(ajax) to see the bug
-        console.log('123', 123);
         if(this.props.onSubmit) {
             let promise = this.props.onSubmit(Object.assign({}, data, this.state.externalData), ajax);
             if(promise) {
