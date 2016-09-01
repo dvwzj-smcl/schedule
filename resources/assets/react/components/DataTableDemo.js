@@ -1,5 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import api from '../api';
+
+import {Grid, Row, Col} from 'react-flexbox-grid';
+import Panel from './widgets/Panel';
+import PageHeading from './widgets/PageHeading';
 import SemiDataTable from './widgets/SemiDataTable';
 
 const data = [
@@ -49,36 +53,59 @@ class DataTableDemo extends Component {
     render() {
         return (
             <div>
-                <SemiDataTable settings={{
-                    table:{
-                        selectable: false
-                    },
-                    header:{
-                        displaySelectAll: false,
-                        enableSelectAll: false,
-                        adjustForCheckbox: false
-                    },
-                    body:{
-                        displayRowCheckbox: false
-                    },
-                    fields:[
-                        {
-                            title: "Name",
-                            key: "name",
-                            custom: (row,index)=>row.user.name
-                        },
-                        {
-                            title: "Email",
-                            tooltip: "Email (tooltip)",
-                            key: "email",
-                            custom: (row,index)=>row.user.email
-                        }
-                    ],
-                    limit: 1
-                }}
-                pagination={true}
-                dataSourceResult="doctors"
-                dataSource={api.baseUrl("calendar/doctors")} />
+                <PageHeading title="Request" description="description" />
+                <Grid fluid className="content-wrap">
+                    <Row>
+                        <Col md={9}>
+                            <Panel title="SemiDataTable">
+                                <div className="con-pad">
+                                    <SemiDataTable
+                                        settings={{
+                                            table:{
+                                                selectable: false
+                                            },
+                                            header:{
+                                                displaySelectAll: false,
+                                                enableSelectAll: false,
+                                                adjustForCheckbox: false
+                                            },
+                                            body:{
+                                                displayRowCheckbox: false
+                                            },
+                                            fields:[
+                                                {
+                                                    title: "HN",
+                                                    key: "hn",
+                                                    sortable: true,
+                                                    filterable: true,
+                                                    width: '100px'
+                                                },
+                                                {
+                                                    title: "First Name",
+                                                    key: "first_name",
+                                                    sortable: true,
+                                                    filterable: true
+                                                },
+                                                {
+                                                    title: "Last Name",
+                                                    key: "last_name",
+                                                    sortable: true,
+                                                    filterable: true
+                                                }
+                                            ],
+                                            limit: 10
+                                        }}
+                                        pagination={true}
+                                        dataSourceResult="data"
+                                        dataSourceMap={{data: 'tbData', total: 'recordsTotal'}}
+                                        dataSource="schedules/customers" />
+                                </div>
+                            </Panel>
+                        </Col>
+                        <Col md={3}>
+                        </Col>
+                    </Row>
+                </Grid>
             </div>
         );
     }

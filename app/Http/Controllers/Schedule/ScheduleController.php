@@ -264,6 +264,7 @@ class ScheduleController extends Controller
             'contact'
         ];
         $sql = Customer::select($cols);
+        \DB::enableQueryLog();
         if (Input::has('order')) {
             foreach (json_decode(Input::get('order')) as $order) {
                 $sql->orderBy($order->column, $order->dir);
@@ -281,7 +282,7 @@ class ScheduleController extends Controller
 
         try {
             $count = $sql->count();
-            $data = $sql->skip(Input::get('start'))->take(Input::get('length'))->get();
+            $data = Input::has('length')&&Input::get('length')!=0 ? $sql->skip(Input::get('start'))->take(Input::get('length'))->get() : $sql->get();
             $test = array_map(function($customer){
                 $customer['boolean'] = true;
                 return $customer;
@@ -290,6 +291,8 @@ class ScheduleController extends Controller
         } catch (\Illuminate\Database\QueryException $e) {
             return BF::result(false, $e->getMessage());
         }
+
+        //dd(\DB::getQueryLog());
 
         return BF::result(true, $result, '[schedule] get customers');
 
