@@ -140,8 +140,8 @@ class SemiColorPicker extends SemiInputComponent{
                         modal={false}
                         open={this.state.openModal}
                         onRequestClose={this.handleClose}>
-                    <TextField id="colorPicker" style={{width: 320}} disabled value={this.state.color ? this.state.color: ''} />
-                    <Paper style={{width: 320, height: 30, marginBottom: 30, backgroundColor: this.state.color ? this.state.color: '#fff'}} zDepth={2}></Paper>
+                    <TextField id="colorPicker" style={{width: '320px'}} disabled value={this.state.color ? this.state.color: ''} />
+                    <Paper style={{width: '320px', height: '30px', marginBottom: '30px', backgroundColor: this.state.color ? this.state.color: '#fff'}} zDepth={2}></Paper>
                     <SwatchesPicker onChange={this.handleColorChange} />
                 </Dialog>
             </div>

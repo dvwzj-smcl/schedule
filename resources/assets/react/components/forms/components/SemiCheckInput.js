@@ -10,6 +10,7 @@ import IconButton from 'material-ui/IconButton/IconButton';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
 import RadioButtonChecked from 'material-ui/svg-icons/toggle/radio-button-checked';
 import RadioButtonUnchecked from 'material-ui/svg-icons/toggle/radio-button-unchecked';
+import Avatar from 'material-ui/Avatar';
 
 class SemiCheckInput extends SemiInputComponent{
     controlledValue = (props = this.props) => {
@@ -84,7 +85,8 @@ class SemiCheckInput extends SemiInputComponent{
         if(typeof options === 'object') { // object or array only
             for(let i in options) {
                 let id = options[i].id ? parseInt(options[i].id) : parseInt(i);
-                items.push(<ListItem value={id} key={id} primaryText={options[i].name}/>);
+                let color = options[i].color || null;
+                items.push(<ListItem value={id} key={id} primaryText={options[i].name} color={color} />);
             }
         }
 
@@ -111,15 +113,17 @@ class SemiCheckInput extends SemiInputComponent{
         let checkboxItems = children ? children.map((item, i) => {
             console.log('item', item);
             let checkbox = <Checkbox
+                iconStyle={{fill: item.props.color || null}}
                 disabled={this.props.disabled}
                 checkedIcon={multiple ? null : <RadioButtonChecked />}
                 uncheckedIcon={multiple ? null : <RadioButtonUnchecked />}
                 checked={(valueIsObject ? currentValue.map(v=>parseInt(v,10)).indexOf(parseInt(item.props.value,10)) >= 0 : parseInt(currentValue,10)==parseInt(item.props.value,10))}
                 onCheck={this.handleCheck.bind(this, item, i)} />;
+            let style = Object.assign({}, {color: item.props.color, cursor: this.props.disabled ? 'not-allowed' : null});
             return React.cloneElement(item, {
                 leftCheckbox: labelPosition=='right' ? null : checkbox,
                 rightToggle: labelPosition=='right' ? checkbox : null,
-                style: {cursor: this.props.disabled ? 'not-allowed' : null}
+                style
             });
         }) : null;
 

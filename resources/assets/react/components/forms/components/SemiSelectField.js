@@ -162,7 +162,7 @@ class SemiSelectField extends SemiInputComponent{
                     underlineFocusStyle={underlineFocusStyle}
                     >
                     <div style={{width: "100%"}}>
-                        <div style={{position:"absolute", bottom: floatingLabelFixed ? 26 : 12, left:0, width: "100%", overflow:"hidden" }}>{labels.join(", ")}</div>
+                        <div style={{position:"absolute", bottom: floatingLabelFixed ? '26px' : '12px', left:0, width: "100%", overflow:"hidden" }}>{labels.join(", ")}</div>
                         <DropDownMenu
                             ref="dropdown"
                             disabled={disabled}
