@@ -264,7 +264,6 @@ class ScheduleController extends Controller
             'contact'
         ];
         $sql = Customer::select($cols);
-        \DB::enableQueryLog();
         if (Input::has('order')) {
             foreach (json_decode(Input::get('order')) as $order) {
                 $sql->orderBy($order->column, $order->dir);
@@ -295,6 +294,43 @@ class ScheduleController extends Controller
         //dd(\DB::getQueryLog());
 
         return BF::result(true, $result, '[schedule] get customers');
+
+    }
+
+    public function getCustomerEvents($customer_id){
+        $cols = [
+            'id',
+            'start',
+            'end'
+        ];
+        $sql = Event::select($cols)->with('sale');
+        $sql->where('sc_customer_id', '=', $customer_id);
+        if (Input::has('order')) {
+            foreach (json_decode(Input::get('order')) as $order) {
+                $sql->orderBy($order->column, $order->dir);
+            }
+        }
+        if (Input::has('columns')) {
+            foreach (json_decode(Input::get('columns')) as $col) {
+                $column = $col->data;
+                $val = $col->search;
+                if (in_array($column, $cols) && ($val != '')) {
+                    $sql->where($column, 'LIKE', '%' . $val . '%');
+                }
+            }
+        }
+
+        try {
+            $count = $sql->count();
+            $data = Input::has('length')&&Input::get('length')!=0 ? $sql->skip(Input::get('start'))->take(Input::get('length'))->get() : $sql->get();
+            $result = BF::dataTable($data, $count, $count, false);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return BF::result(false, $e->getMessage());
+        }
+
+        //dd(\DB::getQueryLog());
+
+        return BF::result(true, $result, '[schedule] get customer events');
 
     }
 }

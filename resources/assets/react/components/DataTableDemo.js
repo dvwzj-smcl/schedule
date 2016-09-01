@@ -91,6 +91,10 @@ class DataTableDemo extends Component {
                                                     key: "last_name",
                                                     sortable: true,
                                                     filterable: true
+                                                },
+                                                {
+                                                    title: "Bool",
+                                                    key: "boolean"
                                                 }
                                             ],
                                             limit: 10

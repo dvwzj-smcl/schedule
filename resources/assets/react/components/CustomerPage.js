@@ -14,7 +14,8 @@ class CustomerPage extends Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
-            customer: null
+            customer: null,
+            events: null
         };
         this.showModal = this.showModal.bind(this);
         this.handleModalClose = this.handleModalClose.bind(this);
@@ -30,11 +31,20 @@ class CustomerPage extends Component {
         //this.context.modal
         //this.refs.modal.open();
         this.setState({customer});
+        /*
         this.context.router.push({pathname: `/customers/${customer.id}`});
         this.refs.modal.open();
+        */
+        this.context.ajax.call("get", `schedules/customer-events/${customer.id}`, null).then((res)=>{
+            this.setState({events: res.data.tbData});
+            this.context.router.push({pathname: `/customers/${customer.id}`});
+            this.refs.modal.open();
+        }).catch((err)=>{
+            console.log('err', err);
+        });
     }
     handleModalClose(){
-        this.setState({customer: null});
+        this.setState({customer: null, events: null});
         //let {query} = this.props.location;
         //this.context.router.push({pathname: `customers`, query});
         this.context.router.go(-1);
@@ -57,33 +67,59 @@ class CustomerPage extends Component {
             }
         }).filter((row)=>row.field) : null;
         let modalTable = customer ? (
-            <SemiDataTable
-                settings={{
-                    table:{
-                        selectable: false
-                    },
-                    header:{
-                        displaySelectAll: false,
-                        enableSelectAll: false,
-                        adjustForCheckbox: false
-                    },
-                    body:{
-                        displayRowCheckbox: false
-                    },
-                    fields:[
-                        {
-                            title: 'Field',
-                            key: 'field',
-                            style: {width: '20%'}
+            <div>
+                <SemiDataTable
+                    settings={{
+                        table:{
+                            selectable: false
                         },
-                        {
-                            title: 'Value',
-                            key: 'value'
-                        }
-                    ]
-                }}
-                pathname={`customers/${customer.id}`}
-                dataSource={customerProfile} />
+                        header:{
+                            displaySelectAll: false,
+                            enableSelectAll: false,
+                            adjustForCheckbox: false
+                        },
+                        body:{
+                            displayRowCheckbox: false
+                        },
+                        fields:[
+                            {
+                                title: 'Field',
+                                key: 'field',
+                                width: '20%'
+                            },
+                            {
+                                title: 'Value',
+                                key: 'value'
+                            }
+                        ]
+                    }}
+                    dataSource={customerProfile} />
+                <SemiDataTable
+                    settings={{
+                        table:{
+                            selectable: false
+                        },
+                        header:{
+                            displaySelectAll: false,
+                                enableSelectAll: false,
+                                adjustForCheckbox: false
+                        },
+                        body:{
+                            displayRowCheckbox: false
+                        },
+                        fields:[
+                            {
+                                title: 'Start',
+                                key: 'start'
+                            },
+                            {
+                                title: 'End',
+                                key: 'end'
+                            }
+                        ]
+                    }}
+                dataSource={this.state.events} />
+            </div>
         ) : null;
         return (
             <div>
@@ -113,20 +149,25 @@ class CustomerPage extends Component {
                                                     title: 'ID',
                                                     key: 'id',
                                                     sortable: true,
-                                                    style: {width: '10%'}
+                                                    filterable: true,
+                                                    width: '10%'
                                                 },
                                                 {
-                                                    title: 'Name',
-                                                    key: ['first_name','last_name'],
+                                                    title: 'First Name',
+                                                    key: 'first_name',
                                                     sortable: true,
-                                                    custom: (row)=>{
-                                                        return row.first_name+' '+row.last_name;
-                                                    }
+                                                    filterable: true,
+                                                },
+                                                {
+                                                    title: 'Last Name',
+                                                    key: 'last_name',
+                                                    sortable: true,
+                                                    filterable: true,
                                                 },
                                                 {
                                                     title: 'Actions',
                                                     key: 'actions',
-                                                    style: {width: '10%'},
+                                                    width: '10%',
                                                     custom: (row)=>{
                                                         return (
                                                             <IconButton onTouchTap={this.showModal.bind(null, row)}>
@@ -135,15 +176,13 @@ class CustomerPage extends Component {
                                                         );
                                                     }
                                                 }
-                                            ]
+                                            ],
+                                            limit: 10
                                         }}
-                                        pathname="customers"
-                                        location={this.props.location}
                                         pagination={true}
-                                        limit={10}
                                         dataSourceResult="data"
                                         dataSourceMap={{data: 'tbData', total: 'recordsTotal'}}
-                                        dataSource={api.baseUrl('schedules/customers')}
+                                        dataSource="schedules/customers"
                                         />
                                 </div>
                             </Panel>
@@ -160,7 +199,8 @@ class CustomerPage extends Component {
 
 CustomerPage.propTypes = {};
 CustomerPage.contextTypes = {
-    router: PropTypes.object.isRequired
+    router: PropTypes.object.isRequired,
+    ajax: PropTypes.object,
 };
 
 function mapStateToProps(state) {

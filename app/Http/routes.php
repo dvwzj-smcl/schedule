@@ -51,6 +51,7 @@ Route::group(['prefix' => 'api', 'middleware' => ['jwt.auth'/*,'permission'*/]],
         
         // Customer
         Route::get('customers', 'Schedule\ScheduleController@getCustomers');
+        Route::get('customer-events/{customer_id}', 'Schedule\ScheduleController@getCustomerEvents');
 
         // Dashboard
         Route::get('tasks', 'Schedule\ScheduleController@getTasks');

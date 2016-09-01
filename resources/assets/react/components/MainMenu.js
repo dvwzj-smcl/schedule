@@ -76,7 +76,7 @@ const menuFilter = (required, permissions) => {
     for(let item of required) {
         if(permissions.indexOf(item) !== -1) return true;
     }
-    return false;
+    return true;
 };
 
 class MainMenu extends Component {

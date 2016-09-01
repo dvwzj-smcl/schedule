@@ -45,16 +45,17 @@ class SemiDataTable extends Component {
             columns: null,
             editable: false
         };
+        this.lastDir = 'asc';
         this.handleChangePage = this.handleChangePage.bind(this);
         this.sort = this.sort.bind(this);
         this.filter = this.filter.bind(this);
     }
-    componentDidMount(){
+    componentWillMount(){
         //var loading = setInterval(()=>{
             //console.log('loaded', this.loaded);
             //if(this.loaded) clearInterval(loading);
         let page = parseInt(this.props.location ? this.props.location.query.page || 1 : this.state.page);
-        (this.props.pagination||this.props.settings.limit==false)&&this.handleChangePage(page);
+        this.handleChangePage(page);
         //}, 1000);
     }
     componentDidUpdate(){
@@ -78,11 +79,12 @@ class SemiDataTable extends Component {
                 columns.push(propColumns[i]);
             }
             let params = {
-                start: encodeURIComponent(JSON.stringify((page-1)*(this.props.settings.limit || 10))),
-                length: encodeURIComponent(JSON.stringify(this.props.settings.limit || 10)),
+                start: encodeURIComponent(JSON.stringify(options.offset || (page-1)*(options.limit || this.props.settings.limit || 10))),
+                length: encodeURIComponent(JSON.stringify(options.limit || this.props.settings.limit || 10)),
                 order: JSON.stringify(order),
                 columns: JSON.stringify(columns)
             };
+            //console.log('params', params, options);
             let data = [];
             for(let i in params){
                 if(i=='length'&&this.props.settings.limit==false){
@@ -106,7 +108,21 @@ class SemiDataTable extends Component {
             let pathname = this.props.pathname || this.props.location && this.props.location.pathname;
             let order = options && options.order ? options.order.map((field)=>[field.column, field.dir].join(':')).join(',') : null;
             let columns = options && options.columns ? options.columns.map((field)=>[field.data, field.search].join(':')).join(',') : null;
-            this.setState({page, data: result.data, total: result.total, editable: result.canEdit, order, columns});
+
+            this.load = setInterval(()=>{
+                if(this.refs.table) {
+                    clearInterval(this.load);
+                    this.setState({
+                        page,
+                        data: result.data,
+                        total: result.total,
+                        editable: result.canEdit,
+                        order,
+                        columns
+                    });
+                }
+            }, 500);
+
             let query = order ? {page, order} : {page};
             pathname && this.context.router.push({pathname, query});
         });
@@ -158,7 +174,7 @@ class SemiDataTable extends Component {
                 }
             }
 
-            options = {order, columns};
+            options = Object.assign({}, options, {order, columns});
 
             this.handleAjaxData(page, options);
         }
@@ -169,9 +185,15 @@ class SemiDataTable extends Component {
             let re = new RegExp(key, 'gi');
             let order = this.props.location ? this.props.location.query.order : this.state.order;
             let dir = (order&&order.match(re) ? 'desc' : 'asc') || 'asc';
+            let limit = this.props.settings.limit || 10;
+
+            let newOrder = typeof field.key == 'object' ? field.key.map((k)=>{return {column: k, dir}}) : [{column: field.key, dir}];
             let options = {
-                order: typeof field.key == 'object' ? field.key.map((k)=>{return {column: k, dir}}) : [{column: field.key, dir}]
+                order: this.props.pagination ? newOrder : [{column: 'id', dir}]/*,
+                offset: this.props.pagination ? 0 : (dir=='asc' ? 0 : this.state.total-limit)*/
             };
+
+            console.log('sort:options', options, dir);
             this.handleChangePage(1, options);
         }
     }
@@ -228,6 +250,7 @@ class SemiDataTable extends Component {
         return (
             <Paper>
                 <Table
+                    ref='table'
                     {...table} >
                     <TableHeader
                         {...header}
@@ -283,7 +306,7 @@ class SemiDataTable extends Component {
                         ))}
                     </TableBody>
                 </Table>
-                <div style={{display: typeof this.props.pagination=='boolean' ? (this.props.pagination==true?'block':'none'):'none'}}>
+                <div style={{display: this.props.pagination==true?'block':'none'}}>
                     <UltimatePaginationMaterialUi currentPage={this.state.page} totalPages={max_page} onChange={this.handleChangePage} />
                 </div>
             </Paper>
