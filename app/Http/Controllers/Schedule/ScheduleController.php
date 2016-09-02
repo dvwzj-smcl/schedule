@@ -264,17 +264,21 @@ class ScheduleController extends Controller
             'contact'
         ];
         $sql = Customer::select($cols);
-        if (Input::has('order')) {
-            foreach (json_decode(Input::get('order')) as $order) {
-                $sql->orderBy($order->column, $order->dir);
+        if(Input::has('id')){
+            $sql->where('id', '=', Input::get('id'));
+        }else {
+            if (Input::has('order')) {
+                foreach (json_decode(Input::get('order')) as $order) {
+                    $sql->orderBy($order->column, $order->dir);
+                }
             }
-        }
-        if (Input::has('columns')) {
-            foreach (json_decode(Input::get('columns')) as $col) {
-                $column = $col->data;
-                $val = $col->search;
-                if (in_array($column, $cols) && ($val != '')) {
-                    $sql->where($column, 'LIKE', '%' . $val . '%');
+            if (Input::has('columns')) {
+                foreach (json_decode(Input::get('columns')) as $col) {
+                    $column = $col->data;
+                    $val = $col->search;
+                    if (in_array($column, $cols) && ($val != '')) {
+                        $sql->where($column, 'LIKE', '%' . $val . '%');
+                    }
                 }
             }
         }
@@ -282,11 +286,7 @@ class ScheduleController extends Controller
         try {
             $count = $sql->count();
             $data = Input::has('length')&&Input::get('length')!=0 ? $sql->skip(Input::get('start'))->take(Input::get('length'))->get() : $sql->get();
-            $test = array_map(function($customer){
-                $customer['boolean'] = true;
-                return $customer;
-            }, $data->toArray());
-            $result = BF::dataTable($test, $count, $count, false);
+            $result = BF::dataTable($data, $count, $count, false);
         } catch (\Illuminate\Database\QueryException $e) {
             return BF::result(false, $e->getMessage());
         }

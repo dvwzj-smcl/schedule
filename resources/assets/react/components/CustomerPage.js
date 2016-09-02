@@ -7,18 +7,33 @@ import PageHeading from './widgets/PageHeading';
 import api from '../api';
 import SemiDataTable from './widgets/SemiDataTable';
 import ActionAssignment from 'material-ui/svg-icons/action/assignment';
+import ContentCreate from 'material-ui/svg-icons/content/create';
 import IconButton from 'material-ui/IconButton';
 import SemiModal from './widgets/SemiModal';
+import {Form} from 'formsy-react';
+import SemiTextField from './forms/components/SemiTextField';
+
+let customerFields = {
+    first_name: 'First Name',
+    last_name: 'Last Name',
+    hn: 'HN',
+    phone: 'Phone',
+    contact: 'Contact',
+    boolean: 'Boolean (Test)'
+};
 
 class CustomerPage extends Component {
     constructor(props, context) {
         super(props, context);
         this.state = {
             customer: null,
-            events: null
+            events: null,
+            editable: false
         };
-        this.showModal = this.showModal.bind(this);
+        this.infoCustomerModal = this.infoCustomerModal.bind(this);
+        this.editCustomerModal = this.editCustomerModal.bind(this);
         this.handleModalClose = this.handleModalClose.bind(this);
+        this.handleEditSubmit = this.handleEditSubmit.bind(this);
     }
 
     componentDidMount() {
@@ -27,100 +42,142 @@ class CustomerPage extends Component {
     componentDidUpdate() {
     }
 
-    showModal(customer){
-        //this.context.modal
-        //this.refs.modal.open();
-        this.setState({customer});
-        /*
-        this.context.router.push({pathname: `/customers/${customer.id}`});
-        this.refs.modal.open();
-        */
-        this.context.ajax.call("get", `schedules/customer-events/${customer.id}`, null).then((res)=>{
-            this.setState({events: res.data.tbData});
-            this.context.router.push({pathname: `/customers/${customer.id}`});
-            this.refs.modal.open();
-        }).catch((err)=>{
-            console.log('err', err);
-        });
+    infoCustomerModal(customer_id){
+        this.context.ajax.getAll([
+            {
+                name: 'customer',
+                url: `schedules/customers?id=${customer_id}`
+            },
+            {
+                name: 'events',
+                url: `schedules/customer-events/${customer_id}`
+            }
+        ], null).then((res)=>{
+            if(res.customer&&res.events&&res.customer.recordsTotal==1){
+                let customer = Object.keys(res.customer.tbData[0]).map((i)=>{
+                    return {
+                        key: i,
+                        field: customerFields[i],
+                        value: res.customer.tbData[0][i]
+                    }
+                }).filter((row)=>row.field);
+                let events = res.events.tbData;
+                this.setState({customer, events, editable: false});
+                //this.context.router.push({pathname: `/customers/${customer_id}`});
+                this.refs.info.open();
+            }
+        }).catch((err)=>{console.log('err', err)});
+    }
+    editCustomerModal(customer_id){
+        this.context.ajax.call("get", `schedules/customers?id=${customer_id}`, null).then((res)=>{
+            if(res.data&&res.data.recordsTotal==1) {
+                let customer = Object.keys(res.data.tbData[0]).map((i)=>{
+                    return {
+                        key: i,
+                        field: customerFields[i],
+                        value: res.data.tbData[0][i]
+                    }
+                }).filter((row)=>row.field);
+                this.setState({customer, events: null, editable: true});
+                //this.context.router.push({pathname: `/customers/${customer_id}/edit`});
+                this.refs.edit.open();
+            }
+        }).catch((err)=>{console.log('err', err)});
+    }
+    handleEditSubmit(data){
+        console.log('submit', data);
+        this.setState({customer: null, events: null, editable: false});
     }
     handleModalClose(){
-        this.setState({customer: null, events: null});
-        //let {query} = this.props.location;
-        //this.context.router.push({pathname: `customers`, query});
-        this.context.router.go(-1);
+        this.setState({customer: null, events: null, editable: false});
+        //this.context.router.goBack();
     }
 
     render() {
-        let {customer} = this.state;
-        let mapKeys = {
-            first_name: 'First Name',
-            last_name: 'Last Name',
-            hn: 'HN',
-            phone: 'Phone',
-            contact: 'Contact',
-            boolean: 'Boolean (Test)'
-        };
-        let customerProfile = customer ? Object.keys(customer).map((i)=>{
-            return {
-                field: mapKeys[i],
-                value: customer[i]
-            }
-        }).filter((row)=>row.field) : null;
-        let modalTable = customer ? (
+        let {customer, events, editable} = this.state;
+
+        let infoCustomerModal = customer&&events&&!editable ? (
             <div>
-                <SemiDataTable
-                    settings={{
-                        table:{
-                            selectable: false
-                        },
-                        header:{
-                            displaySelectAll: false,
-                            enableSelectAll: false,
-                            adjustForCheckbox: false
-                        },
-                        body:{
-                            displayRowCheckbox: false
-                        },
-                        fields:[
-                            {
-                                title: 'Field',
-                                key: 'field',
-                                width: '20%'
+                <Panel title="Customer Info">
+                    <SemiDataTable
+                        settings={{
+                            table:{
+                                selectable: false
                             },
-                            {
-                                title: 'Value',
-                                key: 'value'
-                            }
-                        ]
-                    }}
-                    dataSource={customerProfile} />
-                <SemiDataTable
-                    settings={{
-                        table:{
-                            selectable: false
-                        },
-                        header:{
-                            displaySelectAll: false,
+                            header:{
+                                displaySelectAll: false,
                                 enableSelectAll: false,
                                 adjustForCheckbox: false
-                        },
-                        body:{
-                            displayRowCheckbox: false
-                        },
-                        fields:[
-                            {
-                                title: 'Start',
-                                key: 'start'
                             },
-                            {
-                                title: 'End',
-                                key: 'end'
-                            }
-                        ]
-                    }}
-                dataSource={this.state.events} />
+                            body:{
+                                displayRowCheckbox: false
+                            },
+                            fields:[
+                                {
+                                    title: 'Field',
+                                    key: 'field',
+                                    width: '20%'
+                                },
+                                {
+                                    title: 'Value',
+                                    key: 'value'
+                                }
+                            ]
+                        }}
+                        dataSource={customer} />
+                </Panel>
+                <Panel title="Appointment Info">
+                    <SemiDataTable
+                        settings={{
+                            table:{
+                                selectable: false
+                            },
+                            header:{
+                                displaySelectAll: false,
+                                    enableSelectAll: false,
+                                    adjustForCheckbox: false
+                            },
+                            body:{
+                                displayRowCheckbox: false
+                            },
+                            fields:[
+                                {
+                                    title: 'Start',
+                                    key: 'start'
+                                },
+                                {
+                                    title: 'End',
+                                    key: 'end'
+                                },
+                                {
+                                    title: 'Sale',
+                                    key: 'sale',
+                                    custom(row){
+                                        return row.sale ? (
+                                            <div>Sale is ? xxx</div>
+                                        ) : null;
+                                    }
+                                }
+                            ]
+                        }}
+                    dataSource={events} />
+                </Panel>
             </div>
         ) : null;
+        let editCustomerFormTemplate = {
+            values: customer&&customer.map((f)=>{
+                let obj = {};
+                obj[f.key] = f.value;
+                return obj;
+            }).reduce((a,b)=>Object.assign(a,b)),
+            components: [
+                [{type: 'text', name: 'first_name', label: 'First Name', required: true}],
+                [{type: 'text', name: 'last_name', label: 'Last Name', required: true}],
+                [{type: 'numeric', name: 'hn', label: 'HN', required: true}],
+                [{type: 'text', name: 'phone', label: 'Phone'}],
+                [{type: 'text', name: 'contact', label: 'Contact'}]
+            ]
+        };
         return (
             <div>
                 <PageHeading title="Customer" description="Edit customer info and find customers' appointments" />
@@ -168,11 +225,16 @@ class CustomerPage extends Component {
                                                     title: 'Actions',
                                                     key: 'actions',
                                                     width: '10%',
-                                                    custom: (row)=>{
+                                                    custom: (row, index, dataSourceOptions,tableProps)=>{
                                                         return (
-                                                            <IconButton onTouchTap={this.showModal.bind(null, row)}>
-                                                                <ActionAssignment />
-                                                            </IconButton>
+                                                            <div>
+                                                                <IconButton onTouchTap={this.infoCustomerModal.bind(null, row.id)}>
+                                                                    <ActionAssignment />
+                                                                </IconButton>
+                                                                <IconButton onTouchTap={this.editCustomerModal.bind(null, row.id)}>
+                                                                    <ContentCreate />
+                                                                </IconButton>
+                                                            </div>
                                                         );
                                                     }
                                                 }
@@ -186,9 +248,15 @@ class CustomerPage extends Component {
                                         />
                                 </div>
                             </Panel>
-                            <SemiModal ref="modal" onClose={this.handleModalClose}>
-                                {modalTable}
+                            <SemiModal ref="info" onClose={this.handleModalClose}>
+                                {infoCustomerModal}
                             </SemiModal>
+                            <SemiModal
+                                ref="edit"
+                                title="Customer Info"
+                                onSubmit={this.handleEditSubmit}
+                                onClose={this.handleModalClose}
+                                formTemplate={editCustomerFormTemplate} />
                         </Col>
                     </Row>
                 </Grid>

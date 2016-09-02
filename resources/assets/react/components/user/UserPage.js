@@ -152,7 +152,7 @@ class UserPage extends Component {
                                     pagination={true}
                                     dataSourceResult="data"
                                     dataSourceMap={{data: "tbData", total: "recordsTotal"}}
-                                    dataSource={api.baseUrl("users")}
+                                    dataSource="users"
                                     />
                             </Panel>
                         </Col>

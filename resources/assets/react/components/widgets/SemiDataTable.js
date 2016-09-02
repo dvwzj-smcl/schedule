@@ -19,6 +19,7 @@ import IconButton from 'material-ui/IconButton';
 import VerticalAlignBottomIcon from 'material-ui/svg-icons/editor/vertical-align-bottom';
 import VerticalAlignTopIcon from 'material-ui/svg-icons/editor/vertical-align-top';
 import SortIcon from 'material-ui/svg-icons/content/sort';
+import Divider from 'material-ui/Divider';
 
 import UltimatePaginationMaterialUi from 'react-ultimate-pagination-material-ui';
 
@@ -238,7 +239,7 @@ class SemiDataTable extends Component {
                 if(typeof key == "string") obj[key] = row[key];
                 else if(typeof key == "object"){
                     if(key.key) obj[key.key] = row[key.key];
-                    if(key.custom) obj[key.key] = key.custom(row,index,{editable: this.state.editable});
+                    if(key.custom) obj[key.key] = key.custom(row,index,{editable: this.state.editable},this.props);
                     if(key.tooltip) fields[i].tooltip = key.tooltip;
                 }
             }
@@ -249,6 +250,7 @@ class SemiDataTable extends Component {
         }
         return (
             <Paper>
+
                 <Table
                     ref='table'
                     {...table} >
@@ -262,7 +264,7 @@ class SemiDataTable extends Component {
                             </TableHeaderColumn>
                         </TableRow>
                         */}
-                        <TableRow style={{verticalAlign: 'top'}}>
+                        <TableRow style={{verticalAlign: fields.filter((f)=>f.filterable).length ? 'top' : 'middle'}}>
                             {fields.map((field, i)=> {
                                 let isOrder = order&&order.filter((o)=>o.column==field.key);
                                 let sortable = isOrder&&isOrder.length>0;
@@ -307,6 +309,7 @@ class SemiDataTable extends Component {
                     </TableBody>
                 </Table>
                 <div style={{display: this.props.pagination==true?'block':'none'}}>
+                    <Divider style={{marginBottom: '50px'}} />
                     <UltimatePaginationMaterialUi currentPage={this.state.page} totalPages={max_page} onChange={this.handleChangePage} />
                 </div>
             </Paper>
