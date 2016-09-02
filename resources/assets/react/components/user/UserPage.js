@@ -133,7 +133,8 @@ class UserPage extends Component {
                                                 key: 'action',
                                                 style: {width: '10%'},
                                                 custom: (row,index,tbDataProps)=>{
-                                                    return tbDataProps.editable ? (
+                                                    //console.log('tbDataProps', tbDataProps);
+                                                    return (
                                                         <div>
                                                             <IconButton backgroundColor="#F00" onClick={this.editUser.bind(null, row.id)} >
                                                                 <ContentCreate />
@@ -142,7 +143,7 @@ class UserPage extends Component {
                                                                 <ActionDelete />
                                                             </IconButton>
                                                         </div>
-                                                    ) : null;
+                                                    );
                                                 }
                                             }
                                         ],

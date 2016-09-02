@@ -278,12 +278,14 @@ class SemiDataTable extends Component {
                 }
             }
         }
+        let showCreateBtn = actions ? actions.create!==false : false;
+        let showReloadBtn = actions ? actions.reload!==false : true;
         return (
             <Paper>
-                {!actions||customActions||actions&&(actions.create!==false||actions.reload!==false) ? (
+                {!actions||customActions.length||showCreateBtn||showReloadBtn ? (
                     <div>
                         <div>
-                            {actions&&actions.create!==false ? (
+                            {showCreateBtn ? (
                                 actions.create.props ?
                                 actions.create :
                                 <FlatButton
@@ -293,9 +295,9 @@ class SemiDataTable extends Component {
                                     style={actions.create.style}
                                     />
                             ) : null }
-                            {!actions||actions&&actions.reload!==false ? (
-                                actions.reload.props ?
-                                actions.reload :
+                            {showReloadBtn ? (
+                                actions&&actions.reload.props ?
+                                actions&&actions.reload :
                                 <FlatButton
                                     label={actions&&actions.reload.label || 'Reload'}
                                     icon={<NavigationRefresh />}
