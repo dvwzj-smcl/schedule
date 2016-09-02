@@ -147,6 +147,7 @@ class FormDemoPage extends Component {
                 test_color: '#c5cae9',
                 test_number: 123,
                 test_toggle1: true,
+                test_checkbox1: [2]
             }, // default values
             settings: {},
             // validators: {hn: {rule: '/^\d{6,7}$/', hint: 'Invalid HN'}},

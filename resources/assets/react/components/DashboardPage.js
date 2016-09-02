@@ -70,7 +70,6 @@ class HomePage extends Component {
     };
 
     onEventActionSelect = (data) => {
-        console.log('data', data);
         let date = (new Date(data.start)).getISODate();
         let role = 'sale'; // todo
         let doctor_id = data.slot.sc_doctor_id;
@@ -95,6 +94,8 @@ class HomePage extends Component {
 
         let isTaskLoaded = this.props.actions.getScheduleTasks(false);
         let isEventStatusLoaded = this.props.actions.getScheduleEventsStatus(false);
+        let isSale = user.roles.indexOf('sale') >= 0;
+        let isOrganizer = user.roles.indexOf('organizer') >= 0;
 
         let taskLists = [];
         let eventsStatusLists = [];
@@ -171,11 +172,11 @@ class HomePage extends Component {
                                 <ListItem
                                     leftAvatar={leftAvatar}
                                     rightIconButton={rightIconMenu}
-                                    primaryText={`${customer.first_name} ${customer.last_name}`}
+                                    primaryText={`${subCategory.name}`}
                                     secondaryText={
                                         <p>
-                                          <span style={{color: darkBlack}}>{`${customer.phone}`}</span>, {`${customer.contact}`}<br/>
-                                          <span style={{color: teal700}}>{`${subCategory.name}`}</span> {`${when}`}
+                                          <span style={{color: teal700, marginRight:16}}>{`${task.slot.doctor.user.name}`}</span>
+                                          <span style={{color: darkBlack}}>{`${when}`}</span>
                                         </p>
                                     }
                                     secondaryTextLines={2}
@@ -192,65 +193,69 @@ class HomePage extends Component {
             <div>
                 <PageHeading title="Dashboard" description="Remaining tasks & status" />
                 <Grid fluid className="content-wrap dashboard">
-                    <Row>
-                        <Col xs md={6}>
-                            <Panel>
-                                <Subheader>To Confirm: This Week</Subheader>
-                                <Divider />
-                                {!isTaskLoaded ? <Loading inline /> :
-                                    <List className="scroll-list">
-                                        {taskLists['new']}
-                                    </List>
-                                }
-                            </Panel>
-                        </Col>
-                        <Col xs md={6}>
-                            <Panel>
-                                <Subheader>To Confirm: Urgent</Subheader>
-                                <Divider />
-                                {!isTaskLoaded ? <Loading inline /> :
-                                    <List className="scroll-list">
-                                        {taskLists['urgent']}
-                                    </List>
-                                }
-                            </Panel>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col xs md={4}>
-                            <Panel>
-                                <Subheader>Pending</Subheader>
-                                <Divider />
-                                {!isEventStatusLoaded ? <Loading inline /> :
-                                    <List className="scroll-list">
-                                        {eventsStatusLists['pending']}
-                                    </List>
-                                }
-                            </Panel>
-                        </Col>
-                        <Col xs md={4}>
-                            <Panel>
-                                <Subheader>Rejected</Subheader>
-                                <Divider />
-                                {!isEventStatusLoaded ? <Loading inline /> :
-                                    <List className="scroll-list">
-                                        {eventsStatusLists['rejected']}
-                                    </List>
-                                }
-                            </Panel>
-                        </Col>
-                        <Col xs md={4}>
-                            <Panel>
-                                <Subheader>Canceled</Subheader>
-                                <Divider />
-                                {!isEventStatusLoaded ? <Loading inline /> :
-                                    <List className="scroll-list">
-                                        {eventsStatusLists['canceled']}
-                                    </List>
-                                }
-                            </Panel>
-                        </Col>
-                    </Row>
+                    {!isSale ? null :
+                        <Row>
+                            <Col xs md={6}>
+                                <Panel>
+                                    <Subheader>To Confirm: This Week</Subheader>
+                                    <Divider />
+                                    {!isTaskLoaded ? <Loading inline /> :
+                                        <List className="scroll-list">
+                                            {taskLists['new']}
+                                        </List>
+                                    }
+                                </Panel>
+                            </Col>
+                            <Col xs md={6}>
+                                <Panel>
+                                    <Subheader>To Confirm: Urgent</Subheader>
+                                    <Divider />
+                                    {!isTaskLoaded ? <Loading inline /> :
+                                        <List className="scroll-list">
+                                            {taskLists['urgent']}
+                                        </List>
+                                    }
+                                </Panel>
+                            </Col>
+                        </Row>
+                    }
+                    {!(isSale || isOrganizer) ? null :
+                        <Row>
+                            <Col xs md={4}>
+                                <Panel>
+                                    <Subheader>Pending</Subheader>
+                                    <Divider />
+                                    {!isEventStatusLoaded ? <Loading inline/> :
+                                        <List className="scroll-list">
+                                            {eventsStatusLists['pending']}
+                                        </List>
+                                    }
+                                </Panel>
+                            </Col>
+                            <Col xs md={4}>
+                                <Panel>
+                                    <Subheader>Rejected</Subheader>
+                                    <Divider />
+                                    {!isEventStatusLoaded ? <Loading inline/> :
+                                        <List className="scroll-list">
+                                            {eventsStatusLists['rejected']}
+                                        </List>
+                                    }
+                                </Panel>
+                            </Col>
+                            <Col xs md={4}>
+                                <Panel>
+                                    <Subheader>Canceled</Subheader>
+                                    <Divider />
+                                    {!isEventStatusLoaded ? <Loading inline/> :
+                                        <List className="scroll-list">
+                                            {eventsStatusLists['canceled']}
+                                        </List>
+                                    }
+                                </Panel>
+                            </Col>
+                        </Row>
+                    }
                 </Grid>
             </div>
         );

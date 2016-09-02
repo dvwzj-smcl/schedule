@@ -10,10 +10,6 @@ import {List, ListItem} from 'material-ui/List';
 import * as scheduleActions from '../../actions/scheduleActions';
 import helper from '../../libs/helper';
 import SemiForm from '../forms/SemiForm';
-import FloatingActionButton from 'material-ui/FloatingActionButton';
-import Paper from 'material-ui/Paper';
-import Checkbox from 'material-ui/Checkbox';
-import FlatButton from 'material-ui/FlatButton';
 import {ActionPermIdentity, ActionInfo, HardwareKeyboardArrowRight, HardwareKeyboardArrowLeft} from 'material-ui/svg-icons';
 import ContextMenu from '../widgets/ContextMenu';
 
@@ -80,14 +76,6 @@ class SlotPage extends Component {
             });
         }
     };
-
-    // refreshColor = (hides) => {
-    //     this.init().then(calendar => {
-    //         calendar.filterClientEvents((event) => {
-    //             console.log('event, event2', event, event2);
-    //         });
-    //     });
-    // };
 
     setValuesState = (params) => {
         let {date} = params;
@@ -196,17 +184,17 @@ class SlotPage extends Component {
         }
     };
 
-    onCheck = (obj) => {
-        let name = obj.target.getAttribute('name');
-        console.log('name', name);
-        // let h = this.context.hides, hides = '';
-        // h[name] = !h[name];
-        // if(h.other) hides += 'o';
-        // if(h.approved) hides += 'a';
-        // if(h.pending) hides += 'p';
-        // if(h.rejected) hides += 'r';
-        // if(h.canceled) hides += 'c';
-        // this.context.navigate({hides});
+    onCheck = (value) => {
+        let doctors = this.props.schedule.data.doctors;
+        let hides = [];
+        for(let i in doctors) {
+            let id = doctors[i].id;
+            console.log('i', value);
+            if(value.indexOf(id) < 0) hides.push(id);
+        }
+        hides = hides.join('_');
+        console.log('*hides', hides);
+        this.navigate({hides});
     };
 
     render() {
@@ -240,26 +228,8 @@ class SlotPage extends Component {
         
         // --- Colors
 
-        // todo: use this example
-        let colorComponents = [];
-        if (props.schedule.data) {
-            let {doctors} = props.schedule.data;
-            this.colorComponents = [];
-            for (let i in doctors) {
-                let {color, user, id} = doctors[i];
-                colorComponents.push(
-                    <Checkbox key={i} name={id} onCheck={this.onCheck} label={user.name} checked={true}
-                              
-                              // *** this is how to add color
-                              iconStyle={{fill: color}} labelStyle={{color: color}}
-                    />);
-            }
-        }
-
-        // todo: I want to add color to form's checkboxes
         let colorList = [];
         if (props.schedule.data) {
-            let {doctors} = props.schedule.data;
             this.colorList = [];
             for (let i in doctors) {
                 let {color, id, user:{name}} = doctors[i];
@@ -269,12 +239,28 @@ class SlotPage extends Component {
             }
         }
 
+        // Parse Hide Url
+        let shows = [];
+        let docs = [];
+        for(let i in doctors) {
+            docs.push(doctors[i].id);
+        }
+        if (props.params.hides) {
+            let hides = props.params.hides.split('_').map(function (id) {return parseInt(id);});
+            console.log('hides.length', hides.length);
+            shows = docs.filter(function(i) {return hides.indexOf(i) < 0;});
+        } else {
+            shows = docs;
+        }
+
+        console.log('shows', shows);
+
         let filterForm = {
+            values: {filters: shows},
             components: [
-                [{type: 'checkbox', name: 'test_checkbox2', options: colorList, showClear: false}]
+                [{type: 'checkbox', onCheck: this.onCheck, name: 'filters', options: colorList, showClear: false}]
             ]
         };
-        // todo: ---- end ----
 
         return (
             <div>
@@ -290,8 +276,7 @@ class SlotPage extends Component {
                             </Panel>
                             <Panel title="Show" type="secondary">
                                 <div className="semicon">
-                                    {colorComponents}
-                                    <SemiForm noSubmitButton formTemplate={filterForm} />
+                                    <SemiForm className="color-filter" noSubmitButton formTemplate={filterForm} />
                                 </div>
                             </Panel>
                         </Col>
