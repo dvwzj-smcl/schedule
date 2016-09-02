@@ -99,6 +99,8 @@ body { margin: 0; font-family: 'roboto', 'segoe ui', 'droid sans', tahoma, arial
 /* Calendar */
 .calendar-header h2 { float:left; margin-top: 8px; }
 
+.color-filter .semi-list-item { margin: 0 !important; }
+
 /* Search Page */
 /*
 $approved: #FF00FF;
@@ -111,6 +113,7 @@ $approved: #FF00FF;
 }
 */
 
+/* todo delete below */
 
 .pagination {
   text-align: right;

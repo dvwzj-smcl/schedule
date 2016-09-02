@@ -74,6 +74,14 @@ class User extends Authenticatable
         return $perms;
     }
 
+    public function getAllRoles(){
+        $roles = [];
+        foreach ($this->roles as $role) {
+            $roles[] = $role->name;
+        }
+        return $roles;
+    }
+
     public function scopeSales($query) {
         $query->join('role_user', function ($join) {
             $join->on('users.id', '=', 'role_user.user_id');

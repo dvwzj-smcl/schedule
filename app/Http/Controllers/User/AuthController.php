@@ -55,6 +55,7 @@ class AuthController extends Controller
                     // todo: user information here
                     "user" => [
                         "permissions" => Auth::user()->getAllPermissions(),
+                        "roles" => Auth::user()->getAllRoles(),
                         "id" => Auth::user()->id,
                         "branch" => Auth::user()->branch
                     ]

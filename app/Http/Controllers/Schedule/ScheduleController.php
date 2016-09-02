@@ -8,6 +8,7 @@ use App\Models\Calendar\Slot;
 use App\Models\Calendar\SubCategory;
 use App\Models\User\Customer;
 use App\Models\User\Doctor;
+use App\Models\User\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -89,20 +90,37 @@ class ScheduleController extends Controller
         try {
             $userId = BF::getUserId();
             if(BF::hasRole('organizer')) {
-                // todo: check branch too
+                $users = User::currentBranch()->get();
+                $sales = [];
+                foreach($users as $user) {
+                    if($user->hasRole('sale')) $sales[] = $user->id;
+                }
+                $pending = Event::whereIn('sale_id', $sales)
+                    ->where('status', 'pending')
+                    ->orderBy('start', 'asc')
+                    ->with('customer', 'sub_category', 'slot.doctor.user')->get();
+                $rejected = Event::whereIn('sale_id', $sales)
+                    ->where('status', 'rejected')
+                    ->orderBy('start', 'asc')
+                    ->with('customer', 'sub_category', 'slot.doctor.user')->get();
+                $canceled = Event::whereIn('sale_id', $sales)
+                    ->where('status', 'canceled')
+                    ->orderBy('start', 'asc')
+                    ->with('customer', 'sub_category', 'slot.doctor.user')->get();
+                return BF::result(true, ['pending' => $pending, 'rejected' => $rejected, 'canceled' => $canceled]);
             } else if(BF::hasRole('sale')) {
                 $pending = Event::where('sale_id', $userId)
                     ->where('status', 'pending')
                     ->orderBy('start', 'asc')
-                    ->with('customer', 'sub_category', 'slot')->get();
+                    ->with('customer', 'sub_category', 'slot.doctor.user')->get();
                 $rejected = Event::where('sale_id', $userId)
                     ->where('status', 'rejected')
                     ->orderBy('start', 'asc')
-                    ->with('customer', 'sub_category', 'slot')->get();
+                    ->with('customer', 'sub_category', 'slot.doctor.user')->get();
                 $canceled = Event::where('sale_id', $userId)
                     ->where('status', 'canceled')
                     ->orderBy('start', 'asc')
-                    ->with('customer', 'sub_category', 'slot')->get();
+                    ->with('customer', 'sub_category', 'slot.doctor.user')->get();
                 return BF::result(true, ['pending' => $pending, 'rejected' => $rejected, 'canceled' => $canceled]);
             }
             return BF::result(true, ['pending' => [], 'rejected' => [], 'canceled' => []]);
