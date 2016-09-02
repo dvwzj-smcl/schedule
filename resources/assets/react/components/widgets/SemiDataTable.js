@@ -330,7 +330,7 @@ class SemiDataTable extends Component {
                     </TableBody>
                 </Table>
                 <div style={{display: this.props.pagination==true?'block':'none'}}>
-                    <Divider style={{marginBottom: '50px'}} />
+                    <Divider />
                     <UltimatePaginationMaterialUi currentPage={this.state.page} totalPages={max_page} onChange={this.handleChangePage} />
                 </div>
             </Paper>

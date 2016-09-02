@@ -94,8 +94,8 @@ class HomePage extends Component {
 
         let isTaskLoaded = this.props.actions.getScheduleTasks(false);
         let isEventStatusLoaded = this.props.actions.getScheduleEventsStatus(false);
-        let isSale = user.roles.indexOf('sale') >= 0;
-        let isOrganizer = user.roles.indexOf('organizer') >= 0;
+        let isSale = user&&user.roles&&user.roles.indexOf('sale') >= 0;
+        let isOrganizer = user&&user.roles&&user.roles.indexOf('organizer') >= 0;
 
         let taskLists = [];
         let eventsStatusLists = [];
