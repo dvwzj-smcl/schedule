@@ -19,6 +19,7 @@ import IconButton from 'material-ui/IconButton';
 import VerticalAlignBottomIcon from 'material-ui/svg-icons/editor/vertical-align-bottom';
 import VerticalAlignTopIcon from 'material-ui/svg-icons/editor/vertical-align-top';
 import NavigationRefresh from 'material-ui/svg-icons/navigation/refresh';
+import ContentAddCircleOutline from 'material-ui/svg-icons/content/add-circle-outline';
 import SortIcon from 'material-ui/svg-icons/content/sort';
 import Divider from 'material-ui/Divider';
 
@@ -51,6 +52,8 @@ class SemiDataTable extends Component {
         this.handleChangePage = this.handleChangePage.bind(this);
         this.sort = this.sort.bind(this);
         this.filter = this.filter.bind(this);
+        this.handleCreate = this.handleCreate.bind(this);
+        this.handleReload = this.handleReload.bind(this);
     }
     componentWillMount(){
         //var loading = setInterval(()=>{
@@ -213,6 +216,15 @@ class SemiDataTable extends Component {
         let options = {columns};
         this.handleChangePage(1, options);
     }
+    handleCreate(){
+        console.log('on create: SemiDataTable');
+        this.props.settings.actions.create&&this.props.settings.actions.create.onClick&&this.props.settings.actions.create.onClick();
+    }
+    handleReload(){
+        console.log('on reload: SemiDataTable');
+        this.handleChangePage(1, {order:[], columns:[]});
+        this.props.settings.actions.reload&&this.props.settings.actions.reload.onClick&&this.props.settings.actions.reload.onClick();
+    }
 
     goToPage(page){
         this.handleChangePage(page);
@@ -226,7 +238,7 @@ class SemiDataTable extends Component {
             }
         }) : null;
         // console.log('render', this.state);
-        let {table,header,body,fields,limit} = this.props.settings;
+        let {table,header,body,actions,fields,limit} = this.props.settings;
         limit = limit==false ? false : limit || 10;
         const offset = limit==false ? 0 : (this.state.page-1)*limit;
         let data = typeof this.props.dataSource=='object' ? this.props.dataSource : this.state.data;
@@ -253,20 +265,45 @@ class SemiDataTable extends Component {
             }
             return obj;
         });
-        let isSourceObject = typeof this.props.dataSource=='object';
-        if(isSourceObject && limit!=false) {
+        if(typeof this.props.dataSource=='object' && limit!=false) {
             rows = rows.slice(offset,offset+limit);
+        }
+        let customActions = [];
+        for(let i in actions||[]){
+            if(actions[i] && !i.match(/create/gi) && !i.match(/reload/gi)){
+                if(actions[i].props){
+                    customActions.push(React.cloneElement(actions[i], {key: i}));
+                }else{
+                    customActions.push(<FlatButton key={i} label={actions[i].label||i} onTouchTap={actions[i].onClick} style={actions[i].style} />)
+                }
+            }
         }
         return (
             <Paper>
-                {!isSourceObject ? (
+                {!actions||customActions||actions&&(actions.create!==false||actions.reload!==false) ? (
                     <div>
                         <div>
-                            <FlatButton
-                                label="Reload"
-                                icon={<NavigationRefresh />}
-                                onTouchTap={this.handleChangePage.bind(null, 1, {columns: [], order: []})}
-                                />
+                            {actions&&actions.create!==false ? (
+                                actions.create.props ?
+                                actions.create :
+                                <FlatButton
+                                    label={actions.create.label || 'Create'}
+                                    icon={<ContentAddCircleOutline />}
+                                    onTouchTap={this.handleCreate}
+                                    style={actions.create.style}
+                                    />
+                            ) : null }
+                            {!actions||actions&&actions.reload!==false ? (
+                                actions.reload.props ?
+                                actions.reload :
+                                <FlatButton
+                                    label={actions&&actions.reload.label || 'Reload'}
+                                    icon={<NavigationRefresh />}
+                                    onTouchTap={this.handleReload}
+                                    style={actions&&actions.reload.style}
+                                    />
+                            ) : null }
+                            {customActions}
                         </div>
                         <Divider />
                     </div>

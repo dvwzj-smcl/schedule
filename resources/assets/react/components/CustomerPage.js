@@ -9,6 +9,7 @@ import SemiDataTable from './widgets/SemiDataTable';
 import ActionAssignment from 'material-ui/svg-icons/action/assignment';
 import ContentCreate from 'material-ui/svg-icons/content/create';
 import IconButton from 'material-ui/IconButton';
+import FlatButton from 'material-ui/FlatButton';
 import SemiModal from './widgets/SemiModal';
 import {Form} from 'formsy-react';
 import SemiTextField from './forms/components/SemiTextField';
@@ -34,6 +35,8 @@ class CustomerPage extends Component {
         this.editCustomerModal = this.editCustomerModal.bind(this);
         this.handleModalClose = this.handleModalClose.bind(this);
         this.handleEditSubmit = this.handleEditSubmit.bind(this);
+
+        this.handleReloadPage = this.handleReloadPage.bind(this);
     }
 
     componentDidMount() {
@@ -91,6 +94,9 @@ class CustomerPage extends Component {
     handleModalClose(){
         this.setState({customer: null, events: null, editable: false});
         //this.context.router.goBack();
+    }
+    handleReloadPage(){
+        console.log('on reload: CustomerPage');
     }
 
     render() {
@@ -200,6 +206,27 @@ class CustomerPage extends Component {
                                             },
                                             body:{
                                                 displayRowCheckbox: false
+                                            },
+                                            actions: {
+                                                create: {
+                                                    label: "New Customer",
+                                                    onClick(){
+                                                        console.log('on create: CustomerPage');
+                                                    }
+                                                },
+                                                reload: {
+                                                    label: "Reload",
+                                                    onClick: this.handleReloadPage
+                                                },
+                                                test1: {
+                                                    onClick(){
+                                                        console.log('on test1: CustomerPage');
+                                                    }
+                                                },
+                                                test2: <FlatButton label="Test 2" onTouchTap={()=>{console.log('on test2: CustomerPage')}} />,
+                                                test3: {style:{backgroundColor: 'red', color: 'white'}},
+                                                test4: null,
+                                                test5: false
                                             },
                                             fields: [
                                                 {
