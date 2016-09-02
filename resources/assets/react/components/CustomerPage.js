@@ -207,27 +207,6 @@ class CustomerPage extends Component {
                                             body:{
                                                 displayRowCheckbox: false
                                             },
-                                            actions: {
-                                                create: {
-                                                    label: "New Customer",
-                                                    onClick(){
-                                                        console.log('on create: CustomerPage');
-                                                    }
-                                                },
-                                                reload: {
-                                                    label: "Reload",
-                                                    onClick: this.handleReloadPage
-                                                },
-                                                test1: {
-                                                    onClick(){
-                                                        console.log('on test1: CustomerPage');
-                                                    }
-                                                },
-                                                test2: <FlatButton label="Test 2" onTouchTap={()=>{console.log('on test2: CustomerPage')}} />,
-                                                test3: {style:{backgroundColor: 'red', color: 'white'}},
-                                                test4: null,
-                                                test5: false
-                                            },
                                             fields: [
                                                 {
                                                     title: 'ID',

@@ -218,12 +218,12 @@ class SemiDataTable extends Component {
     }
     handleCreate(){
         console.log('on create: SemiDataTable');
-        this.props.settings.actions.create&&this.props.settings.actions.create.onClick&&this.props.settings.actions.create.onClick();
+        this.props.settings.actions&&this.props.settings.actions.create&&this.props.settings.actions.create.onClick&&this.props.settings.actions.create.onClick();
     }
     handleReload(){
         console.log('on reload: SemiDataTable');
         this.handleChangePage(1, {order:[], columns:[]});
-        this.props.settings.actions.reload&&this.props.settings.actions.reload.onClick&&this.props.settings.actions.reload.onClick();
+        this.props.settings.actions&&this.props.settings.actions.reload&&this.props.settings.actions.reload.onClick&&this.props.settings.actions.reload.onClick();
     }
 
     goToPage(page){
