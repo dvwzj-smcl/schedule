@@ -18,6 +18,7 @@ import Toggle from 'material-ui/Toggle';
 import IconButton from 'material-ui/IconButton';
 import VerticalAlignBottomIcon from 'material-ui/svg-icons/editor/vertical-align-bottom';
 import VerticalAlignTopIcon from 'material-ui/svg-icons/editor/vertical-align-top';
+import NavigationRefresh from 'material-ui/svg-icons/navigation/refresh';
 import SortIcon from 'material-ui/svg-icons/content/sort';
 import Divider from 'material-ui/Divider';
 
@@ -151,28 +152,36 @@ class SemiDataTable extends Component {
                 }
             }) : [];
 
-            for(let i in options&&options.order||[]){
-                let index = order.map((o)=>o.column).indexOf(options.order[i].column);
-                if(index!=-1){
-                    let shouldResetDir = false;
-                    if(order[index].dir=='desc') shouldResetDir=true;
-                    order.splice(index, 1);
-                    if(!shouldResetDir) {
-                        order.unshift(options.order[i]);
+            if(options&&options.order&&options.order.length>0) {
+                for (let i in options.order) {
+                    let index = order.map((o)=>o.column).indexOf(options.order[i].column);
+                    if (index != -1) {
+                        let shouldResetDir = false;
+                        if (order[index].dir == 'desc') shouldResetDir = true;
+                        order.splice(index, 1);
+                        if (!shouldResetDir) {
+                            order.unshift(options.order[i]);
+                        }
+                    } else {
+                        order.push(options.order[i]);
                     }
-                }else{
-                    order.push(options.order[i]);
                 }
+            }else if(options&&options.order&&options.order.length==0){
+                order = [];
             }
 
-            for(let i in options&&options.columns||[]){
-                if(columns.map((c)=>c.data).indexOf(options.columns[i].data)!=-1){
-                    columns = columns.map((c)=>{
-                        return c.data==options.columns[i].data ? Object.assign(c, options.columns[i]) : c;
-                    });
-                }else{
-                    columns.push(options.columns[i]);
+            if(options&&options.columns&&options.columns.length>0) {
+                for (let i in options.columns) {
+                    if (columns.map((c)=>c.data).indexOf(options.columns[i].data) != -1) {
+                        columns = columns.map((c)=> {
+                            return c.data == options.columns[i].data ? Object.assign(c, options.columns[i]) : c;
+                        });
+                    } else {
+                        columns.push(options.columns[i]);
+                    }
                 }
+            }else if(options&&options.columns&&options.columns.length==0){
+                columns = [];
             }
 
             options = Object.assign({}, options, {order, columns});
@@ -245,12 +254,24 @@ class SemiDataTable extends Component {
             }
             return obj;
         });
-        if(typeof this.props.dataSource=='object' && limit!=false) {
+        let isSourceObject = typeof this.props.dataSource=='object';
+        if(isSourceObject && limit!=false) {
             rows = rows.slice(offset,offset+limit);
         }
         return (
             <Paper>
-
+                {!isSourceObject ? (
+                    <div>
+                        <div>
+                            <FlatButton
+                                label="Reload"
+                                icon={<NavigationRefresh />}
+                                onTouchTap={this.handleChangePage.bind(null, 1, {columns: [], order: []})}
+                                />
+                        </div>
+                        <Divider />
+                    </div>
+                ) : null}
                 <Table
                     ref='table'
                     {...table} >

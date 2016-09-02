@@ -269,6 +269,7 @@ CustomerPage.propTypes = {};
 CustomerPage.contextTypes = {
     router: PropTypes.object.isRequired,
     ajax: PropTypes.object,
+    dialog: PropTypes.object
 };
 
 function mapStateToProps(state) {
