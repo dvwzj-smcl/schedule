@@ -203,7 +203,6 @@ class SemiDataTable extends Component {
                 offset: this.props.pagination ? 0 : (dir=='asc' ? 0 : this.state.total-limit)*/
             };
 
-            console.log('sort:options', options, dir);
             this.handleChangePage(1, options);
         }
     }
