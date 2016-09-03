@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import MenuItem from 'material-ui/MenuItem';
-import FormsySelect from '../../libs/FormsySelect';
-import ErrorMessage from '../forms/ErrorMessage';
+import FormsySelect from '../../../libs/FormsySelect';
+import ErrorMessage from '../../../components/forms/ErrorMessage';
 // import FormsySelect from 'formsy-material-ui/lib/FormsySelect';
 
 class SemiSelect extends Component {

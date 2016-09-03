@@ -3,11 +3,11 @@ import RaisedButton from 'material-ui/RaisedButton';
 import {Form} from 'formsy-react';
 import ReactDOM from 'react-dom';
 import Loading from '../widgets/Loading';
-import SemiValidation from './SemiValidation';
+import SemiValidation from './../../backups/components/forms/SemiValidation';
 import {Grid, Row, Col} from 'react-flexbox-grid';
 import TextField from 'material-ui/TextField';
 import ErrorMessage from '../forms/ErrorMessage';
-import SemiText from './SemiText';
+import SemiText from './../../backups/components/forms/SemiText';
 import SemiTextField from './components/SemiTextField';
 import SemiSelectField from './components/SemiSelectField';
 import SemiDatePicker from './components/SemiDatePicker';
@@ -16,7 +16,7 @@ import SemiSliderInput from './components/SemiSliderInput';
 import SemiToggleInput from './components/SemiToggleInput';
 import SemiCheckInput from './components/SemiCheckInput';
 import SemiAutoComplete from './components/SemiAutoComplete';
-import SemiDate from './SemiDate';
+import SemiDate from './../../backups/components/forms/SemiDate';
 
 class SemiForm extends Component {
     constructor(props, context) {

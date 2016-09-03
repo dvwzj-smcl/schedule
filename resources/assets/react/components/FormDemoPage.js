@@ -36,7 +36,7 @@ import TextField from 'material-ui/TextField';
 
 //import ErrorMessage from './forms/ErrorMessage';
 
-import SemiValidation from './forms/SemiValidation';
+import SemiValidation from './../backups/components/forms/SemiValidation';
 import Validation from 'react-validation';
 
 Object.assign(Validation.rules, {

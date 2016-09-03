@@ -71,7 +71,7 @@ class HomePage extends Component {
 
     onEventActionSelect = (data) => {
         let date = (new Date(data.start)).getISODate();
-        let role = 'sale'; // todo
+        let role = this.props.user.roles.indexOf('organizer') >= 0 ? 'organizer' : this.props.user.roles.indexOf('sale') >= 0 ? 'sale' : '';
         let doctor_id = data.slot.sc_doctor_id;
         this.context.router.push(`/schedules/${role}/${doctor_id}/${date}`);
     };
@@ -88,7 +88,7 @@ class HomePage extends Component {
     };
 
     render(){
-        // console.log('render: dash', this.props.notification);
+        // console.log('render: dash', this.props.user);
 
         let {user, notification} = this.props;
 

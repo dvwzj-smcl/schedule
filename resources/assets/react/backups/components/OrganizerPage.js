@@ -5,7 +5,7 @@ import {Grid, Row, Col} from 'react-flexbox-grid';
 import Panel from './../../components/widgets/Panel';
 import PageHeading from './../../components/widgets/PageHeading';
 import SemiModal from './../../components/widgets/SemiModal';
-import SemiSelect from './../../components/forms/SemiSelect';
+import SemiSelect from './forms/SemiSelect';
 
 import {List, ListItem} from 'material-ui/List';
 import Paper from 'material-ui/Paper';

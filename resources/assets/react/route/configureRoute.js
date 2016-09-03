@@ -13,6 +13,7 @@ import SchedulePage from '../components/schedule/SchedulePage';
 import ScheduleSummaryPage from '../components/schedule/ScheduleSummaryPage';
 import SettingPage from '../components/schedule/SettingPage';
 import CustomerPage from '../components/CustomerPage';
+import BranchPage from '../components/BranchPage';
 import DoctorSettingPage from '../components/schedule/DoctorSettingPage';
 import CategorySettingPage from '../components/schedule/CategorySettingPage';
 import SlotPage from '../components/schedule/SlotPage';
@@ -51,8 +52,8 @@ export default function configureRoute(store){
                 <Route path="doctors(/:doctor_id)(/:category_id)" component={UserIsAuthenticated(DoctorSettingPage)} />
                 <Route path="categories(/:category_id)" component={UserIsAuthenticated(CategorySettingPage)} />
             </Route>
-            <Route path="customers(/:customer_id)" component={UserIsAuthenticated(CustomerPage)}>
-            </Route>
+            <Route path="customers(/:customer_id)" component={UserIsAuthenticated(CustomerPage)} />
+            <Route path="branches(/:branch_id)" component={UserIsAuthenticated(BranchPage)} />
             <Route path="form" component={UserIsAuthenticated(FormDemoPage)} />
             <Route path="datatable" component={UserIsAuthenticated(DataTableDemo)} />
             <Route path="*" component={UserIsAuthenticated(NotFoundPage)} />

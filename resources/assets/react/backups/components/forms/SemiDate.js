@@ -1,8 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import DatePicker from 'material-ui/DatePicker';
-import DateRangeIcon from 'material-ui/svg-icons/action/date-range';
-import IconButton from 'material-ui/IconButton/IconButton';
-import ClearIcon from 'material-ui/svg-icons/content/clear';
+import DateRangeIcon from '../../../../../../node_modules/material-ui/svg-icons/action/date-range';
+import IconButton from '../../../../../../node_modules/material-ui/IconButton/IconButton';
+import ClearIcon from '../../../../../../node_modules/material-ui/svg-icons/content/clear';
 import {HOC} from 'formsy-react';
 
 class SemiDate extends Component {

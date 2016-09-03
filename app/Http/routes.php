@@ -36,10 +36,13 @@ Route::group(['prefix' => 'api', 'middleware' => ['jwt.auth'/*,'permission'*/]],
     // User Module
     Route::controller('auth', 'User\AuthController');
     Route::resource('users', 'User\UserController');
-    Route::controller('branches', 'User\BranchController');
+    
+    Route::get('branches/list', 'User\BranchController@getList');
     Route::resource('branches', 'User\BranchController');
+    
     Route::controller('roles', 'User\RoleController');
     Route::resource('roles', 'User\RoleController');
+    
     Route::resource('permissions', 'User\PermissionController');
 
     // Schedules Module
@@ -50,8 +53,8 @@ Route::group(['prefix' => 'api', 'middleware' => ['jwt.auth'/*,'permission'*/]],
         Route::get('organizer/{user_id}/events', 'Schedule\ScheduleController@getOrganizerEvents');
         
         // Customer
-        Route::get('customers', 'Schedule\ScheduleController@getCustomers');
-        Route::get('customer-events/{customer_id}', 'Schedule\ScheduleController@getCustomerEvents');
+        Route::get('customers/{customer_id}/events', 'Schedule\CustomerController@getCustomerEvents');
+        Route::resource('customers', 'Schedule\CustomerController');
 
         // Dashboard
         Route::get('tasks', 'Schedule\ScheduleController@getTasks');
@@ -68,6 +71,5 @@ Route::group(['prefix' => 'api', 'middleware' => ['jwt.auth'/*,'permission'*/]],
         // Settings
         Route::resource('subcategories', 'Schedule\SubcategoryController');
         Route::resource('doctors', 'Schedule\DoctorController');
-        Route::resource('save-subcategories', 'Schedule\SubcategoryController@saveSubcategories');
     });
 });

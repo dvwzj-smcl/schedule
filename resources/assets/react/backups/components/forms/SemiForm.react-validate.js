@@ -2,7 +2,7 @@ import React, {PropTypes, Component} from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import {Form} from 'formsy-react';
 import ReactDOM from 'react-dom';
-import Loading from '../widgets/Loading';
+import Loading from '../../../components/widgets/Loading';
 import SemiValidation from './SemiValidation';
 import {Grid, Row, Col} from 'react-flexbox-grid';
 import TextField from 'material-ui/TextField';

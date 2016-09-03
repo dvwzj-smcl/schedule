@@ -6,8 +6,8 @@ import { Row, Col } from 'react-flexbox-grid';
 import SemiModal from '../widgets/SemiModal';
 // import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import Toggle from 'material-ui/Toggle';
-import SemiText from '../forms/SemiText';
-import SemiSelect from '../forms/SemiSelect';
+import SemiText from '../../backups/components/forms/SemiText';
+import SemiSelect from '../../backups/components/forms/SemiSelect';
 
 class UserModal extends Component {
     constructor(props, context) {
@@ -51,6 +51,7 @@ class UserModal extends Component {
         // must return a promise
         return ajax.call(method, url, data).then( response => {
             this.context.dialog.alert(SuccessMessage, 'Success', 'success');
+            this.context.dataTable.handleReload();
             return response;
         }).catch( error => {
             this.context.dialog.alert(error, 'Error');
@@ -133,7 +134,7 @@ class UserModal extends Component {
                     {type: 'text', name: 'phone_2', label: 'Secondary Phone', hint: 'Secondary phone number'}
                 ],
                 [
-                    {type: 'multiselect', name: 'roles', label: 'Roles*', required: true}
+                    {type: 'multiselect', name: 'roles', label: 'Roles*', required: false}
                 ]
             ]
         };
@@ -146,115 +147,7 @@ class UserModal extends Component {
                 onLoad={this.onLoad}
                 onSubmit={this.onSubmit}
                 formTemplate={formTemplate}
-            >
-                <Row>
-                    <Col xs md={6}>
-                        <SemiText
-                            name="username"
-                            value={values.username}
-                            validations={{ minLength: 3, maxLength: 50 }}
-                            required
-                            hintText="What is login username?"
-                            floatingLabelText="username"
-                            fullWidth={true}
-                        />
-                    </Col>
-                    <Col xs md={6}>
-                        <SemiText
-                            name="email"
-                            value={values.email}
-                            validations="isEmail"
-                            required
-                            floatingLabelText="email"
-                            fullWidth={true}
-                        />
-                    </Col>
-                </Row>
-
-                {editId ? togglePass : null}
-
-                {changePass || !editId ?
-                    <Row>
-                        <Col xs md={6}>
-                            <SemiText
-                                name="password"
-                                type="password"
-                                validations={{ minLength: 3, maxLength: 50 }}
-                                hintText="Longer the better"
-                                floatingLabelText="password"
-                                fullWidth={true}
-                            />
-                        </Col>
-                        <Col xs md={6}>
-                            <SemiText
-                                name="confirmPassword"
-                                type="password"
-                                validations="equalsField:password"
-                                required
-                                floatingLabelText="confim password"
-                                fullWidth={true}
-                            />
-                        </Col>
-                    </Row> : null}
-                <Row>
-                    <Col xs md={6}>
-                        <SemiText
-                            name="name"
-                            value={values.name}
-                            validations={{ minLength: 3, maxLength: 50 }}
-                            required
-                            floatingLabelText="full name"
-                            fullWidth={true}
-                        />
-                    </Col>
-                    <Col xs md={6}>
-                        <SemiSelect
-                            name="branch"
-                            data={this.state.data.branches}
-                            value={values.branchId}
-                            required
-                            floatingLabelText={'branch'}
-                            fullWidth={true}
-                        />
-                    </Col>
-                </Row><Row>
-                    <Col xs md={6}>
-                        <SemiText
-                            name="phone"
-                            value={values.phone}
-                            validations={{minLength: 3,maxLength: 50}}
-                            required
-                            hintText="Primary phone number"
-                            floatingLabelText="phone"
-                            fullWidth={true}
-                        />
-
-                    </Col>
-                    <Col xs md={6}>
-                        <SemiText
-                            name="phone2"
-                            value={values.phone_2}
-                            validations={{minLength: 3,maxLength: 50}}
-                            hintText="Secondary phone number"
-                            floatingLabelText="another phone"
-                            fullWidth={true}
-                        />
-                    </Col>
-                </Row><Row>
-                    <Col xs md={6}>
-                        <SemiSelect
-                            name="roles"
-                            data={this.state.data.roles}
-                            value={values.roleId}
-                            required
-                            floatingLabelText={'roles'}
-                            fullWidth={true}
-                            multiple
-                        />
-                    </Col>
-
-                </Row>
-            </SemiModal>
+            />
         );
     }
 }

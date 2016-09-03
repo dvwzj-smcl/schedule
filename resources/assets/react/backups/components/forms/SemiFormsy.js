@@ -2,8 +2,8 @@ import React, { PropTypes, Component } from 'react';
 import RaisedButton from 'material-ui/RaisedButton';
 import { Form } from 'formsy-react';
 import ReactDOM from 'react-dom';
-import Loading from '../widgets/Loading';
-import FormGenerator from './FormGenerator';
+import Loading from '../../../components/widgets/Loading';
+import FormGenerator from './../../../components/forms/FormGenerator';
 
 class SemiForm extends Component {
     constructor(props) {

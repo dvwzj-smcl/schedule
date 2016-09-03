@@ -1,12 +1,12 @@
 import React, { PropTypes, Component } from 'react';
 import {HOC} from 'formsy-react';
-import FormsyText from 'formsy-material-ui/lib/FormsyText';
+import FormsyText from '../../../../../../node_modules/formsy-material-ui/lib/FormsyText';
 import keycode from 'keycode';
 import TextField from 'material-ui/TextField';
-import ErrorMessage from '../forms/ErrorMessage';
-import IconButton from 'material-ui/IconButton/IconButton';
-import ClearIcon from 'material-ui/svg-icons/content/clear';
-import VisibleOffIcon from 'material-ui/svg-icons/action/visibility-off';
+import ErrorMessage from '../../../components/forms/ErrorMessage';
+import IconButton from '../../../../../../node_modules/material-ui/IconButton/IconButton';
+import ClearIcon from '../../../../../../node_modules/material-ui/svg-icons/content/clear';
+import VisibleOffIcon from '../../../../../../node_modules/material-ui/svg-icons/action/visibility-off';
 
 class SemiText extends Component{
     constructor(props) {

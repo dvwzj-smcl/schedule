@@ -37,6 +37,7 @@ class Alert extends Component {
         let color = '#C62828';
         if(state.type == 'success') color = '#43A047';
         if(state.type == 'warning') color = '#EF6C00';
+        let desc = typeof state.description === 'string' ? state.description : 'Something happened';
         return (
             <Dialog
                 style={{zIndex: 99999}}
@@ -49,7 +50,7 @@ class Alert extends Component {
                 bodyStyle={{ marginTop: 20 }}
                 autoScrollBodyContent={true}
             >
-                {state.description}
+                <div>{desc}</div>
             </Dialog>
         );
     }

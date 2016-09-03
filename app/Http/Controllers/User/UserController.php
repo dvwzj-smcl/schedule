@@ -19,61 +19,76 @@ class UserController extends Controller
 {
     public function index()
     {
-        $cols = [
-            'id',
-            'name',
-            'username',
-            'email',
-            'branch_id'
-        ];
-        $data = [];
-        $sql = User::currentBranch()->select($cols);
-
-        // -- Order
-        if (Input::has('order')) {
-            foreach (json_decode(Input::get('order')) as $order) {
-                $sql->orderBy($order->column, $order->dir);
-            }
-        }
-
-        $userID = 1;
-        $user = Auth::loginUsingId($userID);
-        $canEdit = $user->can("edit-users");
-
-        // -- Filter
-        if (Input::has('columns')) {
-            foreach (json_decode(Input::get('columns')) as $col) {
-                $column = $col->data;
-                $val = $col->search;
-                if (in_array($column, $cols) && ($val != '')) {
-                    $sql->where($column, 'LIKE', '%' . $val . '%');
+        return BF::getDataTable(User::with('branch'), 'user', function($data) {
+            // process data here or just use custom field on client side.
+            foreach($data as $item) {
+                $roleStr = '';
+                foreach($item->roles as $role) {
+                    $roleStr .= $role->display_name;
                 }
+                $item->role_name = $roleStr;
+                if(isset( $item->branch)) $item->branch_name = $item->branch->name;
+                unset($item->branch);
+                unset($item->roles);
             }
-        }
-
-//        DB::enableQueryLog();
-//        $sql->get();
-//        $query = DB::getQueryLog();
-//        return $query ;
-//        exit();
-        try {
-            $count = $sql->count();
-            $data = $sql->skip(Input::get('start'))->take(Input::get('length'))->with('roles', 'branch')->get();
-            foreach ($data as $key => $rs) {
-                if (!empty($rs->roles[0]))
-                    $rs->role_name = $rs->roles[0]->display_name;
-                if (!empty($rs->branch))
-                    $rs->branch_name = $rs->branch->name;
-
-                unset($rs->branch);
-                unset($rs->roles);
-            }
-            $result = BF::dataTable($data, $count, $count, $canEdit);
-        } catch (\Illuminate\Database\QueryException $e) {
-            return BF::result(false, $e->getMessage());
-        }
-
-        return BF::result(true, $result, '[user] index');
+            return $data;
+        });
+        // original
+//        $cols = [
+//            'id',
+//            'name',
+//            'username',
+//            'email',
+//            'branch_id'
+//        ];
+//        $data = [];
+//        $sql = User::currentBranch()->select($cols);
+//
+//        // -- Order
+//        if (Input::has('order')) {
+//            foreach (json_decode(Input::get('order')) as $order) {
+//                $sql->orderBy($order->column, $order->dir);
+//            }
+//        }
+//
+//        $userID = 1;
+//        $user = Auth::loginUsingId($userID);
+//        $canEdit = $user->can("edit-users");
+//
+//        // -- Filter
+//        if (Input::has('columns')) {
+//            foreach (json_decode(Input::get('columns')) as $col) {
+//                $column = $col->data;
+//                $val = $col->search;
+//                if (in_array($column, $cols) && ($val != '')) {
+//                    $sql->where($column, 'LIKE', '%' . $val . '%');
+//                }
+//            }
+//        }
+//
+////        DB::enableQueryLog();
+////        $sql->get();
+////        $query = DB::getQueryLog();
+////        return $query ;
+////        exit();
+//        try {
+//            $count = $sql->count();
+//            $data = $sql->skip(Input::get('start'))->take(Input::get('length'))->with('roles', 'branch')->get();
+//            foreach ($data as $key => $rs) {
+//                if (!empty($rs->roles[0]))
+//                    $rs->role_name = $rs->roles[0]->display_name;
+//                if (!empty($rs->branch))
+//                    $rs->branch_name = $rs->branch->name;
+//
+//                unset($rs->branch);
+//                unset($rs->roles);
+//            }
+//            $result = BF::dataTable($data, $count, $count, $canEdit);
+//        } catch (\Illuminate\Database\QueryException $e) {
+//            return BF::result(false, $e->getMessage());
+//        }
+//
+//        return BF::result(true, $result, '[user] index');
     }
 
     public function create()

@@ -12,6 +12,16 @@ class CreateUserModuleTables extends Migration
      */
     public function up()
     {
+        Schema::create('branches', function(Blueprint $table) {
+            $table->increments('id');
+            $table->string('name', 50)->unique();
+            $table->string('email', 100);
+            $table->string('phone', 20);
+            $table->string('fax', 20);
+            $table->text('address');
+            $table->text('desc');
+            $table->timestamps() ;
+        });
         Schema::create('users', function(Blueprint $table) {
             $table->increments('id');
             $table->string('name') ;
@@ -22,20 +32,10 @@ class CreateUserModuleTables extends Migration
             $table->string('password', 60);
             $table->string('status', 60)->nullable();
             $table->integer('branch_id')->unsigned();
+            $table->foreign('branch_id')->references('id')->on('branches')->onUpdate('cascade')->onDelete('restrict');
             $table->string('lang', 2)->default('th');
             $table->rememberToken();
             $table->timestamps();
-        });
-        
-        Schema::create('branches', function(Blueprint $table) {
-            $table->increments('id');
-            $table->string('name', 50)->unique();
-            $table->string('email', 100);
-            $table->string('phone', 20);
-            $table->string('fax', 20);
-            $table->text('address');
-            $table->text('desc');
-            $table->timestamps() ;
         });
         Schema::create('user_type', function(Blueprint $table) {
             $table->increments('id');
@@ -50,8 +50,8 @@ class CreateUserModuleTables extends Migration
      */
     public function down()
     {
+        Schema::drop('user_type');
         Schema::drop('users');
         Schema::drop('branches');
-        Schema::drop('user_type');
     }
 }

@@ -2,7 +2,7 @@ import React, {PropTypes, Component} from 'react';
 import { connect } from 'react-redux';
 import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
-import {ActionDateRange, ActionHome, ActionEvent, ActionEventSeat, ActionPermContactCalendar, SocialPerson, ActionSettings, ActionDashboard, ActionAccessibility } from 'material-ui/svg-icons';
+import {ActionDateRange, ActionHome, ActionEvent, ActionEventSeat, ActionPermContactCalendar, SocialPerson, ActionSettings, ActionDashboard, ActionAccessibility, ActionStore } from 'material-ui/svg-icons';
 // shift+shift and svg-icons\index to search for the name
 // see: https://www.materialui.co/icons, https://design.google.com/icons/
 
@@ -58,15 +58,21 @@ const menus = [
         permissions : ['edit-users']
     },
     {
-        text: "FormDemo",
-        icon: <ActionPermContactCalendar />,
-        to: "/form"
+        text: "Branches",
+        icon: <ActionStore />,
+        to: "/branches",
+        permissions : ['edit-branches']
     },
-    {
-        text: "DataTableDemo",
-        icon: <ActionPermContactCalendar />,
-        to: "/datatable"
-    }
+    // {
+    //     text: "FormDemo",
+    //     icon: <ActionPermContactCalendar />,
+    //     to: "/form"
+    // },
+    // {
+    //     text: "DataTableDemo",
+    //     icon: <ActionPermContactCalendar />,
+    //     to: "/datatable"
+    // }
 ];
 
 const menuFilter = (required, permissions) => {
@@ -76,7 +82,7 @@ const menuFilter = (required, permissions) => {
     for(let item of required) {
         if(permissions.indexOf(item) !== -1) return true;
     }
-    return true;
+    return false;
 };
 
 class MainMenu extends Component {
@@ -91,9 +97,9 @@ class MainMenu extends Component {
     }
 
     isActiveMenu(menuPath, parentPath) {
-        // console.log('props.location.pathname', this.props.location.pathname, pathname);
-        if(menuPath == '/') return false;
+        // console.log('props.location.pathname', this.props.location.pathname, menuPath);
         let currentPath = this.props.location.pathname;
+        if(menuPath == '/') return currentPath == menuPath;
         let path = parentPath || menuPath;
         return currentPath.indexOf(path) !== -1;
     }

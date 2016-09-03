@@ -29,7 +29,7 @@ class CustomerPage extends Component {
         this.state = {
             customer: null,
             events: null,
-            editable: false
+            editable: null
         };
         this.infoCustomerModal = this.infoCustomerModal.bind(this);
         this.editCustomerModal = this.editCustomerModal.bind(this);
@@ -37,12 +37,6 @@ class CustomerPage extends Component {
         this.handleEditSubmit = this.handleEditSubmit.bind(this);
 
         this.handleReloadPage = this.handleReloadPage.bind(this);
-    }
-
-    componentDidMount() {
-    }
-
-    componentDidUpdate() {
     }
 
     infoCustomerModal(customer_id){
@@ -53,7 +47,7 @@ class CustomerPage extends Component {
             },
             {
                 name: 'events',
-                url: `schedules/customer-events/${customer_id}`
+                url: `schedules/customers/${customer_id}/events`
             }
         ], null).then((res)=>{
             if(res.customer&&res.events&&res.customer.recordsTotal==1){
@@ -65,36 +59,40 @@ class CustomerPage extends Component {
                     }
                 }).filter((row)=>row.field);
                 let events = res.events.tbData;
-                this.setState({customer, events, editable: false});
+                this.setState({customer, events, editable: null});
                 //this.context.router.push({pathname: `/customers/${customer_id}`});
                 this.refs.info.open();
             }
         }).catch((err)=>{console.log('err', err)});
     }
+
     editCustomerModal(customer_id){
-        this.context.ajax.call("get", `schedules/customers?id=${customer_id}`, null).then((res)=>{
-            if(res.data&&res.data.recordsTotal==1) {
-                let customer = Object.keys(res.data.tbData[0]).map((i)=>{
-                    return {
-                        key: i,
-                        field: customerFields[i],
-                        value: res.data.tbData[0][i]
-                    }
-                }).filter((row)=>row.field);
-                this.setState({customer, events: null, editable: true});
-                //this.context.router.push({pathname: `/customers/${customer_id}/edit`});
-                this.refs.edit.open();
-            }
+        this.context.ajax.call("get", `schedules/customers/${customer_id}`, null).then((res)=>{
+            this.setState({customer: null, events: null, editable: res.data.customer});
+            this.refs.edit.open();
         }).catch((err)=>{console.log('err', err)});
     }
-    handleEditSubmit(data){
+
+    handleEditSubmit(data, ajax, dialog){
         console.log('submit', data);
-        this.setState({customer: null, events: null, editable: false});
+        // Using SemiModal's ajax is recommended
+        return ajax.call('put', `schedules/customers/${data.id}`, data).then( response => {
+            dialog.alert('Customer Updated', 'Success', 'success');
+            this.refs.tb.handleReload();
+            this.setState({customer: null, events: null, editable: null});
+            return response; // pass response to SemiModal
+        }).catch( error => {
+            console.log('error', error);
+            dialog.alert(error, 'Error');
+            throw error; // pass error to SemiModal
+        });
     }
+
     handleModalClose(){
-        this.setState({customer: null, events: null, editable: false});
+        this.setState({customer: null, events: null, editable: null});
         //this.context.router.goBack();
     }
+
     handleReloadPage(){
         console.log('on reload: CustomerPage');
     }
@@ -140,8 +138,8 @@ class CustomerPage extends Component {
                             },
                             header:{
                                 displaySelectAll: false,
-                                    enableSelectAll: false,
-                                    adjustForCheckbox: false
+                                enableSelectAll: false,
+                                adjustForCheckbox: false
                             },
                             body:{
                                 displayRowCheckbox: false
@@ -149,41 +147,55 @@ class CustomerPage extends Component {
                             fields:[
                                 {
                                     title: 'Start',
-                                    key: 'start'
-                                },
-                                {
-                                    title: 'End',
-                                    key: 'end'
-                                },
-                                {
-                                    title: 'Sale',
-                                    key: 'sale',
+                                    key: 'start',
+                                    width: '40%',
                                     custom(row){
-                                        return row.sale ? (
-                                            <div>Sale is ? xxx</div>
-                                        ) : null;
+                                        let start = new Date(row.start);
+                                        let end = new Date(row.end);
+                                        return <div>{`${start.getISODate()} (${start.getTimeAmPm()} - ${end.getTimeAmPm()})`}</div>;
+                                    }
+                                },
+                                {
+                                    title: 'Activity',
+                                    key: 'Activity',
+                                    width: '30%',
+                                    custom(row){
+                                        return <div>{row.sub_category.name}</div>;
+                                    }
+                                },
+                                {
+                                    title: 'Doctor',
+                                    key: 'Doctor',
+                                    width: '30%',
+                                    custom(row){
+                                        return <div>{row.slot.doctor.user.name}</div>;
                                     }
                                 }
+                                // {
+                                //     title: 'Sale',
+                                //     key: 'Sale',
+                                //     custom(row){
+                                //         return <div>{row.sale.name}</div>;
+                                //     }
+                                // }
                             ]
                         }}
                     dataSource={events} />
                 </Panel>
             </div>
         ) : null;
-        let editCustomerFormTemplate = {
-            values: customer&&customer.map((f)=>{
-                let obj = {};
-                obj[f.key] = f.value;
-                return obj;
-            }).reduce((a,b)=>Object.assign(a,b)),
+
+        let editCustomerFormTemplate = editable ? {
+            values: editable,
             components: [
                 [{type: 'text', name: 'first_name', label: 'First Name', required: true}],
                 [{type: 'text', name: 'last_name', label: 'Last Name', required: true}],
                 [{type: 'numeric', name: 'hn', label: 'HN', required: true}],
                 [{type: 'text', name: 'phone', label: 'Phone'}],
-                [{type: 'text', name: 'contact', label: 'Contact'}]
+                [{type: 'text', name: 'contact', label: 'Contact'}],
+                [{type: 'hidden', name: 'id'}]
             ]
-        };
+        } : {};
         return (
             <div>
                 <PageHeading title="Customer" description="Edit customer info and find customers' appointments" />

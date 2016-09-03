@@ -11,7 +11,7 @@ import Divider from 'material-ui/Divider';
 import MenuItem from 'material-ui/MenuItem';
 import SelectField from 'material-ui/SelectField';
 // Forms
-import SemiText from './forms/SemiText';
+import SemiText from './../backups/components/forms/SemiText';
 import SemiForm from './forms/SemiForm';
 import FormsyDate from 'formsy-material-ui/lib/FormsyDate';
 import FormsySelect from 'formsy-material-ui/lib/FormsySelect';

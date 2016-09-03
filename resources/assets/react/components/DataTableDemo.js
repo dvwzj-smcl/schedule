@@ -61,16 +61,17 @@ class DataTableDemo extends Component {
                                 <div className="con-pad">
                                     <SemiDataTable
                                         settings={{
-                                            table:{
-                                                selectable: false
+                                           table:{
+                                                selectable: true,
+                                                multiSelectable: false
                                             },
                                             header:{
-                                                displaySelectAll: false,
-                                                enableSelectAll: false,
-                                                adjustForCheckbox: false
+                                                displaySelectAll: true,
+                                                enableSelectAll: true,
+                                                adjustForCheckbox: true
                                             },
                                             body:{
-                                                displayRowCheckbox: false
+                                                displayRowCheckbox: true
                                             },
                                             fields:[
                                                 {

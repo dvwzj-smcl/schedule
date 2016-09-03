@@ -68,17 +68,4 @@ class SubcategoryController extends Controller
             return BF::result(false, $e->getMessage());
         }
     }
-
-    public function saveSubcategories(Request $request, $doctor_id)
-    {
-        try {
-            $doctor = Doctor::find($doctor_id);
-            // todo: parse JSON
-            if($doctor == null) throw new \Exception('Doctor not found!');
-            $doctor->update($request->all());
-            return BF::result(true, ['subcategory' => $doctor]);
-        } catch (\Exception $e){
-            return BF::result(false, $e->getMessage());
-        }
-    }
 }

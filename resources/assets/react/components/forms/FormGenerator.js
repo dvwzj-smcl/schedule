@@ -1,8 +1,8 @@
 import React, { PropTypes, Component } from 'react';
 
-import SemiSelect from './SemiSelect';
-import SemiDate from './SemiDate';
-import SemiText from './SemiText';
+import SemiSelect from './../../backups/components/forms/SemiSelect';
+import SemiDate from './../../backups/components/forms/SemiDate';
+import SemiText from './../../backups/components/forms/SemiText';
 
 import {Grid, Row, Col} from 'react-flexbox-grid';
 

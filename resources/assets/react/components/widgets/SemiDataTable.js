@@ -126,7 +126,7 @@ class SemiDataTable extends Component {
                         columns
                     });
                 }
-            }, 500);
+            }, 50);
 
             let query = order ? {page, order} : {page};
             pathname && this.context.router.push({pathname, query});

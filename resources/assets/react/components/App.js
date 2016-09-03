@@ -57,13 +57,7 @@ Date.prototype.getISODate = function() {
     if(day < 10) day = '0'+day;
     return this.getFullYear()+'-'+month+'-'+day;
 };
-Date.prototype.getDateTimeStr = function() {
-    // date
-    let month = this.getMonth()+1;
-    if(month < 10) month = '0'+month;
-    let day = this.getDate();
-    if(day < 10) day = '0'+day;
-
+Date.prototype.getTimeAmPm = function() {
     // time
     let hours = this.getHours();
     let minutes = this.getMinutes();
@@ -72,8 +66,15 @@ Date.prototype.getDateTimeStr = function() {
     hours = hours ? hours : 12; // the hour '0' should be '12'
     minutes = minutes < 10 ? '0'+minutes : minutes;
     let strTime = hours + ':' + minutes + '' + ampm;
-
-    return this.getFullYear()+'-'+month+'-'+day+' '+strTime;
+    return strTime;
+};
+Date.prototype.getDateTimeStr = function() {
+    // date
+    let month = this.getMonth()+1;
+    if(month < 10) month = '0'+month;
+    let day = this.getDate();
+    if(day < 10) day = '0'+day;
+    return this.getFullYear()+'-'+month+'-'+day+' '+this.getTimeAmPm();
 };
 Date.prototype.unix = function() {
     return this.getTime()/1000;

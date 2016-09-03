@@ -18,7 +18,7 @@ import 'fullcalendar';
 import 'fullcalendar/dist/lang-all';
 
 // Forms
-import SemiText from './forms/SemiText';
+import SemiText from './../backups/components/forms/SemiText';
 import SemiForm from './forms/SemiForm';
 import FormsyDate from 'formsy-material-ui/lib/FormsyDate';
 import SelectField from 'material-ui/SelectField';

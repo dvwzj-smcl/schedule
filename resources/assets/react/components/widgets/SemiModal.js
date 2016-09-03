@@ -46,12 +46,13 @@ class SemiModal extends Component {
     onSubmit = (data, ajax) => {
         if(typeof ajax === 'function') return; // unknown bug fix, try removing this and console.log(ajax) to see the bug
         if(this.props.onSubmit) {
-            let promise = this.props.onSubmit(Object.assign({}, data, this.state.externalData), ajax);
+            let promise = this.props.onSubmit(Object.assign({}, data, this.state.externalData), ajax, this.context.dialog);
             if(promise) {
                 return promise.then( response => {
                     this.close();
                     return response;
                 }).catch( error => {
+                    console.log('error', error);
                     // todo: error handling
                     throw error; // to .catch SemiForm
                 });
@@ -135,7 +136,7 @@ SemiModal.propTypes = {
 
 SemiModal.contextTypes = {
     router: PropTypes.object.isRequired,
-    dialog: PropTypes.object.isRequired
+    dialog: PropTypes.object
 };
 
 export default SemiModal;

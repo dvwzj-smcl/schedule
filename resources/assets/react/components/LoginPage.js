@@ -7,7 +7,7 @@ import Paper from 'material-ui/Paper';
 import { login, isAuthenticated, getError } from '../actions/userActions';
 
 import Divider from 'material-ui/Divider';
-import SemiText from './forms/SemiText';
+import SemiText from './../backups/components/forms/SemiText';
 import SemiForm from './forms/SemiForm';
 import Alert from './widgets/Alert';
 
@@ -49,8 +49,8 @@ class LoginPage extends Component {
             settings: {showClear: false},
             // values: {username: 'sale1', password: 'asdfasdf'},
             components: [
-                [{type: 'text', name: 'username', label: 'Username', required: true, hint: 'your username or email', validations:'isAlphanumeric'}],
-                [{type: 'password', name: 'password', label: 'Password', required: true}]
+                [{type: 'text', name: 'username', label: 'Username (Test Users: admin, organizer1, sale1)', required: true, hint: 'your username or email', validations:'isAlphanumeric'}],
+                [{type: 'password', name: 'password', label: 'Password (Test Users: asdfasdf)', required: true}]
             ]
         };
 

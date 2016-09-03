@@ -45,12 +45,6 @@ class User extends Authenticatable
     public function doctor(){
         return $this->hasOne('App\Models\User\Doctor');
     }
-//    public function organizer(){
-//        return $this->hasOne('App\Models\User\Organizer');
-//    }
-//    public function sale(){
-//        return $this->hasOne('App\Models\User\Sale');
-//    }
     public function roles(){
         return $this->belongsToMany('App\Models\User\Role');
     }

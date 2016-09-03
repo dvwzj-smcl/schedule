@@ -25,7 +25,7 @@ class UserModuleSeeder extends Seeder
 
         // Generate Users
 
-        $user_admin = \App\Models\User\User::create(['name'=>'Admin', 'username'=>'admin', 'email'=>'admin@localhost.com', 'password'=>bcrypt('password'), 'lang'=>'th', 'branch_id'=>1, 'phone'=>'020001111', 'phone_2'=>'020001111']);
+        $user_admin = \App\Models\User\User::create(['name'=>'Admin', 'username'=>'admin', 'email'=>'admin@localhost.com', 'password'=>bcrypt('asdfasdf'), 'lang'=>'th', 'branch_id'=>1, 'phone'=>'020001111', 'phone_2'=>'020001111']);
         $user_admin->attachRole($role_admin);
 
         for($branch_id = 1; $branch_id <= \App\Models\User\Branch::count(); $branch_id++) {
@@ -62,6 +62,9 @@ class UserModuleSeeder extends Seeder
         $perms['view-branches'] = \App\Models\User\Permission::create(['name'=>'view-branches', 'display_name'=>'View Branches', 'description'=>'']);
         $perms['edit-branches'] = \App\Models\User\Permission::create(['name'=>'edit-branches', 'display_name'=>'Edit Branches', 'description'=>'']);
 
+        $perms['view-customers'] = \App\Models\User\Permission::create(['name'=>'view-customers', 'display_name'=>'View Customers', 'description'=>'']);
+        $perms['edit-customers'] = \App\Models\User\Permission::create(['name'=>'edit-customers', 'display_name'=>'Edit Customers', 'description'=>'']);
+
         // slot page
         $perms['view-slot'] = \App\Models\User\Permission::create(['name'=>'view-slot', 'display_name'=>'View Slot', 'description'=>'']);
         $perms['edit-slot'] = \App\Models\User\Permission::create(['name'=>'edit-slot', 'display_name'=>'Edit Slot', 'description'=>'']);
@@ -83,14 +86,20 @@ class UserModuleSeeder extends Seeder
         $role_admin->attachPermission($perms['edit-branches']);
 
         $role_doctor->attachPermission($perms['view-schedules']);
+        $role_doctor->attachPermission($perms['view-customers']);
+        $role_doctor->attachPermission($perms['edit-customers']);
 
         $role_organizer->attachPermission($perms['organize-schedules']);
         $role_organizer->attachPermission($perms['view-schedules']);
         $role_organizer->attachPermission($perms['schedule-settings']);
         $role_organizer->attachPermission($perms['view-slot']);
         $role_organizer->attachPermission($perms['edit-slot']);
+        $role_organizer->attachPermission($perms['view-customers']);
+        $role_organizer->attachPermission($perms['edit-customers']);
 
         $role_sale->attachPermission($perms['view-schedules']);
         $role_sale->attachPermission($perms['request-schedules']);
+        $role_sale->attachPermission($perms['view-customers']);
+        $role_sale->attachPermission($perms['edit-customers']);
     }
 }

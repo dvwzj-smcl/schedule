@@ -13,55 +13,23 @@ import SemiButton from '../widgets/SemiButton';
 import api from '../../api';
 class UserPage extends Component {
     constructor(props) {
-
         super(props);
-        this.state = {
-            dataTableColumn:[
-                {
-                    col:'id',
-                    width:'10%'
-                },
-                {
-                    col:'email',
-                    width:'40%'
-                },
-                {
-                    col:'role_name',
-                    width:'40%'
-                }
-            ]
-        };
-        this.reloadPage = this.reloadPage.bind(this);
-        this.editUser = this.editUser.bind(this);
     }
 
-    componentWillMount(){
-        // console.log('componentWillMount');
+    getChildContext() {
+        return { dataTable: this.refs.tb }
     }
 
-    componentDidMount(){
-    }
-
-    componentWillReceiveProps(nextProps){
-    }
-
-    shouldComponentUpdate(nextProps, nextState) {
-        return true ;
-    }
-
-    reloadPage(){
-    }
-
-    editUser(user_id){
+    editUser = (user_id) =>{
         this.context.router.push("/users"+'/'+user_id)
-    }
+    };
 
     deleteUser = (user_id) => {
         this.context.dialog.confirm('Are you sure?', 'Delete', (confirm)=> {
             if (confirm) {
                 this.context.ajax.call('delete', `users/${user_id}`, null).then(response => {
                     this.context.dialog.alert('User deleted', 'Success', 'success');
-                    // todo: refresh datatable
+                    this.refs.tb.handleReload();
                 }).catch(error => {
                     this.context.dialog.alert(error, 'Error');
                 });
@@ -95,7 +63,7 @@ class UserPage extends Component {
                                     </div>
                                 </div>
                                 <SemiDataTable
-                                    ref="db"
+                                    ref="tb"
                                     settings={{
                                         table:{
                                             selectable: false
@@ -112,7 +80,7 @@ class UserPage extends Component {
                                             {
                                                 title: "ID",
                                                 key: "id",
-                                                style: {width: '10%'},
+                                                width: '10%',
                                                 sortable: true
                                             },
                                             {
@@ -126,12 +94,16 @@ class UserPage extends Component {
                                             },
                                             {
                                                 title: "Role",
-                                                key: "role_name"
+                                                key: "role_name",
+                                            },
+                                            {
+                                                title: "Branch",
+                                                key: "branch_name",
                                             },
                                             {
                                                 title: "Actions",
                                                 key: 'action',
-                                                style: {width: '10%'},
+                                                width: '10%',
                                                 custom: (row,index,tbDataProps)=>{
                                                     //console.log('tbDataProps', tbDataProps);
                                                     return (
@@ -174,6 +146,9 @@ UserPage.contextTypes = {
     router: PropTypes.object.isRequired,
     ajax: PropTypes.object,
     dialog: PropTypes.object
+};
+UserPage.childContextTypes = {
+    dataTable: PropTypes.object
 };
 
 const mapStateToProps = ({ user }) => ({ user });

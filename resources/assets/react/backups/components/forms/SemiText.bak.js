@@ -1,6 +1,6 @@
 import React, { PropTypes, Component } from 'react';
-import FormsyText from 'formsy-material-ui/lib/FormsyText';
-import ErrorMessage from '../forms/ErrorMessage';
+import FormsyText from '../../../../../../node_modules/formsy-material-ui/lib/FormsyText';
+import ErrorMessage from '../../../components/forms/ErrorMessage';
 
 // verification on every change is slow, so debouncing helps
 const debounceFunc = function(fn, delay) {
