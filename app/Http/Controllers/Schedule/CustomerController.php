@@ -17,6 +17,8 @@ class CustomerController extends Controller
 {
     public function index()
     {
+        return BF::getDataTable(Customer::query(), 'customer');
+        /*// original
         $cols = [
             'id',
             'first_name',
@@ -55,7 +57,7 @@ class CustomerController extends Controller
             return BF::result(false, $e->getMessage());
         }
 
-        return BF::result(true, $result, '[customer] get customers');
+        return BF::result(true, $result, '[customer] get customers');*/
     }
 
     public function create()
@@ -70,7 +72,7 @@ class CustomerController extends Controller
     {
         try {
             $customer = Customer::find($id);
-            return BF::result(true, ['customer' => $customer], '[customer] show');
+            return BF::result(true, $customer);
         } catch(\Exception $e) {
             return BF::result(false, $e->getMessage());
         }
@@ -82,56 +84,26 @@ class CustomerController extends Controller
 
     public function update(Request $request, $id)
     {
-        $data = $request->all();
-        try {
-            $validator = Validator::make($data, [
+        return BF::update([
+            'model' => 'user',
+            'action' => function($data) use ($id) {
+                $customer = Customer::find($id)->update($data);
+                return $customer;
+            },
+            'validator' => [
                 'first_name' => 'required|between:1,50', // not_exist is custom
                 'hn' => 'numeric',
-            ], BF::getErrorMessage()); // for convenience when needed to change error message in the future
-            if ($validator->fails()) {
-                throw new \Exception($validator->errors()->first());
-            }
-            $customer = Customer::find($id)->update($data);
-            return BF::result(true, [], '[customer] update');
-        } catch(\Exception $e) {
-            return BF::result(false, $e->getMessage());
-        }
+            ]
+        ]);
     }
 
     public function destroy($id)
     {
     }
 
-    public function getCustomerEvents($customer_id){
-        $sql = Event::with('sale', 'slot.doctor.user', 'sub_category');
-        $sql->where('sc_customer_id', '=', $customer_id);
-        if (Input::has('order')) {
-            foreach (json_decode(Input::get('order')) as $order) {
-                $sql->orderBy($order->column, $order->dir);
-            }
-        }
-        if (Input::has('columns')) {
-            foreach (json_decode(Input::get('columns')) as $col) {
-                $column = $col->data;
-                $val = $col->search;
-                if ($val != '') {
-                    $sql->where($column, 'LIKE', '%' . $val . '%');
-                }
-            }
-        }
-
-        try {
-            $count = $sql->count();
-            $data = Input::has('length')&&Input::get('length')!=0 ? $sql->skip(Input::get('start'))->take(Input::get('length'))->get() : $sql->get();
-            $result = BF::dataTable($data, $count, $count, false);
-        } catch (\Illuminate\Database\QueryException $e) {
-            return BF::result(false, $e->getMessage());
-        }
-
-        //dd(\DB::getQueryLog());
-
-        return BF::result(true, $result, '[schedule] get customer events');
-
+    public function getCustomerEvents($customer_id)
+    {
+        return BF::getDataTable(Event::with('sale', 'slot.doctor.user', 'sub_category')->where('sc_customer_id', '=', $customer_id), 'customer');
     }
 
 }

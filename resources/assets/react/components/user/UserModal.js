@@ -73,17 +73,6 @@ class UserModal extends Component {
         let isEdit = !!this.props.params.id;
         const {title,changePass} = this.state;
 
-        let togglePass = (<Row style={{marginTop: 16}}>
-            <Col xs md={6}>
-                <Toggle
-                    name="changePass"
-                    label="change password"
-                    toggled={changePass}
-                    onToggle={this.handleOpenPassword}
-                />
-            </Col>
-        </Row>);
-
         console.log('changePass', changePass);
 
         let formTemplate = {

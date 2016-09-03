@@ -140,7 +140,7 @@ class BaseFunctionManager {
                 $actionErrorMsg = "Cannot {$actionStr}";
                 $logMsg = "[{$actionStr}] something";
             }
-            if(empty($obj)) throw new \Exception("Cannot create {$actionErrorMsg}");
+            if(empty($obj)) throw new \Exception("{$actionErrorMsg}");
             
             // After create/update
             if(isset($postAction)) {
@@ -189,14 +189,15 @@ class BaseFunctionManager {
             exit();*/
 
             $count = $sql->count();
-            $data = $sql->skip(Input::get('start'))->take(Input::get('length'))->get();
+            $data = Input::has('length')&&Input::get('length')!=0 ? $sql->skip(Input::get('start'))->take(Input::get('length'))->get() : $sql->get();
+            // $data = $sql->skip(Input::get('start'))->take(Input::get('length'))->get();
 
             if(is_callable($processData)) {
                 $data = $processData($data);
             }
 
             // no need for logging message
-            return static::result(true, static::dataTable($data, $count, $count), 'asdfsd');
+            return static::result(true, static::dataTable($data, $count, $count));
         } catch(\Exception $e) {
             return static::result(false, $e->getMessage());
         }

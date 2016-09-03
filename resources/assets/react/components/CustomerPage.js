@@ -43,19 +43,19 @@ class CustomerPage extends Component {
         this.context.ajax.getAll([
             {
                 name: 'customer',
-                url: `schedules/customers?id=${customer_id}`
+                url: `schedules/customers/${customer_id}`
             },
             {
                 name: 'events',
                 url: `schedules/customers/${customer_id}/events`
             }
         ], null).then((res)=>{
-            if(res.customer&&res.events&&res.customer.recordsTotal==1){
-                let customer = Object.keys(res.customer.tbData[0]).map((i)=>{
+            if(res.customer&&res.events){
+                let customer = Object.keys(res.customer).map((i)=>{
                     return {
                         key: i,
                         field: customerFields[i],
-                        value: res.customer.tbData[0][i]
+                        value: res.customer[i]
                     }
                 }).filter((row)=>row.field);
                 let events = res.events.tbData;
