@@ -120,7 +120,7 @@ class SchedulePage extends Component {
                                 </div>
                             </Panel>
                             <ScheduleFilter params={this.props.params} schedule={props.schedule}/>
-                            {this.props.params.role == 'organizer' ? <ScheduleEventList user={props.user} params={this.props.params} schedule={props.schedule}/> : null}
+                            {this.props.params.role == 'organizer' ? <ScheduleEventList user={props.user} actions={this.props.actions} params={this.props.params} schedule={props.schedule}/> : null}
                         </Col>
                         <Col md={9}>
                             {props.children}
@@ -147,6 +147,7 @@ SchedulePage.childContextTypes = {
 
 const mapStateToProps = ({user, schedule}) => ({user, schedule});
 const mapDispatchToProps = (dispatch) => ({actions: {
-    init: bindActionCreators(scheduleActions.initSchedule, dispatch)
+    init: bindActionCreators(scheduleActions.initSchedule, dispatch),
+    getPendingEvents: bindActionCreators(scheduleActions.getPendingEvents, dispatch)
 }});
 export default connect(mapStateToProps, mapDispatchToProps)(SchedulePage);

@@ -13,6 +13,16 @@ export function initSchedule(params) {
     }
 }
 
+export function getPendingEvents(params) {
+    return {
+        params,
+        type: SCHEDULE_INIT,
+        moduleName: 'schedule',
+        map: 'pendingEvents',
+        callAPI: `schedules/organizer/pending-events`
+    }
+}
+
 // ----- Old Version
 /*export function initSchedule() {
     return {

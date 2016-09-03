@@ -95,29 +95,29 @@ class ScheduleController extends Controller
                 foreach($users as $user) {
                     if($user->hasRole('sale')) $sales[] = $user->id;
                 }
-                $pending = Event::whereIn('sale_id', $sales)
+                $pending = Event::whereIn('sale_id', $sales)->sinceToday()
                     ->where('status', 'pending')
                     ->orderBy('start', 'asc')
                     ->with('customer', 'sub_category', 'slot.doctor.user')->get();
-                $rejected = Event::whereIn('sale_id', $sales)
+                $rejected = Event::whereIn('sale_id', $sales)->sinceToday()
                     ->where('status', 'rejected')
                     ->orderBy('start', 'asc')
                     ->with('customer', 'sub_category', 'slot.doctor.user')->get();
-                $canceled = Event::whereIn('sale_id', $sales)
+                $canceled = Event::whereIn('sale_id', $sales)->sinceToday()
                     ->where('status', 'canceled')
                     ->orderBy('start', 'asc')
                     ->with('customer', 'sub_category', 'slot.doctor.user')->get();
                 return BF::result(true, ['pending' => $pending, 'rejected' => $rejected, 'canceled' => $canceled]);
             } else if(BF::hasRole('sale')) {
-                $pending = Event::where('sale_id', $userId)
+                $pending = Event::where('sale_id', $userId)->sinceToday()
                     ->where('status', 'pending')
                     ->orderBy('start', 'asc')
                     ->with('customer', 'sub_category', 'slot.doctor.user')->get();
-                $rejected = Event::where('sale_id', $userId)
+                $rejected = Event::where('sale_id', $userId)->sinceToday()
                     ->where('status', 'rejected')
                     ->orderBy('start', 'asc')
                     ->with('customer', 'sub_category', 'slot.doctor.user')->get();
-                $canceled = Event::where('sale_id', $userId)
+                $canceled = Event::where('sale_id', $userId)->sinceToday()
                     ->where('status', 'canceled')
                     ->orderBy('start', 'asc')
                     ->with('customer', 'sub_category', 'slot.doctor.user')->get();
@@ -130,13 +130,13 @@ class ScheduleController extends Controller
     }
 
     // Organizer's Schedule
-    public function getOrganizerEvents()
+    public function getOrganizerPendingEvents()
     {
         Carbon::setWeekStartsAt(Carbon::SUNDAY);
         Carbon::setWeekEndsAt(Carbon::SATURDAY);
         try {
-            $pendingEvents = Event::where('start', '>', Carbon::now()->addDay(-1))->where('status', 'pending')->with('slot.doctor')->orderBy('start')->get();
-            $doctors = Doctor::with('user')->select('id', 'user_id')->get()->keyBy('id');
+            $pendingEvents = Event::sinceToday()->where('status', 'pending')->with('slot.doctor')->orderBy('start')->get();
+            $doctors = Doctor::currentBranch()->with('user')->select('sc_doctors.id', 'sc_doctors.user_id')->get()->keyBy('id');
 
             foreach($doctors as $doctor) {
                 $doctor['name'] = $doctor['user']['name'];
@@ -146,6 +146,7 @@ class ScheduleController extends Controller
             $doctors = $doctors->toArray();
             foreach($pendingEvents as $event) {
                 $doctor_id = $event->slot->doctor->id;
+                if(!isset($doctors[$doctor_id])) continue;
                 $week = Carbon::parse($event->start)->startOfWeek()->timestamp;
                 if(!isset($doctors[$doctor_id]['pending']['items'][$week])) {
                     $doctors[$doctor_id]['pending']['items'][$week] = 0;

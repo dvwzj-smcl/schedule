@@ -24,20 +24,25 @@ class ScheduleEventList extends Component {
     }
 
     componentWillMount() {
-        this.init();
+        this.props.actions.getPendingEvents(true);
     }
 
+    initialized = () => {
+        return this.props.actions.getPendingEvents(false);
+    };
+
     init = () => {
-        let props = this.props;
-        this.loading = true;
-        this.context.ajax.call('get', `schedules/organizer/${props.user.id}/events`).then( response => {
-            console.log('response', response);
-            let list = response.data.list;
-            this.setState({initialized: true, list});
-        }).catch( error => {
-            this.context.dialog.alert(error, 'Error loading organizer\'s events');
-            this.loading = false;
-        });
+        // let props = this.props;
+        // this.loading = true;
+        // this.props.actions.getPendingEvents();
+        // this.context.ajax.call('get', `schedules/organizer/${props.user.id}/events`).then( response => {
+        //     console.log('response', response);
+        //     let list = response.data.list;
+        //     this.setState({initialized: true, list});
+        // }).catch( error => {
+        //     this.context.dialog.alert(error, 'Error loading organizer\'s events');
+        //     this.loading = false;
+        // });
     };
 
     goTo = (date, doctor_id) => {
@@ -45,9 +50,11 @@ class ScheduleEventList extends Component {
     };
 
     render() {
-        if (!this.state.initialized) return <Loading />;
+        if (!this.initialized()) return <Loading />;
         let list = [];
-        for(let [id, doctor] of this.state.list.entries()) {
+        console.log('this.props.schedule.pendingEvents', this.props.schedule.pendingEvents);
+        let pendingEvents = this.props.schedule.pendingEvents.data.list;
+        for(let [id, doctor] of pendingEvents.entries()) {
             let items = [];
             let pendingCount = 0;
             for(let week_id in doctor.pending.items) {

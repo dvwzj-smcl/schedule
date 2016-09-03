@@ -25,6 +25,11 @@ class Event extends Model
     public function customer(){
         return $this->belongsTo('App\Models\User\Customer', 'sc_customer_id');
     }
+    public function scopeSinceToday($query)
+    {
+        $today = Carbon::now()->setTime(0, 0, 0);
+        return $query->where('start', '>', $today);
+    }
 
     // status
     public function approve()

@@ -1,5 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as scheduleActions from '../../actions/scheduleActions';
 import {Grid, Row, Col} from 'react-flexbox-grid';
 import Panel from '../widgets/Panel';
 import {List, ListItem} from 'material-ui/List';
@@ -109,6 +111,7 @@ class ScheduleCalendar extends Component {
             this.context.dialog.confirm('Are you sure?', `${key.capitalize()} Appointment`, (confirm) => {
                 if(confirm) {
                     this.context.ajax.call('get', `schedules/events/${event_id}/status/${key}`, null).then( response => {
+                        this.props.actions.getPendingEvents();
                         this.refreshCalendar();
                     }).catch( error => {
                         this.context.dialog.alert(error, 'Error');
@@ -409,4 +412,7 @@ ScheduleCalendar.contextTypes = {
 };
 
 const mapStateToProps = ({user, schedule}) => ({user, schedule});
-export default connect(mapStateToProps)(ScheduleCalendar);
+const mapDispatchToProps = (dispatch) => ({actions: {
+    getPendingEvents: bindActionCreators(scheduleActions.getPendingEvents, dispatch)
+}});
+export default connect(mapStateToProps, mapDispatchToProps)(ScheduleCalendar);

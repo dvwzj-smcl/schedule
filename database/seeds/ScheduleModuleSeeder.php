@@ -95,7 +95,8 @@ class ScheduleModuleSeeder extends Seeder
         $maxId = count($subs) - 1;
         $time = $slot->start;
         $limit = $slot->end;
-        $today = \Carbon\Carbon::now();
+//        $today = \Carbon\Carbon::now();
+        $today = \Carbon\Carbon::now()->addDay(-30);
         $callDay = $today->copy()->addDay(7);
         $messageDay = $today->copy()->addDay(3);
         while($time < $limit) {

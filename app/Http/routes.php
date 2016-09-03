@@ -50,7 +50,7 @@ Route::group(['prefix' => 'api', 'middleware' => ['jwt.auth'/*,'permission'*/]],
         Route::get('init', 'Schedule\ScheduleController@init');
         Route::get('doctors/{doctor_id}/slots', 'Schedule\ScheduleController@getDoctorSlots');
         Route::get('doctors/{doctor_id}/events/{date?}', 'Schedule\ScheduleController@getDoctorSlotsWithEvents');
-        Route::get('organizer/{user_id}/events', 'Schedule\ScheduleController@getOrganizerEvents');
+        Route::get('organizer/pending-events', 'Schedule\ScheduleController@getOrganizerPendingEvents');
         
         // Customer
         Route::get('customers/{customer_id}/events', 'Schedule\CustomerController@getCustomerEvents');
