@@ -27,13 +27,13 @@ const setter = (obj, propString, value) => {
 export default function semiAPIMiddleware({ dispatch, getState }) {
     return next => action => {
         let {
-            shouldCallAPI,
-            moduleName,
-            onSuccess,
-            params,
-            type,
-            map,
-            callAPI, // string or function(fetch)
+            shouldCallAPI, // ( optional ) use this only when don't want to use default isLoading flag
+            moduleName, // ( required ) main module name
+            onSuccess, // ( optional ) a function you want to execute after success
+            params, // ( optional ) undefined: force load, true: load if not isLoading & return boolean isLoading, false: just return boolean isLoading
+            type, // ( required ) just match action name
+            map, // ( optional ) sub module name
+            callAPI, // URL string or custom fetch function
             payload = {}
         } = action;
 
