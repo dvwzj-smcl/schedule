@@ -1,11 +1,12 @@
 import {
-    SCHEDULE_INIT
+    SCHEDULE_INIT,
+    SCHEDULE_GET_PENDING_EVENTS,
+    SCHEDULE_EXAMPLE
 } from '../constants/actionTypes';
 
-// ----- Latest Version
-export function initSchedule(params) {
+export function initSchedule(checkAndLoad) {
     return {
-        params,
+        checkAndLoad,
         type: SCHEDULE_INIT,
         moduleName: 'schedule',
         // shouldCallAPI: (state, isLoaded) => !isLoaded,
@@ -13,13 +14,53 @@ export function initSchedule(params) {
     }
 }
 
-export function getPendingEvents(params) {
+export function getPendingEvents(checkAndLoad) {
     return {
-        params,
-        type: SCHEDULE_INIT,
+        checkAndLoad,
+        type: SCHEDULE_GET_PENDING_EVENTS,
         moduleName: 'schedule',
         map: 'pendingEvents',
         callAPI: `schedules/organizer/pending-events`
+    }
+}
+
+// Just for demonstration, not working properly.
+export function example(checkAndLoad) {
+    return {
+        checkAndLoad, // true|false|undefined
+        /*
+         * undefined: return promise & force load.
+         * true: return loaded (boolean) & if not loaded -> load
+         * false: return loaded (boolean)
+         */
+
+        // (required) unique
+        type: SCHEDULE_EXAMPLE,
+
+        // (required) same throughout this file
+        moduleName: 'schedule',
+        
+        // if no map, results in -> this.props.schedule
+        map: 'example', // results in -> this.props.schedule.example
+
+        // By default, it only checks for loading flag. Use this if you want more.
+        shouldCallAPI: (state, isLoaded) => state.user.access_token && !isLoaded,
+        
+        // callAPI: `schedules/organizer/pending-events`,
+        // or
+        callAPI: fetch(`schedules/organizer/pending-events`, {
+            method: 'get',
+            headers: { 'Access-Token': 'find your own way to get access_token' }
+        }).then(res=>{
+            // do something
+            return res;
+        }).catch(error=>{
+            //do something
+            throw error;
+        }),
+
+        // ( optional ) more data to reducer
+        payload: {more: 'data'} 
     }
 }
 

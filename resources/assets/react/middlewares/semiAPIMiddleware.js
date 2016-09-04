@@ -1,40 +1,16 @@
 import api from '../api';
 
-/*
- -- Deep set object --
- Why don't just use Object.assign ?
- Because The structure and depth are unknown
-  */
-const setter = (obj, propString, value) => {
-    if (!propString)
-        return obj;
-
-    let prop, ref = obj, props = propString.split('.');
-    for (let i = 0, iLen = props.length - 1; i <= iLen; i++) {
-        prop = props[i];
-        if(i == iLen) {
-            return ref[prop] = value;
-        } else {
-            if(ref[prop] == undefined) {
-                ref[prop] = {};
-            }
-            ref = ref[prop];
-        }
-    }
-    return obj;
-};
-
 export default function semiAPIMiddleware({ dispatch, getState }) {
     return next => action => {
         let {
-            shouldCallAPI, // ( optional ) use this only when don't want to use default isLoading flag
+            shouldCallAPI, // ( optional ) more condition in addition to loading flag
+            checkAndLoad, // ( optional ) true|false|undefined
             moduleName, // ( required ) main module name
             onSuccess, // ( optional ) a function you want to execute after success
-            params, // ( optional ) undefined: force load, true: load if not isLoading & return boolean isLoading, false: just return boolean isLoading
+            callAPI, // URL string or custom fetch function
             type, // ( required ) just match action name
             map, // ( optional ) sub module name
-            callAPI, // URL string or custom fetch function
-            payload = {}
+            payload = {} // ( optional ) more data to reducer
         } = action;
 
         
@@ -71,7 +47,7 @@ export default function semiAPIMiddleware({ dispatch, getState }) {
         // console.log('loaded', loaded, 'shouldCallApiFlag', shouldCallApiFlag);
 
         // If params === false it will get status instead of sending API call
-        if(params === false) {
+        if(checkAndLoad === false) {
             return loaded;
         } else if (!shouldCallApiFlag) {
             return;
@@ -128,10 +104,33 @@ export default function semiAPIMiddleware({ dispatch, getState }) {
             }
         );
         
-        if(params === true) {
+        if(checkAndLoad === true) {
             return loaded;
         } else {
             return promise;
         }
     }
 }
+
+/*
+ * -- Deep set object --
+ * parse string separated by '.'
+ */
+const setter = (obj, propString, value) => {
+    if (!propString)
+        return obj;
+
+    let prop, ref = obj, props = propString.split('.');
+    for (let i = 0, iLen = props.length - 1; i <= iLen; i++) {
+        prop = props[i];
+        if(i == iLen) {
+            return ref[prop] = value;
+        } else {
+            if(ref[prop] == undefined) {
+                ref[prop] = {};
+            }
+            ref = ref[prop];
+        }
+    }
+    return obj;
+};
