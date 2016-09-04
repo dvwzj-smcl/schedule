@@ -68,7 +68,7 @@ class CustomerPage extends Component {
 
     editCustomerModal(customer_id){
         this.context.ajax.call("get", `schedules/customers/${customer_id}`, null).then((res)=>{
-            this.setState({customer: null, events: null, editable: res.data.customer});
+            this.setState({customer: null, events: null, editable: res.data});
             this.refs.edit.open();
         }).catch((err)=>{console.log('err', err)});
     }

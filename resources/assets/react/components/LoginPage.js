@@ -32,7 +32,7 @@ class LoginPage extends Component {
     }
 
     onSubmit = (data) => {
-        console.log('data', data);
+        // console.log('data', data);
         this.props.actions.login(data.username, data.password).then((json)=>{
             console.log('json', json, this.props.user.error);
             if(this.props.actions.isAuthenticated()){

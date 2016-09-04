@@ -5,9 +5,11 @@ export default function semiAPIMiddleware({ dispatch, getState }) {
         let {
             shouldCallAPI, // ( optional ) more condition in addition to loading flag
             checkAndLoad, // ( optional ) true|false|undefined
+            requestData, // ( optional ) data to server
             moduleName, // ( required ) main module name
             onSuccess, // ( optional ) a function you want to execute after success
             callAPI, // URL string or custom fetch function
+            method, // ( required ) default to 'get'
             type, // ( required ) just match action name
             map, // ( optional ) sub module name
             payload = {} // ( optional ) more data to reducer
@@ -60,10 +62,17 @@ export default function semiAPIMiddleware({ dispatch, getState }) {
             return;
         } else if (typeof callAPI === 'string') {
             let url = callAPI;
-            callAPI = () => fetch(api.baseUrl(url),{
-                method: 'get',
+            if(method && method !== 'get') {
+                if(requestData) requestData._method = method;
+                else requestData = {_method: method};
+            }
+            else method = 'get';
+            let options = {
+                method: method,
                 headers: { 'Access-Token': getState().user.access_token }
-            });
+            };
+            if(requestData) options.body = JSON.stringify(requestData);
+            callAPI = () => fetch(api.baseUrl(url), options);
 
         } else if (typeof callAPI !== 'function') {
             throw new Error('Expected fetch to be a function.')

@@ -39,9 +39,12 @@ export function example(checkAndLoad) {
 
         // (required) same throughout this file
         moduleName: 'schedule',
-        
+
         // if no map, results in -> this.props.schedule
         map: 'example', // results in -> this.props.schedule.example
+
+        // if no data to server remove this not just {}
+        requestData: {data: 'data to server'},
 
         // By default, it only checks for loading flag. Use this if you want more.
         shouldCallAPI: (state, isLoaded) => state.user.access_token && !isLoaded,
@@ -50,7 +53,7 @@ export function example(checkAndLoad) {
             // do something with the loaded data
             getPendingEvents(); // or dispatch another action
         },
-        
+
         // callAPI: `schedules/organizer/pending-events`,
         // or
         callAPI: fetch(`schedules/organizer/pending-events`, {
@@ -65,7 +68,7 @@ export function example(checkAndLoad) {
         }),
 
         // ( optional ) more data to reducer
-        payload: {more: 'data'} 
+        payload: {more: 'data'}
     }
 }
 

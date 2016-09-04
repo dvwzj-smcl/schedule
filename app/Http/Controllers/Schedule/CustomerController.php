@@ -84,6 +84,7 @@ class CustomerController extends Controller
 
     public function update(Request $request, $id)
     {
+        var_dump($request->all());
         return BF::update([
             'model' => 'user',
             'action' => function($data) use ($id) {
