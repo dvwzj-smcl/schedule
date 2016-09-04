@@ -53,7 +53,7 @@ export default function configureRoute(store){
                 <Route path="categories(/:category_id)" component={UserIsAuthenticated(CategorySettingPage)} />
             </Route>
             <Route path="customers(/:customer_id)" component={UserIsAuthenticated(CustomerPage)} />
-            <Route path="branches(/:branch_id)" component={UserIsAuthenticated(BranchPage)} />
+            <Route path="branches(/:id)" component={UserIsAuthenticated(BranchPage)} />
             <Route path="form" component={UserIsAuthenticated(FormDemoPage)} />
             <Route path="datatable" component={UserIsAuthenticated(DataTableDemo)} />
             <Route path="*" component={UserIsAuthenticated(NotFoundPage)} />

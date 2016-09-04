@@ -69,8 +69,12 @@ class SemiModal extends Component {
     };
 
     close = () => {
-        if(this.props.alwaysOpen) {
-            this.context.router.goBack();
+        if(this.props.alwaysOpen || this.props.routeModal) {
+            if(this.props.onClose) this.props.onClose();
+            this.setState({ open: false });
+            setTimeout(()=> {
+                this.context.router.goBack();
+            }, 250);
         } else {
             if(this.props.onClose) this.props.onClose();
             this.setState({ open: false });
@@ -82,7 +86,7 @@ class SemiModal extends Component {
     };
 
     render() {
-        // console.log('render: modal');
+        // console.log('render: modal', this.state.open);
         let props = this.props;
         const actions = props.formTemplate ? [
             <FlatButton

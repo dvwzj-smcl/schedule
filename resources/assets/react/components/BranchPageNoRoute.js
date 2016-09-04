@@ -20,23 +20,23 @@ class BranchPage extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            data: {},
             values: {}
-        }
+        };
     }
 
     // Execute every time the modal is open
     // Recommend using ajax here if there is a form because it will trigger form loading spinner.
     onLoad = (ajax) => {
-        let id = this.props.params.id;
-        let isEdit = id !== 'create';
+        let id = this.object_id;
         let urls = [];
-        if(isEdit) { // edit
+        if(id) { // edit
             urls.push({url:`${URL}/${id}/edit`, name: 'values'});
         }
         // must return a promise
         return ajax.getAll(urls).then( data => {
-            if(data.values) this.setState(data);
-            else this.setState({value: {}});
+            if(data.values) this.setState(Object.assign({title: `Edit ${MODEL_NAME}`}, data));
+            else this.setState(Object.assign({title: `Create ${MODEL_NAME}`, value: {}}, data));
             return data; // pass data to SemiForm for further processing
         });
     };
@@ -46,6 +46,9 @@ class BranchPage extends Component {
         let url = id ? `${URL}/${id}` : `${URL}`;
         let method = id ? 'put' : 'post';
         let SuccessMessage = id ? `${MODEL_NAME} updated` : `${MODEL_NAME} created`;
+
+
+        console.log('method, url, data', method, url, data);
 
         // must return a promise
         return ajax.call(method, url, data).then( response => {
@@ -59,7 +62,8 @@ class BranchPage extends Component {
     };
 
     handleEdit = (id) =>{
-        this.context.router.push(`/${URL}/${id}`);
+        this.object_id = id;
+        this.refs.modal.open();
     };
 
     handleDelete = (id) => {
@@ -76,43 +80,37 @@ class BranchPage extends Component {
     };
 
     render() {
-        // console.log(`render: ${MODEL_NAME}`, !!id);
-        let id = this.props.params.id;
-        let modal = null;
-        if (id) {
-            let isEdit = id !== 'create';
-            let formTemplate = {
-                values: isEdit ? this.state.values : {},
-                components: [
-                    [
-                        {type: 'text', name: 'name', label: 'Name*', required: true},
-                        {type: 'text', name: 'email', label: 'Email*', required: true, validations:'isEmail'}
-                    ],
-                    [
-                        {type: 'text', name: 'phone', label: 'Phone*', required: true},
-                        {type: 'text', name: 'fax', label: 'Fax'}
-                    ],
-                    [
-                        {type: 'text', name: 'desc', label: 'Description'}
-                    ],
-                    [
-                        {type: 'text', name: 'address', label: 'Address'},
-                        {type: 'hidden', name: 'id'}
-                    ]
+        let {values, title} = this.state;
+        let formTemplate = {
+            values: values || {},
+            components: [
+                [
+                    {type: 'text', name: 'name', label: 'Name*', required: true},
+                    {type: 'text', name: 'email', label: 'Email*', required: true, validations:'isEmail'}
+                ],
+                [
+                    {type: 'text', name: 'phone', label: 'Phone*', required: true},
+                    {type: 'text', name: 'fax', label: 'Fax'}
+                ],
+                [
+                    {type: 'text', name: 'desc', label: 'Description'}
+                ],
+                [
+                    {type: 'text', name: 'address', label: 'Address'},
+                    {type: 'hidden', name: 'id'}
                 ]
-            };
-            modal = (
-                <SemiModal
-                    ref="modal"
-                    open={!!id}
-                    routeModal={true}
-                    title={isEdit ? `Edit ${MODEL_NAME}` : `Create ${MODEL_NAME}`}
-                    onLoad={this.onLoad} // execute every time the modal is open
-                    onSubmit={this.onSubmit}
-                    formTemplate={formTemplate}
-                />
-            );
-        }
+            ]
+        };
+
+        let modal = (
+            <SemiModal
+                ref="modal"
+                title={title || ''}
+                onLoad={this.onLoad} // execute every time the modal is open
+                onSubmit={this.onSubmit}
+                formTemplate={formTemplate}
+            />
+        );
 
         return (
             <div>
@@ -128,7 +126,12 @@ class BranchPage extends Component {
                                             semiType="add"
                                             label="Add New"
                                             onTouchTap={()=>{
-                                                this.context.router.push(`/${URL}/create`);
+                                                this.setState({
+                                                    value: {},
+                                                    title: 'Create Branch'
+                                                });
+                                                this.object_id = null;
+                                                this.refs.modal.open();
                                             }}
                                         />
                                         <SemiButton
