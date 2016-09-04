@@ -12,6 +12,11 @@ import SemiButton from './widgets/SemiButton';
 import {Form} from 'formsy-react';
 import {ContentAdd, ContentCreate, ActionAutorenew, ActionDelete} from 'material-ui/svg-icons';
 
+/**
+ * This page is for showing the differences between using route and setState
+ *
+ */
+
 // settings
 const MODEL_NAME = 'Branch';
 const URL = 'branches';
