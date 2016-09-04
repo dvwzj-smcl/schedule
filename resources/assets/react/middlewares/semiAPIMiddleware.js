@@ -86,7 +86,7 @@ export default function semiAPIMiddleware({ dispatch, getState }) {
                     else data = {data: json.data, loading: false, loaded: true};
                     // console.log('onSuccess', onSuccess);
                     if(typeof onSuccess === 'function') {
-                        dispatch(onSuccess());
+                        dispatch(onSuccess(data));
                     }
                     dispatch(Object.assign({}, payload, {
                         data,

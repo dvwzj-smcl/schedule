@@ -24,7 +24,7 @@ export function getPendingEvents(checkAndLoad) {
     }
 }
 
-// Just for demonstration, not working properly.
+// Just for demonstration only, not working properly.
 export function example(checkAndLoad) {
     return {
         checkAndLoad, // true|false|undefined
@@ -45,6 +45,11 @@ export function example(checkAndLoad) {
 
         // By default, it only checks for loading flag. Use this if you want more.
         shouldCallAPI: (state, isLoaded) => state.user.access_token && !isLoaded,
+
+        onSuccess: (data) => {
+            // do something with the loaded data
+            getPendingEvents(); // or dispatch another action
+        },
         
         // callAPI: `schedules/organizer/pending-events`,
         // or
