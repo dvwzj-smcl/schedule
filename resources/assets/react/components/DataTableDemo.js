@@ -61,7 +61,34 @@ class DataTableDemo extends Component {
                                 <div className="con-pad">
                                     <SemiDataTable
                                         settings={{
-                                           table:{
+                                            /*
+                                                table: // object, Table properties for <Table> (mui),
+                                                header: // object, TableHeader properties for <TableHeader> (mui),
+                                                body: // object, TableBody properties for <TableBody> mui,
+                                                fields: [ // array, limited column(s) to show
+                                                    {
+                                                        title: // required, but can be empty string (''),
+                                                        key: // row's key for show value,
+                                                        sortable: // optional, use for order,
+                                                        filterable: // optional, use for filter column(s) value
+                                                    }
+                                                ],
+                                                actions: {
+                                                    // key: props (can be boolean for reload , others with object or element)
+                                                    keyName: { // optional with prepared <FlatButton>
+                                                        label // optional, default=keyName
+                                                        onClick // optional
+                                                        style // optional
+                                                    },
+                                                    create: {onClick:()=>{}},
+                                                    reload: true,
+                                                    div: <div>Div Element</div>,
+                                                    raiseBtn: <RaiseButton label="Raise" onClick={()=>{}} />,
+                                                    emptyObj: {}
+                                                }
+                                                limit: // can be false for display all row(s), or (positive) decimal number
+                                            */
+                                            table:{
                                                 selectable: true,
                                                 multiSelectable: false
                                             },
