@@ -113,7 +113,6 @@ class SemiDataTable extends Component {
             let pathname = this.props.pathname || this.props.location && this.props.location.pathname;
             let order = options && options.order ? options.order.map((field)=>[field.column, field.dir].join(':')).join(',') : null;
             let columns = options && options.columns ? options.columns.map((field)=>[field.data, field.search].join(':')).join(',') : null;
-
             this.load = setInterval(()=>{
                 if(this.refs.table) {
                     clearInterval(this.load);
@@ -127,7 +126,6 @@ class SemiDataTable extends Component {
                     });
                 }
             }, 50);
-
             let query = order ? {page, order} : {page};
             pathname && this.context.router.push({pathname, query});
         });
@@ -154,7 +152,6 @@ class SemiDataTable extends Component {
                     search: f[1]
                 }
             }) : [];
-
             if(options&&options.order&&options.order.length>0) {
                 for (let i in options.order) {
                     let index = order.map((o)=>o.column).indexOf(options.order[i].column);
@@ -172,7 +169,6 @@ class SemiDataTable extends Component {
             }else if(options&&options.order&&options.order.length==0){
                 order = [];
             }
-
             if(options&&options.columns&&options.columns.length>0) {
                 for (let i in options.columns) {
                     if (columns.map((c)=>c.data).indexOf(options.columns[i].data) != -1) {
@@ -186,9 +182,7 @@ class SemiDataTable extends Component {
             }else if(options&&options.columns&&options.columns.length==0){
                 columns = [];
             }
-
             options = Object.assign({}, options, {order, columns});
-
             this.handleAjaxData(page, options);
         }
     }
@@ -198,14 +192,12 @@ class SemiDataTable extends Component {
             let re = new RegExp(key, 'gi');
             let order = this.props.location ? this.props.location.query.order : this.state.order;
             let dir = (order&&order.match(re) ? 'desc' : 'asc') || 'asc';
-            let limit = this.props.settings.limit || 10;
-
+            let limit = this.props.settings.limit!==undefined ? this.props.settings.limit : 10;
             let newOrder = typeof field.key == 'object' ? field.key.map((k)=>{return {column: k, dir}}) : [{column: field.key, dir}];
             let options = {
-                order: this.props.pagination ? newOrder : [{column: 'id', dir}]/*,
+                order: this.props.pagination||limit==false ? newOrder : [{column: 'id', dir}]/*,
                 offset: this.props.pagination ? 0 : (dir=='asc' ? 0 : this.state.total-limit)*/
             };
-
             this.handleChangePage(1, options);
         }
     }
@@ -278,7 +270,7 @@ class SemiDataTable extends Component {
                 }
             }
         }
-        let showCreateBtn = actions ? actions.create!==false : false;
+        let showCreateBtn = actions ? actions.create&&actions.create!==false : false;
         let showReloadBtn = actions ? actions.reload!==false : true;
         return (
             <Paper>
